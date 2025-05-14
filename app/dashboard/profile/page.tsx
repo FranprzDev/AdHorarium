@@ -29,13 +29,11 @@ export default function ProfilePage() {
     const fetchData = async () => {
       setIsLoading(true)
       try {
-        // Fetch careers
         const { data: careersData, error: careersError } = await supabase.from("careers").select("*")
 
         if (careersError) throw careersError
         setCareers(careersData || [])
 
-        // Fetch user profile
         if (user) {
           const { data: profileData, error: profileError } = await supabase
             .from("user_profiles")
@@ -83,7 +81,6 @@ export default function ProfilePage() {
     }
   }
 
-  // Get user initials for avatar
   const getUserInitials = () => {
     if (!user?.email) return "U"
     return user.email.charAt(0).toUpperCase()
