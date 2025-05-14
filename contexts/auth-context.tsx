@@ -26,6 +26,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const supabase = getSupabaseBrowserClient()
 
   const REDIRECT_URL = process.env.NEXT_PUBLIC_DEPLOY_URL;
+  console.log(REDIRECT_URL)
 
   const refreshSession = async () => {
     try {
@@ -76,7 +77,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: REDIRECT_URL,
           queryParams: {
             access_type: "offline",
             prompt: "consent",
