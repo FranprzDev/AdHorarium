@@ -25,8 +25,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const supabase = getSupabaseBrowserClient()
 
-  // Use the Vercel deployment URL instead of localhost
-  const REDIRECT_URL = "https://v0-web-app-with-gsap-ztvhv0.vercel.app/dashboard"
+  const REDIRECT_URL = process.env.NEXT_PUBLIC_DEPLOY_URL;
 
   const refreshSession = async () => {
     try {

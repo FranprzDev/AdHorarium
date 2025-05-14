@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- Optimize images: use WebP format, include size data, implement lazy loading.

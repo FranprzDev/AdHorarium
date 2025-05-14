@@ -1,0 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- When you generating code, please use zustand instead useContext or Redux or other stores.
+- Always use zustand.
+

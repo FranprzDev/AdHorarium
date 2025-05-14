@@ -1,0 +1,9 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- Ensure all components are reusable and follow the existing design patterns.
+- Ensure all components are responsive and accessible.
+
+- Use Tailwind CSS for styling, adhering to the defined color palette.

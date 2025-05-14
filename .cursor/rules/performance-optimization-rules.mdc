@@ -1,0 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- Optimize Web Vitals (LCP, CLS, FID).
+
+- Use dynamic loading for non-critical components.

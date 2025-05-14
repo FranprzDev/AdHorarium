@@ -1,0 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- When generating code, prioritize TypeScript and React best practices.
+
+- Always validate user inputs and handle errors gracefully.

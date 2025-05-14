@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- Minimize the use of AI generated comments, instead use clearly named variables and functions.

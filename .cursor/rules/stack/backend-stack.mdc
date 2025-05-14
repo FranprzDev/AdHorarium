@@ -1,0 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- Framework: Next.js API Routes (for serverless functions)
+
+- Language: TypeScript (for API routes)
