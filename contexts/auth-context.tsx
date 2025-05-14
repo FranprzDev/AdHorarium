@@ -77,6 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
+          redirectTo: REDIRECT_URL,
           queryParams: {
             access_type: "offline",
             prompt: "consent",
