@@ -74,10 +74,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = async (provider: "google") => {
     try {
       setIsLoading(true)
+      console.log(REDIRECT_URL + "/dashboard")
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: REDIRECT_URL + "/dashboard",
+          redirectTo: "https://adhorarium.vercel.app/dashboard",
           queryParams: {
             access_type: "offline",
             prompt: "consent",
