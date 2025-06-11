@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { useAuth } from "@/contexts/auth-context"
+import { useAuthStore } from "@/stores/auth-store"
 import { Button } from "@/components/ui/button"
 import {
   GraduationCap,
@@ -22,7 +22,7 @@ import {
 import Link from "next/link"
 
 export default function LandingPage() {
-  const { signIn, isLoading } = useAuth()
+  const { signIn, isLoading } = useAuthStore()
   const [isSigningIn, setIsSigningIn] = useState(false)
 
   const handleSignIn = async () => {

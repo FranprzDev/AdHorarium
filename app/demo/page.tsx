@@ -3,10 +3,11 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
-import CurriculumBoard from "@/components/curriculum-board"
-import { Tabs, Switch, Button } from "@/components/ui/acernity-ui"
 import { coursesData2008 } from "@/data/courses-2008"
-import { AuroraBackground } from "@/components/ui/aurora-background"
+import CurriculumBoard from "@/app/components/curriculum-board"
+import { Tabs, Switch, Button } from "@/app/components/ui/acernity-ui"
+import LevelSelectionModal from "@/app/components/level-selection-modal"
+import { AuroraBackground } from "@/app/components/ui/aurora-background"
 import { ArrowLeft, Info } from "lucide-react"
 
 export default function DemoPage() {

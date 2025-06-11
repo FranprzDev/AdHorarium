@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { useAuth } from "@/contexts/auth-context"
+import { useAuthStore } from "@/stores/auth-store"
 import { getSupabaseBrowserClient } from "@/lib/supabase"
 import { AuroraBackground } from "@/components/ui/aurora-background"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -18,7 +18,7 @@ type Career = {
 }
 
 export default function ProfilePage() {
-  const { user, refreshSession } = useAuth()
+  const { user, refreshSession } = useAuthStore()
   const [careers, setCareers] = useState<Career[]>([])
   const [selectedCareer, setSelectedCareer] = useState<string>("")
   const [isLoading, setIsLoading] = useState(false)

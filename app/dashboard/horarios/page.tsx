@@ -1,13 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { coursesData2008 } from "@/data/courses-2008"
-import { AuroraBackground } from "@/components/ui/aurora-background"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
+import { AuroraBackground } from "@/app/components/ui/aurora-background"
+import { Button } from "@/app/components/ui/button"
+import { Checkbox } from "@/app/components/ui/checkbox"
+import { Badge } from "@/app/components/ui/badge"
+import { Card, CardContent } from "@/app/components/ui/card"
 import type { Course } from "@/types/course"
 
 export default function HorariosPage() {

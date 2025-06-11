@@ -2,12 +2,13 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import CurriculumBoard from "@/components/curriculum-board"
-import ScheduleGenerator from "@/components/schedule-generator"
-import { Tabs, Switch, Button } from "@/components/ui/acernity-ui"
 import { coursesData2008 } from "@/data/courses-2008"
-import { AuroraBackground } from "@/components/ui/aurora-background"
 import { Calendar } from "lucide-react"
+import { AuroraBackground } from "@/app/components/ui/aurora-background"
+import { Button } from "@/app/components/ui/button"
+import { Tabs, Switch } from "@/app/components/ui/acernity-ui"
+import CurriculumBoard from "@/app/components/curriculum-board"
+import ScheduleGenerator from "@/app/components/schedule-generator"
 
 export default function Dashboard() {
   const [plan, setPlan] = useState<"2008" | "2023">("2008")
