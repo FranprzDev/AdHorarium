@@ -1,4 +1,4 @@
-import { RegimenCorrelatividades } from "../interfaces/regimen";
+import { RegimenCorrelatividades } from "./interfaces/regimen";
 
 export const plan_ing_electrica_2025: RegimenCorrelatividades = {
     "carrera": "Ingeniería Eléctrica",

@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { createClient } from "@/utils/supabase/client"
 import { AuroraBackground } from "@/components/ui/aurora-background"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -9,30 +10,92 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { Search, List, TableIcon } from "lucide-react"
-
-// Import the exam tables data
-import materiasDB from "@/data/materias.db"
+import { Search, List, TableIcon, BookOpen } from "lucide-react"
 
 type ViewMode = "list" | "table"
 type ExamTable = "Mesa I" | "Mesa II" | "Mesa III"
+type Career = { id: number; name: string }
+type Subject = { name: string; career_id: number; exam_table_id: number; careers: { name: string } }
+type TransformedData = {
+  [key: string]: {
+    "Mesa I": string[]
+    "Mesa II": string[]
+    "Mesa III": string[]
+  }
+}
 
 export default function MesasPage() {
+  const [allSubjectsData, setAllSubjectsData] = useState<TransformedData>({})
+  const [careers, setCareers] = useState<Career[]>([])
   const [selectedCareer, setSelectedCareer] = useState<string>("")
   const [searchQuery, setSearchQuery] = useState("")
   const [viewMode, setViewMode] = useState<ViewMode>("list")
   const [activeTab, setActiveTab] = useState<ExamTable>("Mesa I")
+  const [loading, setLoading] = useState(true)
+  const supabase = createClient()
 
-  // Get all available careers
-  const careers = Object.keys(materiasDB)
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true)
 
-  // Get subjects for the selected career
+      const { data: careersData } = await supabase.from("careers").select("id, name")
+      setCareers(careersData || [])
+
+      const { data: subjectsData } = await supabase
+        .from("subjects")
+        .select("name, career_id, exam_table_id, careers(name)")
+      
+      const transformedData: TransformedData = {}
+      if (subjectsData) {
+        subjectsData.forEach((subject: any) => {
+          const careerName = subject.careers.name
+          if (!transformedData[careerName]) {
+            transformedData[careerName] = { "Mesa I": [], "Mesa II": [], "Mesa III": [] }
+          }
+          if (subject.exam_table_id) {
+            const examTableName: ExamTable =
+              subject.exam_table_id === 1 ? "Mesa I" : subject.exam_table_id === 2 ? "Mesa II" : "Mesa III"
+            transformedData[careerName][examTableName].push(subject.name)
+          }
+        })
+      }
+      setAllSubjectsData(transformedData)
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      if (user) {
+        const { data: profile } = await supabase
+          .from("user_profiles")
+          .select("careers(name)")
+          .eq("id", user.id)
+          .single()
+        if (profile && profile.careers) {
+          setSelectedCareer((profile.careers as any).name)
+        }
+      }
+
+      setLoading(false)
+    }
+
+    fetchData()
+  }, [])
+
   const careerSubjects = useMemo(() => {
-    if (!selectedCareer) return null
-    return materiasDB[selectedCareer as keyof typeof materiasDB]
-  }, [selectedCareer])
+    if (!selectedCareer || Object.keys(allSubjectsData).length === 0) return null
 
-  // Filter subjects based on search query
+    const userCareerSubjects = allSubjectsData[selectedCareer] || { "Mesa I": [], "Mesa II": [], "Mesa III": [] }
+    const basicSubjects = allSubjectsData["Ciencias Básicas"] || { "Mesa I": [], "Mesa II": [], "Mesa III": [] }
+
+    const combined = {
+      "Mesa I": [...new Set([...userCareerSubjects["Mesa I"], ...basicSubjects["Mesa I"]])],
+      "Mesa II": [...new Set([...userCareerSubjects["Mesa II"], ...basicSubjects["Mesa II"]])],
+      "Mesa III": [...new Set([...userCareerSubjects["Mesa III"], ...basicSubjects["Mesa III"]])],
+    }
+
+    return combined
+  }, [selectedCareer, allSubjectsData])
+
   const filteredSubjects = useMemo(() => {
     if (!careerSubjects) return null
 
@@ -41,11 +104,7 @@ export default function MesasPage() {
     }
 
     const query = searchQuery.toLowerCase().trim()
-    const result: typeof careerSubjects = {
-      "Mesa I": [],
-      "Mesa II": [],
-      "Mesa III": [],
-    }
+    const result: typeof careerSubjects = { "Mesa I": [], "Mesa II": [], "Mesa III": [] }
 
     Object.entries(careerSubjects).forEach(([table, subjects]) => {
       result[table as ExamTable] = subjects.filter((subject) => subject.toLowerCase().includes(query))
@@ -54,33 +113,33 @@ export default function MesasPage() {
     return result
   }, [careerSubjects, searchQuery])
 
-  // Get all subjects across all tables
   const allSubjects = useMemo(() => {
     if (!filteredSubjects) return []
-
     return Object.entries(filteredSubjects).flatMap(([table, subjects]) =>
       subjects.map((subject) => ({ subject, table })),
     )
   }, [filteredSubjects])
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05,
-      },
-    },
+    visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
   }
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.3 },
-    },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+  }
+
+  if (loading) {
+    return (
+      <AuroraBackground className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-purple-400 mx-auto"></div>
+          <h2 className="text-2xl font-semibold text-white mt-4">Cargando Datos...</h2>
+          <p className="text-purple-200">Obteniendo la información más reciente de las mesas.</p>
+        </div>
+      </AuroraBackground>
+    )
   }
 
   return (
@@ -99,27 +158,24 @@ export default function MesasPage() {
         <div className="glass-card p-6 mb-8">
           <div className="space-y-6">
             <div>
-              <label className="text-sm font-medium text-purple-200 mb-2 block">
-                Seleccionar Carrera de Ingeniería
-              </label>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Select value={selectedCareer} onValueChange={setSelectedCareer}>
-                  <SelectTrigger className="select flex-1">
-                    <SelectValue placeholder="Elige una carrera" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-purple-900 border-purple-500/30">
-                    {careers.map((career) => (
-                      <SelectItem key={career} value={career} className="text-white hover:bg-purple-800">
-                        {career}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <label className="text-sm font-medium text-purple-200 mb-2 block">Selecciona tu Carrera</label>
+              <Select onValueChange={setSelectedCareer} value={selectedCareer}>
+                <SelectTrigger className="w-full sm:w-64 glass-input mb-4">
+                  <SelectValue placeholder="Elige tu carrera..." />
+                </SelectTrigger>
+                <SelectContent className="glass-select">
+                  {careers.map((career) => (
+                    <SelectItem key={career.id} value={career.name}>
+                      {career.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
+              <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex gap-2">
                   <Button
                     variant={viewMode === "list" ? "default" : "outline"}
-                    size="icon"
                     onClick={() => setViewMode("list")}
                     className={
                       viewMode === "list"
@@ -127,11 +183,11 @@ export default function MesasPage() {
                         : "bg-transparent border-purple-500/30 text-white hover:bg-purple-800/30"
                     }
                   >
-                    <List className="h-5 w-5" />
+                    <List className="h-5 w-5 mr-2" />
+                    Vista de Cuadrícula
                   </Button>
                   <Button
                     variant={viewMode === "table" ? "default" : "outline"}
-                    size="icon"
                     onClick={() => setViewMode("table")}
                     className={
                       viewMode === "table"
@@ -139,7 +195,8 @@ export default function MesasPage() {
                         : "bg-transparent border-purple-500/30 text-white hover:bg-purple-800/30"
                     }
                   >
-                    <TableIcon className="h-5 w-5" />
+                    <TableIcon className="h-5 w-5 mr-2" />
+                    Vista de Tabla
                   </Button>
                 </div>
               </div>
@@ -165,9 +222,7 @@ export default function MesasPage() {
         {!selectedCareer && (
           <div className="glass-card p-8 text-center">
             <div className="w-16 h-16 mx-auto mb-4 text-purple-300">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
+              <BookOpen />
             </div>
             <h2 className="text-xl font-semibold text-white mb-2">Selecciona una Carrera</h2>
             <p className="text-purple-200">
