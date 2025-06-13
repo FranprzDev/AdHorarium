@@ -2,9 +2,7 @@
 
 import type React from "react"
 
-import { useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { useAuth } from "@/contexts/auth-context"
+import { useAuthStore } from "@/stores/useAuthStore"
 import { MainLayout } from "@/components/layout/main-layout"
 
 export default function DashboardLayout({
@@ -12,22 +10,12 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  const { user, isLoading } = useAuth()
-  const router = useRouter()
-
-  useEffect(() => {
-    if (!isLoading && !user) {
-      router.push("/")
-    }
-  }, [user, isLoading, router])
+  const { user, isLoading } = useAuthStore()
 
   if (isLoading) {
     return (
-      <div className="min-h-screen gradient-bg flex items-center justify-center">
-        <div className="glass-card p-8 text-white text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-300 mx-auto mb-4"></div>
-          <p>Cargando...</p>
-        </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div>
       </div>
     )
   }

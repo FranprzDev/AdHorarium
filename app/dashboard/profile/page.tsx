@@ -1,9 +1,10 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
-import { useAuth } from "@/contexts/auth-context"
+import { useAuthStore } from "@/stores/useAuthStore"
 import { getSupabaseBrowserClient } from "@/lib/supabase"
+import { CareerSelectionModal } from "@/components/career-selection-modal"
+import { useEffect, useState } from "react"
+import { motion } from "framer-motion"
 import { AuroraBackground } from "@/components/ui/aurora-background"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -11,77 +12,81 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { User, Save } from "lucide-react"
 
-type Career = {
+interface Profile {
+  id: string
+  fullName: string
+  avatarUrl: string
+  career_id: number | null
+}
+
+interface Career {
   id: number
   name: string
-  code: string
 }
 
 export default function ProfilePage() {
-  const { user, refreshSession } = useAuth()
+  const { user, refreshSession } = useAuthStore()
+  const [profile, setProfile] = useState<Profile | null>(null)
   const [careers, setCareers] = useState<Career[]>([])
-  const [selectedCareer, setSelectedCareer] = useState<string>("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [isSaving, setIsSaving] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const supabase = getSupabaseBrowserClient()
 
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true)
-      try {
-        // Fetch careers
-        const { data: careersData, error: careersError } = await supabase.from("careers").select("*")
+    async function fetchProfile() {
+      if (user) {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("*, career_id")
+          .eq("id", user.id)
+          .single()
 
-        if (careersError) throw careersError
-        setCareers(careersData || [])
-
-        // Fetch user profile
-        if (user) {
-          const { data: profileData, error: profileError } = await supabase
-            .from("user_profiles")
-            .select("career_id")
-            .eq("id", user.id)
-            .single()
-
-          if (profileError && profileError.code !== "PGRST116") throw profileError
-
-          if (profileData?.career_id) {
-            setSelectedCareer(profileData.career_id.toString())
-          }
+        if (error) {
+          console.error("Error fetching profile:", error)
+        } else {
+          setProfile(data)
         }
-      } catch (error) {
-        console.error("Error fetching data:", error)
-      } finally {
-        setIsLoading(false)
       }
     }
 
-    fetchData()
+    async function fetchCareers() {
+      const { data, error } = await supabase.from("careers").select("id, name")
+      if (error) {
+        console.error("Error fetching careers:", error)
+      } else {
+        setCareers(data)
+      }
+    }
+
+    fetchProfile()
+    fetchCareers()
   }, [user, supabase])
 
-  const handleSaveProfile = async () => {
-    if (!user) return
-
-    setIsSaving(true)
-
-    try {
+  const handleCareerChange = async (careerId: number) => {
+    if (user) {
       const { error } = await supabase
-        .from("user_profiles")
-        .update({
-          career_id: selectedCareer ? Number.parseInt(selectedCareer) : null,
-          updated_at: new Date().toISOString(),
-        })
+        .from("profiles")
+        .update({ career_id: careerId })
         .eq("id", user.id)
 
-      if (error) throw error
-
-      await refreshSession()
-    } catch (error) {
-      console.error("Error updating profile:", error)
-    } finally {
-      setIsSaving(false)
+      if (error) {
+        console.error("Error updating career:", error)
+      } else {
+        await refreshSession()
+        // Fetch profile again to get updated data
+        const { data } = await supabase
+          .from("profiles")
+          .select("*, career_id")
+          .eq("id", user.id)
+          .single()
+        setProfile(data)
+        setIsModalOpen(false)
+      }
     }
   }
+
+  const selectedCareerName =
+    careers.find((c) => c.id === profile?.career_id)?.name ||
+    "No asignada"
 
   // Get user initials for avatar
   const getUserInitials = () => {
@@ -107,10 +112,10 @@ export default function ProfilePage() {
             </CardHeader>
             <CardContent className="flex flex-col items-center text-center">
               <Avatar className="h-24 w-24 mb-4">
-                <AvatarImage src={user?.user_metadata?.avatar_url} />
+                <AvatarImage src={profile?.avatarUrl} />
                 <AvatarFallback className="bg-purple-700 text-2xl">{getUserInitials()}</AvatarFallback>
               </Avatar>
-              <h2 className="text-xl font-medium text-white mb-1">{user?.user_metadata?.full_name || "Usuario"}</h2>
+              <h2 className="text-xl font-medium text-white mb-1">{profile?.fullName || "Usuario"}</h2>
               <p className="text-purple-200 mb-4">{user?.email}</p>
               <div className="flex items-center text-purple-300 text-sm">
                 <User className="h-4 w-4 mr-2" />
@@ -126,33 +131,29 @@ export default function ProfilePage() {
             <CardContent className="space-y-6">
               <div>
                 <label className="text-sm font-medium text-purple-200 mb-2 block">Carrera</label>
-                <Select value={selectedCareer} onValueChange={setSelectedCareer} disabled={isLoading}>
-                  <SelectTrigger className="select">
-                    <SelectValue placeholder="Selecciona tu carrera" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-purple-900 border-purple-500/30">
-                    {careers.map((career) => (
-                      <SelectItem
-                        key={career.id}
-                        value={career.id.toString()}
-                        className="text-white hover:bg-purple-800"
-                      >
-                        {career.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="select flex items-center justify-between">
+                  <span>{selectedCareerName}</span>
+                </div>
               </div>
 
               <div className="flex justify-end">
-                <Button onClick={handleSaveProfile} disabled={isSaving || isLoading} className="primary-button">
-                  {isSaving ? "Guardando..." : "Guardar cambios"}
-                  <Save className="ml-2 h-4 w-4" />
+                <Button onClick={() => setIsModalOpen(true)} disabled={!user} className="primary-button">
+                  Cambiar Carrera
                 </Button>
               </div>
             </CardContent>
           </Card>
         </div>
+
+        {isModalOpen && (
+          <CareerSelectionModal
+            isOpen={isModalOpen}
+            careers={careers}
+            currentCareerId={profile?.career_id ?? null}
+            onSelectCareer={handleCareerChange}
+            onClose={() => setIsModalOpen(false)}
+          />
+        )}
       </motion.div>
     </AuroraBackground>
   )
