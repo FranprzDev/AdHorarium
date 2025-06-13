@@ -162,15 +162,15 @@ export default function MesasPage() {
               <Select onValueChange={setSelectedCareer} value={selectedCareer}>
                 <SelectTrigger className="w-full sm:w-64 glass-input mb-4">
                   <SelectValue placeholder="Elige tu carrera..." />
-                </SelectTrigger>
+                  </SelectTrigger>
                 <SelectContent className="glass-select">
-                  {careers.map((career) => (
+                    {careers.map((career) => (
                     <SelectItem key={career.id} value={career.name}>
                       {career.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
 
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex gap-2">

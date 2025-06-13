@@ -49,19 +49,27 @@ export function MainLayout({ children }: MainLayoutProps) {
 
     async function checkUserProfile() {
       if (!user) return
-      const { data, error } = await supabase
+
+      const { data: profileData, error } = await supabase
         .from("profiles")
         .select("id, career_id")
         .eq("id", user.id)
-        .single()
+        .maybeSingle()
 
       if (error) {
-        console.error("Error fetching profile in layout:", error)
-      } else {
-        setProfile(data)
-        if (!data.career_id) {
-          setIsModalOpen(true)
-        }
+        console.error("Error real al obtener el perfil en layout:", error)
+        return
+      }
+
+      if (!profileData) {
+        setProfile({ id: user.id, career_id: null })
+        setIsModalOpen(true)
+        return
+      }
+
+      setProfile(profileData)
+      if (!profileData.career_id) {
+        setIsModalOpen(true)
       }
     }
 
@@ -73,21 +81,22 @@ export function MainLayout({ children }: MainLayoutProps) {
     if (!user) return
     const { error } = await supabase
       .from("profiles")
-      .update({ career_id: careerId })
-      .eq("id", user.id)
+      .upsert({ id: user.id, career_id: careerId, updated_at: new Date().toISOString() }, { onConflict: 'id' })
 
     if (error) {
       console.error("Error updating career:", error)
-    } else {
-      await refreshSession()
-      const { data } = await supabase
-        .from("profiles")
-        .select("id, career_id")
-        .eq("id", user.id)
-        .single()
-      setProfile(data)
-      setIsModalOpen(false)
+      return
     }
+
+    await refreshSession()
+    const { data } = await supabase
+      .from("profiles")
+      .select("id, career_id")
+      .eq("id", user.id)
+      .maybeSingle()
+
+    setProfile(data ?? { id: user.id, career_id: careerId })
+    setIsModalOpen(false)
   }
 
   const getUserInitials = () => {
