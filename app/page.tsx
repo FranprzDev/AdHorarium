@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
+import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/stores/useAuthStore"
 import { Button } from "@/components/ui/button"
 import {
@@ -18,12 +19,20 @@ import {
   CheckCircle,
   Users,
   Sparkles,
+  LayoutDashboard,
 } from "lucide-react"
 import Link from "next/link"
 
 export default function LandingPage() {
-  const { signIn, isLoading } = useAuthStore()
+  const router = useRouter()
+  const { signIn, isLoading, user } = useAuthStore()
   const [isSigningIn, setIsSigningIn] = useState(false)
+
+  useEffect(() => {
+    if (!isLoading && user) {
+      router.push('/dashboard')
+    }
+  }, [user, isLoading, router])
 
   const handleSignIn = async () => {
     try {
@@ -103,14 +112,23 @@ export default function LandingPage() {
             <School className="h-8 w-8 text-purple-300" />
             <div className="text-2xl font-bold gradient-text">UTN FRT</div>
           </div>
-          <Button
-            onClick={handleSignIn}
-            disabled={isLoading || isSigningIn}
-            className="primary-button flex items-center gap-2"
-          >
-            <LogIn className="h-5 w-5" />
-            {isSigningIn ? "Iniciando sesión..." : "Iniciar sesión con Google"}
-          </Button>
+          {user ? (
+            <Link href="/dashboard">
+              <Button className="primary-button flex items-center gap-2">
+                <LayoutDashboard className="h-5 w-5" />
+                Dashboard
+              </Button>
+            </Link>
+          ) : (
+            <Button
+              onClick={handleSignIn}
+              disabled={isLoading || isSigningIn}
+              className="primary-button flex items-center gap-2"
+            >
+              <LogIn className="h-5 w-5" />
+              {isSigningIn ? "Iniciando sesión..." : "Iniciar sesión con Google"}
+            </Button>
+          )}
         </header>
 
         {/* Hero section */}

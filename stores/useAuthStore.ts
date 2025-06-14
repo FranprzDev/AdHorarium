@@ -1,4 +1,5 @@
 import { create, StateCreator } from 'zustand'
+import { persist } from 'zustand/middleware'
 import type { User, Session } from '@supabase/supabase-js'
 import { getSupabaseBrowserClient } from '@/lib/supabase'
 
@@ -8,49 +9,12 @@ type AuthState = {
   isLoading: boolean
   signIn: (provider: 'google') => Promise<void>
   signOut: () => Promise<void>
-  refreshSession: () => Promise<void>
-  init: () => () => void // Returns the unsubscribe function
 }
 
-const authStoreCreator: StateCreator<AuthState> = (set, get) => ({
+const authStoreCreator: StateCreator<AuthState> = (set) => ({
   user: null,
   session: null,
   isLoading: true,
-  
-  init: () => {
-    const supabase = getSupabaseBrowserClient()
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      set({ session, user: session?.user ?? null, isLoading: false })
-    })
-    
-    // Initial fetch
-    get().refreshSession()
-    
-    return subscription.unsubscribe
-  },
-
-  refreshSession: async () => {
-    const supabase = getSupabaseBrowserClient()
-    set({ isLoading: true })
-    try {
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession()
-
-      if (error) throw error
-
-      if (session) {
-        set({ session, user: session.user })
-      }
-    } catch (error) {
-      console.error('Error refreshing session:', error)
-    } finally {
-      set({ isLoading: false })
-    }
-  },
 
   signIn: async (provider: 'google') => {
     const supabase = getSupabaseBrowserClient()
@@ -76,7 +40,7 @@ const authStoreCreator: StateCreator<AuthState> = (set, get) => ({
       console.error('Unexpected error during sign in:', error)
       alert('An unexpected error occurred. Please try again later.')
     } finally {
-      // isLoading will be set to false by onAuthStateChange listener
+      set({ isLoading: false })
     }
   },
 
@@ -95,4 +59,51 @@ const authStoreCreator: StateCreator<AuthState> = (set, get) => ({
   },
 })
 
-export const useAuthStore = create<AuthState>(authStoreCreator) 
+export const useAuthStore = create<AuthState>()(
+  persist(
+    authStoreCreator,
+    {
+      name: 'auth-storage',
+      partialize: (state) => ({
+        user: state.user,
+        session: state.session,
+      }),
+    }
+  )
+)
+
+if (typeof window !== 'undefined') {
+  const supabase = getSupabaseBrowserClient()
+  
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    const currentState = useAuthStore.getState()
+    
+    if (session && !currentState.user) {
+      useAuthStore.setState({ 
+        session, 
+        user: session.user,
+        isLoading: false 
+      })
+    } 
+    else if (!session && currentState.user) {
+      useAuthStore.setState({ 
+        user: null, 
+        session: null, 
+        isLoading: false 
+      })
+    }
+    // Si ambos coinciden, solo actualizar isLoading
+    else {
+      useAuthStore.setState({ isLoading: false })
+    }
+  })
+  
+  // Escuchar cambios de autenticación
+  supabase.auth.onAuthStateChange(async (_event, session) => {
+    useAuthStore.setState({ 
+      session, 
+      user: session?.user ?? null,
+      isLoading: false
+    })
+  })
+} 

@@ -2,7 +2,6 @@ import type React from "react"
 import "./globals.css"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
-import { AuthManager } from "@/components/auth/AuthManager"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -19,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={inter.className}>
-        <AuthManager>{children}</AuthManager>
+        {children}
       </body>
     </html>
   )

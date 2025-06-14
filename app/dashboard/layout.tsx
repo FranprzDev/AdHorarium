@@ -1,8 +1,11 @@
 "use client"
 
 import type React from "react"
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 
 import { useAuthStore } from "@/stores/useAuthStore"
+import { useCareerStore } from "@/stores/useCareerStore"
 import { MainLayout } from "@/components/layout/main-layout"
 
 export default function DashboardLayout({
@@ -10,7 +13,24 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
+  const router = useRouter()
   const { user, isLoading } = useAuthStore()
+  const fetchCareerId = useCareerStore((state) => state.fetchCareerId)
+  const clearCareer = useCareerStore((state) => state.clearCareer)
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push('/')
+    }
+  }, [user, isLoading, router])
+
+  useEffect(() => {
+    if (user?.id) {
+      fetchCareerId(user.id)
+    } else {
+      clearCareer()
+    }
+  }, [user, fetchCareerId, clearCareer])
 
   if (isLoading) {
     return (
