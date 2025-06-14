@@ -10,7 +10,7 @@ import { getSupabaseBrowserClient } from "@/lib/supabase"
 import { CareerSelectionModal } from "@/components/career-selection-modal"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { BookOpen, Calendar, Search, Menu, X, LogOut, User as UserIcon } from "lucide-react"
+import { BookOpen, Calendar, Search, Menu, X, LogOut, User as UserIcon, GraduationCap } from "lucide-react"
 
 interface MainLayoutProps {
   children: React.ReactNode
@@ -29,7 +29,7 @@ interface Career {
 export function MainLayout({ children }: MainLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const pathname = usePathname()
-  const { user, signOut, refreshSession } = useAuthStore()
+  const { user, signOut } = useAuthStore()
   
   const [profile, setProfile] = useState<Profile | null>(null)
   const [careers, setCareers] = useState<Career[]>([])
@@ -88,7 +88,6 @@ export function MainLayout({ children }: MainLayoutProps) {
       return
     }
 
-    await refreshSession()
     const { data } = await supabase
       .from("profiles")
       .select("id, career_id")
@@ -106,6 +105,7 @@ export function MainLayout({ children }: MainLayoutProps) {
 
   const navItems = [
     { name: "Plan de Correlativas", path: "/dashboard", icon: <BookOpen className="h-5 w-5" /> },
+    { name: "Gestor de Materias", path: "/dashboard/materias", icon: <GraduationCap className="h-5 w-5" /> },
     { name: "Gestor de Horarios", path: "/dashboard/horarios", icon: <Calendar className="h-5 w-5" /> },
     { name: "Buscador de Mesa", path: "/dashboard/mesas", icon: <Search className="h-5 w-5" /> },
   ]
