@@ -14,7 +14,6 @@ export default function HorariosPage() {
   const [selectedCourses, setSelectedCourses] = useState<Record<number, string[]>>({})
   const coursesData = coursesData2008
 
-  // Group courses by level
   const coursesByLevel = coursesData.reduce(
     (acc, course) => {
       const level = course.level
@@ -26,8 +25,6 @@ export default function HorariosPage() {
     },
     {} as Record<number, Course[]>,
   )
-
-  // Get sorted levels
   const levels = Object.keys(coursesByLevel)
     .map(Number)
     .sort((a, b) => a - b)
