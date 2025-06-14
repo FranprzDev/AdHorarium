@@ -6,48 +6,15 @@ import { getSupabaseBrowserClient } from '@/lib/supabase'
 type AuthState = {
   user: User | null
   session: Session | null
-  careerId: number | null
   isLoading: boolean
   signIn: (provider: 'google') => Promise<void>
   signOut: () => Promise<void>
-  refreshSession: () => Promise<void>
 }
 
-const authStoreCreator: StateCreator<AuthState> = (set, get) => ({
+const authStoreCreator: StateCreator<AuthState> = (set) => ({
   user: null,
   session: null,
-  careerId: null,
   isLoading: true,
-
-  refreshSession: async () => {
-    const supabase = getSupabaseBrowserClient()
-    const { user } = get()
-    if (!user) {
-      set({ isLoading: false })
-      return
-    }
-
-    set({ isLoading: true })
-    try {
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('career_id')
-        .eq('id', user.id)
-        .single()
-
-      if (error) {
-        console.error('Error fetching career_id:', error)
-        set({ careerId: null })
-      } else {
-        set({ careerId: profile?.career_id ?? null })
-      }
-    } catch (error) {
-      console.error('Error refreshing session:', error)
-      set({ careerId: null })
-    } finally {
-      set({ isLoading: false })
-    }
-  },
 
   signIn: async (provider: 'google') => {
     const supabase = getSupabaseBrowserClient()
@@ -83,7 +50,7 @@ const authStoreCreator: StateCreator<AuthState> = (set, get) => ({
     try {
       const { error } = await supabase.auth.signOut()
       if (error) throw error
-      set({ user: null, session: null, careerId: null })
+      set({ user: null, session: null })
     } catch (error) {
       console.error('Error signing out:', error)
     } finally {
@@ -100,7 +67,6 @@ export const useAuthStore = create<AuthState>()(
       partialize: (state) => ({
         user: state.user,
         session: state.session,
-        careerId: state.careerId,
       }),
     }
   )
@@ -118,22 +84,17 @@ if (typeof window !== 'undefined') {
         user: session.user,
         isLoading: false 
       })
-      useAuthStore.getState().refreshSession()
     } 
     else if (!session && currentState.user) {
       useAuthStore.setState({ 
         user: null, 
         session: null, 
-        careerId: null,
         isLoading: false 
       })
     }
     // Si ambos coinciden, solo actualizar isLoading
     else {
       useAuthStore.setState({ isLoading: false })
-      if (session?.user) {
-        useAuthStore.getState().refreshSession()
-      }
     }
   })
   
@@ -141,16 +102,8 @@ if (typeof window !== 'undefined') {
   supabase.auth.onAuthStateChange(async (_event, session) => {
     useAuthStore.setState({ 
       session, 
-      user: session?.user ?? null 
+      user: session?.user ?? null,
+      isLoading: false
     })
-    
-    if (session?.user) {
-      await useAuthStore.getState().refreshSession()
-    } else {
-      useAuthStore.setState({ 
-        isLoading: false, 
-        careerId: null 
-      })
-    }
   })
 } 

@@ -5,6 +5,7 @@ import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 
 import { useAuthStore } from "@/stores/useAuthStore"
+import { useCareerStore } from "@/stores/useCareerStore"
 import { MainLayout } from "@/components/layout/main-layout"
 
 export default function DashboardLayout({
@@ -13,7 +14,9 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   const router = useRouter()
-  const { user, session, isLoading } = useAuthStore()
+  const { user, isLoading } = useAuthStore()
+  const fetchCareerId = useCareerStore((state) => state.fetchCareerId)
+  const clearCareer = useCareerStore((state) => state.clearCareer)
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -21,9 +24,13 @@ export default function DashboardLayout({
     }
   }, [user, isLoading, router])
 
-  console.log("user;", user)
-  console.log("session;", session)
-  console.log("isLoading;", isLoading)
+  useEffect(() => {
+    if (user?.id) {
+      fetchCareerId(user.id)
+    } else {
+      clearCareer()
+    }
+  }, [user, fetchCareerId, clearCareer])
 
   if (isLoading) {
     return (
@@ -34,7 +41,6 @@ export default function DashboardLayout({
   }
 
   if (!user) {
-    console.log("no user")
     return null
   }
 
