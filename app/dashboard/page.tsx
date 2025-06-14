@@ -26,16 +26,8 @@ export default function Dashboard() {
             <div className="flex flex-col gap-6">
               <div className="flex justify-between items-center">
                 <div>
-                  <h1 className="text-3xl md:text-4xl font-bold gradient-text">Plan de Correlativas</h1>
-                  <p className="text-slate-200 mt-2 text-lg">Departamento de Sistemas - UTN FRT</p>
+                  <h1 className="text-3xl md:text-4xl font-bold gradient-text">Correlativas de Ingeniería UTN</h1>
                 </div>
-                <Button
-                  onClick={() => setShowScheduleGenerator(true)}
-                  className="bg-violet-600 hover:bg-violet-700 text-white flex items-center gap-2 px-4"
-                >
-                  <Calendar size={18} />
-                  <span className="hidden md:inline">Generar Horario</span>
-                </Button>
               </div>
 
               <div className="flex flex-wrap gap-4">
@@ -88,3 +80,4 @@ export default function Dashboard() {
     </AuroraBackground>
   )
 }
+
