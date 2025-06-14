@@ -9,6 +9,7 @@ alwaysApply: true
 - Please use the best practices of Next.js (TypeScript)
 - The stack'll be Next.js + TypeScript + TailwindCSS + ShadCN + ZUstand 
 - If i tell you make and form, you should use react-hook-form, dont use validates with HTML natives, use validate by react-hook-form provided.
+- DONT PUT COMMENTS IN MY CODE PLEASE...
 
 
 

@@ -1,4 +1,5 @@
 import { create, StateCreator } from 'zustand'
+import { persist } from 'zustand/middleware'
 import type { User, Session } from '@supabase/supabase-js'
 import { getSupabaseBrowserClient } from '@/lib/supabase'
 
@@ -91,37 +92,65 @@ const authStoreCreator: StateCreator<AuthState> = (set, get) => ({
   },
 })
 
-export const useAuthStore = create<AuthState>(authStoreCreator)
+export const useAuthStore = create<AuthState>()(
+  persist(
+    authStoreCreator,
+    {
+      name: 'auth-storage',
+      partialize: (state) => ({
+        user: state.user,
+        session: state.session,
+        careerId: state.careerId,
+      }),
+    }
+  )
+)
 
-// Auto-inicialización del store
-const supabase = getSupabaseBrowserClient()
-
-// Obtener sesión inicial
-supabase.auth.getSession().then(({ data: { session } }) => {
-  useAuthStore.setState({ 
-    session, 
-    user: session?.user ?? null,
-    isLoading: false 
+if (typeof window !== 'undefined') {
+  const supabase = getSupabaseBrowserClient()
+  
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    const currentState = useAuthStore.getState()
+    
+    if (session && !currentState.user) {
+      useAuthStore.setState({ 
+        session, 
+        user: session.user,
+        isLoading: false 
+      })
+      useAuthStore.getState().refreshSession()
+    } 
+    else if (!session && currentState.user) {
+      useAuthStore.setState({ 
+        user: null, 
+        session: null, 
+        careerId: null,
+        isLoading: false 
+      })
+    }
+    // Si ambos coinciden, solo actualizar isLoading
+    else {
+      useAuthStore.setState({ isLoading: false })
+      if (session?.user) {
+        useAuthStore.getState().refreshSession()
+      }
+    }
   })
   
-  if (session?.user) {
-    useAuthStore.getState().refreshSession()
-  }
-})
-
-// Escuchar cambios de autenticación
-supabase.auth.onAuthStateChange(async (_event, session) => {
-  useAuthStore.setState({ 
-    session, 
-    user: session?.user ?? null 
-  })
-  
-  if (session?.user) {
-    await useAuthStore.getState().refreshSession()
-  } else {
+  // Escuchar cambios de autenticación
+  supabase.auth.onAuthStateChange(async (_event, session) => {
     useAuthStore.setState({ 
-      isLoading: false, 
-      careerId: null 
+      session, 
+      user: session?.user ?? null 
     })
-  }
-}) 
+    
+    if (session?.user) {
+      await useAuthStore.getState().refreshSession()
+    } else {
+      useAuthStore.setState({ 
+        isLoading: false, 
+        careerId: null 
+      })
+    }
+  })
+} 

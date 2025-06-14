@@ -19,6 +19,7 @@ import {
   CheckCircle,
   Users,
   Sparkles,
+  LayoutDashboard,
 } from "lucide-react"
 import Link from "next/link"
 
@@ -111,14 +112,23 @@ export default function LandingPage() {
             <School className="h-8 w-8 text-purple-300" />
             <div className="text-2xl font-bold gradient-text">UTN FRT</div>
           </div>
-          <Button
-            onClick={handleSignIn}
-            disabled={isLoading || isSigningIn}
-            className="primary-button flex items-center gap-2"
-          >
-            <LogIn className="h-5 w-5" />
-            {isSigningIn ? "Iniciando sesión..." : "Iniciar sesión con Google"}
-          </Button>
+          {user ? (
+            <Link href="/dashboard">
+              <Button className="primary-button flex items-center gap-2">
+                <LayoutDashboard className="h-5 w-5" />
+                Dashboard
+              </Button>
+            </Link>
+          ) : (
+            <Button
+              onClick={handleSignIn}
+              disabled={isLoading || isSigningIn}
+              className="primary-button flex items-center gap-2"
+            >
+              <LogIn className="h-5 w-5" />
+              {isSigningIn ? "Iniciando sesión..." : "Iniciar sesión con Google"}
+            </Button>
+          )}
         </header>
 
         {/* Hero section */}
