@@ -1,4 +1,4 @@
-import { RegimenCorrelatividades } from "../interfaces/regimen";
+import { RegimenCorrelatividades } from "./interfaces/regimen";
 
 export const plan_ing_mecanica_2023: RegimenCorrelatividades = {
       "carrera": "Ingeniería Mecánica",
@@ -235,7 +235,7 @@ export const plan_ing_mecanica_2023: RegimenCorrelatividades = {
               "numero": 35,
               "nombre": "Máquinas Alternativas y Turbomáquinas",
               "para_cursar_aprobar": [13,17],
-              "para_cursar_cursar": [20,28,30,31,,32]
+              "para_cursar_cursar": [20,28,30,31,32]
             },
             {
               "numero": 36,
