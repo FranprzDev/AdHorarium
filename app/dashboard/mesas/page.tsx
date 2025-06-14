@@ -77,7 +77,7 @@ export default function MesasPage() {
       >
         <h1 className="text-3xl md:text-4xl font-bold gradient-text mb-6">Buscador de Mesa</h1>
         <p className="text-purple-200 mb-8">
-          Explora todas las materias y cursos específicos de tu carrera de ingeniería elegida
+          Explora todas las materias y en qué mesa específica se rinde.
         </p>
 
         <div className="glass-card p-6 mb-8">
