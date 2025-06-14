@@ -5,48 +5,44 @@ import { getSupabaseBrowserClient } from '@/lib/supabase'
 type AuthState = {
   user: User | null
   session: Session | null
+  careerId: number | null
   isLoading: boolean
   signIn: (provider: 'google') => Promise<void>
   signOut: () => Promise<void>
   refreshSession: () => Promise<void>
-  init: () => () => void // Returns the unsubscribe function
 }
 
 const authStoreCreator: StateCreator<AuthState> = (set, get) => ({
   user: null,
   session: null,
+  careerId: null,
   isLoading: true,
-  
-  init: () => {
-    const supabase = getSupabaseBrowserClient()
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      set({ session, user: session?.user ?? null, isLoading: false })
-    })
-    
-    // Initial fetch
-    get().refreshSession()
-    
-    return subscription.unsubscribe
-  },
 
   refreshSession: async () => {
     const supabase = getSupabaseBrowserClient()
+    const { user } = get()
+    if (!user) {
+      set({ isLoading: false })
+      return
+    }
+
     set({ isLoading: true })
     try {
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession()
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('career_id')
+        .eq('id', user.id)
+        .single()
 
-      if (error) throw error
-
-      if (session) {
-        set({ session, user: session.user })
+      if (error) {
+        console.error('Error fetching career_id:', error)
+        set({ careerId: null })
+      } else {
+        set({ careerId: profile?.career_id ?? null })
       }
     } catch (error) {
       console.error('Error refreshing session:', error)
+      set({ careerId: null })
     } finally {
       set({ isLoading: false })
     }
@@ -76,7 +72,7 @@ const authStoreCreator: StateCreator<AuthState> = (set, get) => ({
       console.error('Unexpected error during sign in:', error)
       alert('An unexpected error occurred. Please try again later.')
     } finally {
-      // isLoading will be set to false by onAuthStateChange listener
+      set({ isLoading: false })
     }
   },
 
@@ -86,7 +82,7 @@ const authStoreCreator: StateCreator<AuthState> = (set, get) => ({
     try {
       const { error } = await supabase.auth.signOut()
       if (error) throw error
-      set({ user: null, session: null })
+      set({ user: null, session: null, careerId: null })
     } catch (error) {
       console.error('Error signing out:', error)
     } finally {
@@ -95,4 +91,37 @@ const authStoreCreator: StateCreator<AuthState> = (set, get) => ({
   },
 })
 
-export const useAuthStore = create<AuthState>(authStoreCreator) 
+export const useAuthStore = create<AuthState>(authStoreCreator)
+
+// Auto-inicialización del store
+const supabase = getSupabaseBrowserClient()
+
+// Obtener sesión inicial
+supabase.auth.getSession().then(({ data: { session } }) => {
+  useAuthStore.setState({ 
+    session, 
+    user: session?.user ?? null,
+    isLoading: false 
+  })
+  
+  if (session?.user) {
+    useAuthStore.getState().refreshSession()
+  }
+})
+
+// Escuchar cambios de autenticación
+supabase.auth.onAuthStateChange(async (_event, session) => {
+  useAuthStore.setState({ 
+    session, 
+    user: session?.user ?? null 
+  })
+  
+  if (session?.user) {
+    await useAuthStore.getState().refreshSession()
+  } else {
+    useAuthStore.setState({ 
+      isLoading: false, 
+      careerId: null 
+    })
+  }
+}) 

@@ -1,6 +1,8 @@
 "use client"
 
 import type React from "react"
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 
 import { useAuthStore } from "@/stores/useAuthStore"
 import { MainLayout } from "@/components/layout/main-layout"
@@ -10,7 +12,18 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  const { user, isLoading } = useAuthStore()
+  const router = useRouter()
+  const { user, session, isLoading } = useAuthStore()
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push('/')
+    }
+  }, [user, isLoading, router])
+
+  console.log("user;", user)
+  console.log("session;", session)
+  console.log("isLoading;", isLoading)
 
   if (isLoading) {
     return (
@@ -21,6 +34,7 @@ export default function DashboardLayout({
   }
 
   if (!user) {
+    console.log("no user")
     return null
   }
 

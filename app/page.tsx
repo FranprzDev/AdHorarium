@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
+import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/stores/useAuthStore"
 import { Button } from "@/components/ui/button"
 import {
@@ -22,8 +23,15 @@ import {
 import Link from "next/link"
 
 export default function LandingPage() {
-  const { signIn, isLoading } = useAuthStore()
+  const router = useRouter()
+  const { signIn, isLoading, user } = useAuthStore()
   const [isSigningIn, setIsSigningIn] = useState(false)
+
+  useEffect(() => {
+    if (!isLoading && user) {
+      router.push('/dashboard')
+    }
+  }, [user, isLoading, router])
 
   const handleSignIn = async () => {
     try {

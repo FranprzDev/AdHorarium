@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Search, List, TableIcon, BookOpen } from "lucide-react"
+import { useAuthStore } from "@/stores/useAuthStore"
 
 type ViewMode = "list" | "table"
 type ExamTable = "Mesa I" | "Mesa II" | "Mesa III"
@@ -33,18 +34,38 @@ export default function MesasPage() {
   const [activeTab, setActiveTab] = useState<ExamTable>("Mesa I")
   const [loading, setLoading] = useState(true)
   const supabase = createClient()
+  const { careerId } = useAuthStore()
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true)
 
-      const { data: careersData } = await supabase.from("careers").select("id, name")
+      const { data: careersData, error: careersError } = await supabase.from("careers").select("id, name")
+      if (careersError) console.error("Error cargando carreras:", careersError)
       setCareers(careersData || [])
 
-      const { data: subjectsData } = await supabase
+      let currentCareerName = ""
+      if (careerId && careersData) {
+        const careerMatch = careersData.find((c) => c.id === careerId)
+        if (careerMatch) {
+          currentCareerName = careerMatch.name
+          setSelectedCareer(currentCareerName)
+        }
+      }
+
+      const basicCareer = careersData?.find((c) => c.name.toLowerCase().includes("ciencias"))
+      const basicCareerId = basicCareer ? basicCareer.id : null
+
+      const careersToQuery = [careerId].filter(Boolean) as number[]
+      if (basicCareerId && basicCareerId !== careerId) careersToQuery.push(basicCareerId)
+
+      const { data: subjectsData, error: subjectsError } = await supabase
         .from("subjects")
         .select("name, career_id, exam_table_id, careers(name)")
-      
+        .in("career_id", careersToQuery)
+
+      if (subjectsError) console.error("Error cargando materias:", subjectsError)
+
       const transformedData: TransformedData = {}
       if (subjectsData) {
         subjectsData.forEach((subject: any) => {
@@ -61,25 +82,11 @@ export default function MesasPage() {
       }
       setAllSubjectsData(transformedData)
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-      if (user) {
-        const { data: profile } = await supabase
-          .from("user_profiles")
-          .select("careers(name)")
-          .eq("id", user.id)
-          .single()
-        if (profile && profile.careers) {
-          setSelectedCareer((profile.careers as any).name)
-        }
-      }
-
       setLoading(false)
     }
 
     fetchData()
-  }, [])
+  }, [careerId])
 
   const careerSubjects = useMemo(() => {
     if (!selectedCareer || Object.keys(allSubjectsData).length === 0) return null

@@ -1,0 +1,15 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- Don't write any code until you're very confident (95% or more) in what needs to be done. If unclear, ask for more info.
+- don't make any mistakes. you are a distinguished principal staff engineer at faang. you don't make mistakes. PLEASE don't make any mistakes!!
+- Don't add comments. This is not ok.
+- Please use the best practices of Next.js (TypeScript)
+- The stack'll be Next.js + TypeScript + TailwindCSS + ShadCN + ZUstand 
+- If i tell you make and form, you should use react-hook-form, dont use validates with HTML natives, use validate by react-hook-form provided.
+
+
+
+- If you need to modify, something; please dont change the logic of this. add new logic and re-validate the newer logic dont change the old logic, and works ok.
