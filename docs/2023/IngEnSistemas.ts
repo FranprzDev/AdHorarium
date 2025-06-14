@@ -1,11 +1,10 @@
 import { RegimenCorrelatividades } from "./interfaces/regimen";
 
-export const plan_ing_en_sistemas_2025: RegimenCorrelatividades = {
+export const plan_ing_en_sistemas_2023: RegimenCorrelatividades = {
     "carrera": "Ingeniería en Sistemas de Información",
     "plan": "2023",
     "regimen_correlatividades": [
-      {
-        "nivel": 1,
+      { "nivel": "I",
         "asignaturas": [
           {
             "numero": 1,
@@ -21,25 +20,25 @@ export const plan_ing_en_sistemas_2025: RegimenCorrelatividades = {
           },
           {
             "numero": 3,
-            "nombre": "Física I",
-            "para_cursar_aprobar": [],
-            "para_cursar_cursar": []
-          },
-          {
-            "numero": 4,
             "nombre": "Inglés I",
             "para_cursar_aprobar": [],
             "para_cursar_cursar": []
           },
           {
-            "numero": 5,
+            "numero": 4,
             "nombre": "Lógica y Estructuras Discretas",
             "para_cursar_aprobar": [],
             "para_cursar_cursar": []
           },
           {
-            "numero": 6,
+            "numero": 5,
             "nombre": "Algoritmos y Estructuras de Datos",
+            "para_cursar_aprobar": [],
+            "para_cursar_cursar": []
+          },
+          {
+            "numero": 6,
+            "nombre": "Física I",
             "para_cursar_aprobar": [],
             "para_cursar_cursar": []
           },
@@ -54,30 +53,6 @@ export const plan_ing_en_sistemas_2025: RegimenCorrelatividades = {
             "nombre": "Sistemas y Procesos de Negocio",
             "para_cursar_aprobar": [],
             "para_cursar_cursar": []
-          },
-          {
-            "numero": 9,
-            "nombre": "Análisis Matemático II",
-            "para_cursar_aprobar": [1, 2],
-            "para_cursar_cursar": []
-          },
-          {
-            "numero": 10,
-            "nombre": "Física II",
-            "para_cursar_aprobar": [1, 3],
-            "para_cursar_cursar": []
-          },
-          {
-            "numero": 11,
-            "nombre": "Ingeniería y Sociedad",
-            "para_cursar_aprobar": [],
-            "para_cursar_cursar": []
-          },
-          {
-            "numero": 12,
-            "nombre": "Inglés II",
-            "para_cursar_aprobar": [4],
-            "para_cursar_cursar": []
           }
         ]
       },
@@ -85,29 +60,54 @@ export const plan_ing_en_sistemas_2025: RegimenCorrelatividades = {
         "nivel": "II",
         "asignaturas": [
           {
-            "numero": 13,
+            "numero": 9,
+            "nombre": "Análisis Matemático II",
+            "para_cursar_aprobar": [],
+            "para_cursar_cursar": [1, 2]
+          },
+          {
+            "numero": 10,
             "nombre": "Sintaxis y Semántica de los Lenguajes",
-            "para_cursar_aprobar": [5, 6],
-            "para_cursar_cursar": []
+            "para_cursar_aprobar": [],
+            "para_cursar_cursar": [4,5]
+          },
+          {
+            "numero": 11,
+            "nombre": "Paradigmas de Programación",
+            "para_cursar_aprobar": [],
+            "para_cursar_cursar": [4, 5]
+          },
+          {
+            "numero": 12,
+            "nombre": "Sistemas Operativos",
+            "para_cursar_aprobar": [],
+            "para_cursar_cursar": [7]
+          },
+          {
+            "numero": 13,
+            "nombre": "Física II",
+            "para_cursar_aprobar": [],
+            "para_cursar_cursar": [1, 6]
           },
           {
             "numero": 14,
-            "nombre": "Paradigmas de Programación",
-            "para_cursar_aprobar": [5, 6],
-            "para_cursar_cursar": []
+            "nombre": "Análisis de Sistemas de Información",
+            "para_cursar_aprobar": [],
+            "para_cursar_cursar": [8]
           },
           {
             "numero": 15,
-            "nombre": "Sistemas Operativos",
-            "para_cursar_aprobar": [7],
-            "para_cursar_cursar": []
+            "nombre": "Inglés II",
+            "para_cursar_aprobar": [],
+            "para_cursar_cursar": [3]
           },
           {
             "numero": 16,
-            "nombre": "Análisis de Sistemas de Información (integradora)",
-            "para_cursar_aprobar": [6, 8],
+            "nombre": "Ingeniería y Sociedad",
+            "para_cursar_aprobar": [],
             "para_cursar_cursar": []
           }
+       
         ]
       },
       {
@@ -115,92 +115,93 @@ export const plan_ing_en_sistemas_2025: RegimenCorrelatividades = {
         "asignaturas": [
           {
             "numero": 17,
-            "nombre": "Probabilidad y Estadística",
-            "para_cursar_aprobar": [1, 2],
-            "para_cursar_cursar": []
-          },
-          {
-            "numero": 18,
-            "nombre": "Economía",
-            "para_cursar_aprobar": [1, 2],
-            "para_cursar_cursar": []
-          },
-          {
-            "numero": 19,
-            "nombre": "Bases de Datos",
-            "para_cursar_aprobar": [13, 16],
-            "para_cursar_cursar": [5, 6]
-          },
-          {
-            "numero": 20,
-            "nombre": "Desarrollo de Software",
-            "para_cursar_aprobar": [],
-            "para_cursar_cursar": [5, 6, 14, 16]
-          },
-          {
-            "numero": 21,
-            "nombre": "Comunicación de Datos",
-            "para_cursar_aprobar": [3, 7],
-            "para_cursar_cursar": []
-          },
-          {
-            "numero": 22,
-            "nombre": "Análisis Numérico",
-            "para_cursar_aprobar": [9],
-            "para_cursar_cursar": [1, 2]
-          },
-          {
-            "numero": 23,
-            "nombre": "Diseño de Sistemas de Información (integradora)",
-            "para_cursar_aprobar": [14, 16],
-            "para_cursar_cursar": [4, 6, 8]
-          },
-          {
-            "numero": 24,
-            "nombre": "Legislación",
-            "para_cursar_aprobar": [11],
-            "para_cursar_cursar": []
-          }
+        "nombre": "Probabilidad y Estadística",
+        "para_cursar_aprobar": [],
+        "para_cursar_cursar": [1, 2]
+      },
+      {
+        "numero": 18,
+        "nombre": "Bases de Datos",
+        "para_cursar_aprobar": [4, 5],
+        "para_cursar_cursar": [10, 14]
+      },
+      {
+        "numero": 19,
+        "nombre": "Desarrollo de Software I",
+        "para_cursar_aprobar": [4, 5],
+        "para_cursar_cursar": [11, 14]
+      },
+      {
+        "numero": 20,
+        "nombre": "Comunicación de Datos",
+        "para_cursar_aprobar": [],
+        "para_cursar_cursar": [6 , 7]
+      },
+      {
+        "numero": 21,
+        "nombre": "Análisis Numérico",
+        "para_cursar_aprobar": [1,2],
+        "para_cursar_cursar": [9]
+      },
+      {
+        "numero": 22,
+        "nombre": "Diseño de Sistemas de Información",
+        "para_cursar_aprobar": [3, 5, 8],
+        "para_cursar_cursar": [11, 14]
+      },
+      {
+        "numero": 23,
+        "nombre": "Economía",
+        "para_cursar_aprobar": [],
+        "para_cursar_cursar": [1, 2]
+      }
+
         ]
       },
       {
         "nivel": "IV",
         "asignaturas": [
           {
+            "numero": 24,
+            "nombre": "Legislación",
+            "para_cursar_aprobar": [],
+            "para_cursar_cursar": [16]
+          },
+          {
             "numero": 25,
             "nombre": "Ingeniería y Calidad de Software",
-            "para_cursar_aprobar": [19, 20, 23],
-            "para_cursar_cursar": [13, 14]
+            "para_cursar_aprobar": [10, 11],
+            "para_cursar_cursar": [18, 19, 22]
           },
           {
             "numero": 26,
             "nombre": "Redes de Datos",
-            "para_cursar_aprobar": [15, 21],
-            "para_cursar_cursar": []
+            "para_cursar_aprobar": [],
+            "para_cursar_cursar": [12, 20]
           },
           {
             "numero": 27,
             "nombre": "Investigación Operativa",
-            "para_cursar_aprobar": [17, 22],
-            "para_cursar_cursar": []
+            "para_cursar_aprobar": [],
+            "para_cursar_cursar": [17, 21]
           },
           {
             "numero": 28,
             "nombre": "Simulación",
-            "para_cursar_aprobar": [17],
-            "para_cursar_cursar": [9]
+            "para_cursar_aprobar": [9],
+            "para_cursar_cursar": [17]
           },
           {
             "numero": 29,
-            "nombre": "Tecnologías para la automatización",
-            "para_cursar_aprobar": [10, 22],
-            "para_cursar_cursar": [9]
+            "nombre": "Tecnologías para la Automatización",
+            "para_cursar_aprobar": [9],
+            "para_cursar_cursar": [13, 21]
           },
           {
             "numero": 30,
-            "nombre": "Administración de Sistemas de Información (integradora)",
-            "para_cursar_aprobar": [16],
-            "para_cursar_cursar": [18, 23]
+            "nombre": "Administración de Sistemas de Información",
+            "para_cursar_aprobar": [14],
+            "para_cursar_cursar": [22, 23]
           }
         ]
       },
@@ -209,40 +210,40 @@ export const plan_ing_en_sistemas_2025: RegimenCorrelatividades = {
         "asignaturas": [
           {
             "numero": 31,
-            "nombre": "Inteligencia Artificial",
-            "para_cursar_aprobar": [17, 22],
-            "para_cursar_cursar": [28]
-          },
-          {
-            "numero": 32,
-            "nombre": "Ciencia de Datos",
-            "para_cursar_aprobar": [17, 19],
-            "para_cursar_cursar": [28]
-          },
-          {
-            "numero": 33,
-            "nombre": "Sistemas de Gestión",
-            "para_cursar_aprobar": [18, 27],
-            "para_cursar_cursar": [23]
-          },
-          {
-            "numero": 34,
-            "nombre": "Gestión Gerencial",
-            "para_cursar_aprobar": [24, 30],
-            "para_cursar_cursar": [18]
-          },
-          {
-            "numero": 35,
-            "nombre": "Seguridad en los Sistemas de Información",
-            "para_cursar_aprobar": [20, 21],
-            "para_cursar_cursar": [26, 30]
-          },
-          {
-            "numero": 36,
-            "nombre": "Proyecto Final (integradora)",
-            "para_cursar_aprobar": [25, 26, 30],
-            "para_cursar_cursar": [12, 20, 23]
-          }
+        "nombre": "Inteligencia Artificial",
+        "para_cursar_aprobar": [17,21],
+        "para_cursar_cursar": [28]
+      },
+      {
+        "numero": 32,
+        "nombre": "Ciencia de Datos",
+        "para_cursar_aprobar": [17,18],
+        "para_cursar_cursar": [28]
+      },
+      {
+        "numero": 33,
+        "nombre": "Sistemas de Gestión",
+        "para_cursar_aprobar": [22],
+        "para_cursar_cursar": [23, 27]
+      },
+      {
+        "numero": 34,
+        "nombre": "Gestión Gerencial",
+        "para_cursar_aprobar": [23],
+        "para_cursar_cursar": [24, 30]
+      },
+      {
+        "numero": 35,
+        "nombre": "Seguridad en los Sistemas de Información",
+        "para_cursar_aprobar": [19, 20],
+        "para_cursar_cursar": [26, 30]
+      },
+      {
+        "numero": 36,
+        "nombre": "Proyecto Final",
+        "para_cursar_aprobar": [15, 19, 22],
+        "para_cursar_cursar": [25, 26, 30]
+      }
         ]
       }
     ],

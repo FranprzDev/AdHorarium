@@ -9,61 +9,49 @@ export const plan_ing_mecanica_2023: RegimenCorrelatividades = {
           "asignaturas": [
             {
               "numero": 1,
-              "nombre": "ANÁLISIS MATEMÁTICO I",
+              "nombre": "Análisis Matemático I",
               "para_cursar_aprobar": [],
               "para_cursar_cursar": []
             },
             {
               "numero": 2,
-              "nombre": "ÁLGEBRA Y GEOMETRÍA ANALÍTICA",
+              "nombre": "Álgebra y Geometría Analítica",
               "para_cursar_aprobar": [],
               "para_cursar_cursar": []
             },
             {
               "numero": 3,
-              "nombre": "INGENIERÍA Y SOCIEDAD",
+              "nombre": "Ingeniería y Sociedad",
               "para_cursar_aprobar": [],
               "para_cursar_cursar": []
             },
             {
               "numero": 4,
-              "nombre": "INGENIERÍA MECÁNICA I",
+              "nombre": "Ingeniería Mecánica I",
               "para_cursar_aprobar": [],
               "para_cursar_cursar": []
             },
             {
               "numero": 5,
-              "nombre": "SISTEMAS DE REPRESENTACIÓN",
+              "nombre": "Sistemas de Representación",
               "para_cursar_aprobar": [],
               "para_cursar_cursar": []
             },
             {
               "numero": 6,
-              "nombre": "FÍSICA I",
+              "nombre": "Química General",
               "para_cursar_aprobar": [],
               "para_cursar_cursar": []
             },
             {
               "numero": 7,
-              "nombre": "QUÍMICA GENERAL",
+              "nombre": "Física I",
               "para_cursar_aprobar": [],
               "para_cursar_cursar": []
             },
             {
               "numero": 8,
-              "nombre": "INGENIERÍA AMBIENTAL Y SEGURIDAD INDUSTRIAL",
-              "para_cursar_aprobar": [],
-              "para_cursar_cursar": [7, 6]
-            },
-            {
-              "numero": 9,
-              "nombre": "FUNDAMENTOS DE INFORMÁTICA",
-              "para_cursar_aprobar": [],
-              "para_cursar_cursar": []
-            },
-            {
-              "numero": 10,
-              "nombre": "INGLÉS I",
+              "nombre": "Fundamentos de Informática",
               "para_cursar_aprobar": [],
               "para_cursar_cursar": []
             }
@@ -73,111 +61,111 @@ export const plan_ing_mecanica_2023: RegimenCorrelatividades = {
           "nivel": "II",
           "asignaturas": [
             {
-              "numero": 11,
-              "nombre": "ANÁLISIS MATEMÁTICO II",
-              "para_cursar_aprobar": [],
-              "para_cursar_cursar": [1, 2]
-            },
-            {
-              "numero": 12,
-              "nombre": "ESTABILIDAD I",
-              "para_cursar_aprobar": [],
-              "para_cursar_cursar": [1, 2, 6]
-            },
-            {
-              "numero": 13,
-              "nombre": "MATERIALES NO METÁLICOS",
-              "para_cursar_aprobar": [],
-              "para_cursar_cursar": [7, 6]
-            },
-            {
-              "numero": 14,
-              "nombre": "MATERIALES METÁLICOS",
-              "para_cursar_aprobar": [],
-              "para_cursar_cursar": [7, 6]
-            },
-            {
-              "numero": 15,
-              "nombre": "FÍSICA II",
-              "para_cursar_aprobar": [],
-              "para_cursar_cursar": [1, 6]
-            },
-            {
-              "numero": 16,
-              "nombre": "INGENIERÍA MECÁNICA II",
-              "para_cursar_aprobar": [],
-              "para_cursar_cursar": [15, 4]
-            },
-            {
-              "numero": 17,
-              "nombre": "PROBABILIDAD Y ESTADÍSTICA",
-              "para_cursar_aprobar": [],
-              "para_cursar_cursar": [1, 2]
-            },
-            {
-              "numero": 18,
-              "nombre": "INGLÉS II",
-              "para_cursar_aprobar": [10],
-              "para_cursar_cursar": []
-            }
+             "numero": 9,
+        "nombre": "Análisis Matemático II",
+        "para_cursar_aprobar": [],
+        "para_cursar_cursar": [1,2]
+      },
+      {
+        "numero": 10,
+        "nombre": "Estabilidad I",
+        "para_cursar_aprobar": [],
+        "para_cursar_cursar": [1, 2]
+      },
+      {
+        "numero": 11,
+        "nombre": "Materiales No Metálicos",
+        "para_cursar_aprobar": [],
+        "para_cursar_cursar": [6,7]
+      },
+      {
+        "numero": 12,
+        "nombre": "Materiales Metálicos",
+        "para_cursar_aprobar": [],
+        "para_cursar_cursar": [6,7]
+      },
+      {
+        "numero": 13,
+        "nombre": "Física II",
+        "para_cursar_aprobar": [],
+        "para_cursar_cursar": [1, 7]
+      },
+      {
+        "numero": 14,
+        "nombre": "Ingeniería Ambiental y Seguridad Industrial",
+        "para_cursar_aprobar": [],
+        "para_cursar_cursar": [6,7]
+      },
+      {
+        "numero": 15,
+        "nombre": "Ingeniería Mecánica II",
+        "para_cursar_aprobar": [],
+        "para_cursar_cursar": [4,7]
+      },
+      {
+        "numero": 16,
+        "nombre": "Inglés I",
+        "para_cursar_aprobar": [],
+        "para_cursar_cursar": []
+      }
           ]
         },
         {
           "nivel": "III",
           "asignaturas": [
             {
+              "numero": 17,
+              "nombre": "Termodinámica",
+              "para_cursar_aprobar": [1,2,7],
+              "para_cursar_cursar": [9,13]
+            },
+            {
+              "numero": 18,
+              "nombre": "Mecánica Racional I",
+              "para_cursar_aprobar": [1,2,7],
+              "para_cursar_cursar": [9,10]
+            },
+            {
               "numero": 19,
-              "nombre": "TERMODINÁMICA",
-              "para_cursar_aprobar": [1, 2, 6],
-              "para_cursar_cursar": [11, 15]
+              "nombre": "Estabilidad II",
+              "para_cursar_aprobar": [1,2,7],
+              "para_cursar_cursar": [9, 10]
             },
             {
               "numero": 20,
-              "nombre": "MECÁNICA RACIONAL",
-              "para_cursar_aprobar": [1, 2, 6],
-              "para_cursar_cursar": [12, 11]
+              "nombre": "Mediciones y Ensayos",
+              "para_cursar_aprobar": [1,7],
+              "para_cursar_cursar": [10,12,13]
             },
             {
               "numero": 21,
-              "nombre": "ESTABILIDAD II",
-              "para_cursar_aprobar": [1, 2, 6],
-              "para_cursar_cursar": [12, 11]
+              "nombre": "Diseño Mecánico",
+              "para_cursar_aprobar": [7,4,5,8],
+              "para_cursar_cursar": [11,10,12]
             },
             {
               "numero": 22,
-              "nombre": "MEDICIONES Y ENSAYOS",
-              "para_cursar_aprobar": [1, 6],
-              "para_cursar_cursar": [12, 14, 15]
+              "nombre": "Ingeniería Mecánica III",
+              "para_cursar_aprobar": [1,6,7,4],
+              "para_cursar_cursar": [11,12,15]
             },
             {
               "numero": 23,
-              "nombre": "DISEÑO MECÁNICO",
-              "para_cursar_aprobar": [6, 4, 5, 9],
-              "para_cursar_cursar": [13, 12, 14]
+              "nombre": "Cálculo Avanzado",
+              "para_cursar_aprobar": [1,2,8],
+              "para_cursar_cursar": [9]
             },
             {
               "numero": 24,
-              "nombre": "INGENIERÍA MECÁNICA III",
-              "para_cursar_aprobar": [1, 7, 6, 4],
-              "para_cursar_cursar": [13, 14, 16]
+              "nombre": "Probabilidad y Estadística",
+              "para_cursar_aprobar": [],
+              "para_cursar_cursar": [1,2]
             },
             {
               "numero": 25,
-              "nombre": "CÁLCULO AVANZADO",
-              "para_cursar_aprobar": [1, 2],
-              "para_cursar_cursar": [11, 9]
-            },
-            {
-              "numero": 26,
-              "nombre": "ELECTROTECNIA Y MÁQUINAS ELÉCTRICAS",
-              "para_cursar_aprobar": [1, 2, 6],
-              "para_cursar_cursar": [11, 15]
-            },
-            {
-              "numero": 27,
-              "nombre": "PROCESOS DE MANUFACTURA",
-              "para_cursar_aprobar": [1, 7, 6, 4],
-              "para_cursar_cursar": [13, 14, 16]
+              "nombre": "Inglés II",
+              "para_cursar_aprobar": [16],
+              "para_cursar_cursar": []
             }
           ]
         },
@@ -185,52 +173,52 @@ export const plan_ing_mecanica_2023: RegimenCorrelatividades = {
           "nivel": "IV",
           "asignaturas": [
             {
-              "numero": 28,
-              "nombre": "ECONOMÍA",
+              "numero": 26,
+              "nombre": "Economía",
               "para_cursar_aprobar": [3],
-              "para_cursar_cursar": [16]
+              "para_cursar_cursar": [15]
+            },
+            {
+              "numero": 27,
+              "nombre": "Elementos de Máquinas",
+              "para_cursar_aprobar": [6,9,10],
+              "para_cursar_cursar": [11,12,18,19,22]
+            },
+            {
+              "numero": 28,
+              "nombre": "Tecnología del Calor",
+              "para_cursar_aprobar": [9,13],
+              "para_cursar_cursar": [17]
             },
             {
               "numero": 29,
-              "nombre": "ELEMENTOS DE MÁQUINAS",
-              "para_cursar_aprobar": [7, 12, 11],
-              "para_cursar_cursar": [13, 14, 20, 21, 24]
+              "nombre": "Metrología e Ingeniería de la Calidad",
+              "para_cursar_aprobar": [2,12,13],
+              "para_cursar_cursar": [20,24]
             },
             {
               "numero": 30,
-              "nombre": "TECNOLOGÍA DEL CALOR",
-              "para_cursar_aprobar": [11, 15],
-              "para_cursar_cursar": [19]
+              "nombre": "Mecánica de los Fluidos",
+              "para_cursar_aprobar": [9,13],
+              "para_cursar_cursar": [17]
             },
             {
               "numero": 31,
-              "nombre": "METROLOGÍA E INGENIERÍA DE CALIDAD",
-              "para_cursar_aprobar": [2, 14, 15],
-              "para_cursar_cursar": [22, 17]
+              "nombre": "Electrotecnia y Máquinas Eléctricas",
+              "para_cursar_aprobar": [9,13],
+              "para_cursar_cursar": [1,2,7]
             },
             {
               "numero": 32,
-              "nombre": "MECÁNICA DE LOS FLUIDOS",
-              "para_cursar_aprobar": [11, 15],
-              "para_cursar_cursar": [19]
+              "nombre": "Electrónica y Sistemas de Control",
+              "para_cursar_aprobar": [1,2,7],
+              "para_cursar_cursar": [9,13,23]
             },
             {
               "numero": 33,
-              "nombre": "ELECTRÓNICA Y SISTEMAS DE CONTROL",
-              "para_cursar_aprobar": [1, 2, 6],
-              "para_cursar_cursar": [11, 15, 25]
-            },
-            {
-              "numero": 34,
-              "nombre": "ESTABILIDAD III",
-              "para_cursar_aprobar": [1, 2, 6, 12],
-              "para_cursar_cursar": [21]
-            },
-            {
-              "numero": 35,
-              "nombre": "LEGISLACIÓN",
-              "para_cursar_aprobar": [3],
-              "para_cursar_cursar": [16]
+              "nombre": "Estabilidad III",
+              "para_cursar_aprobar": [1,2,7,10],
+              "para_cursar_cursar": [19]
             }
           ]
         },
@@ -238,40 +226,46 @@ export const plan_ing_mecanica_2023: RegimenCorrelatividades = {
           "nivel": "V",
           "asignaturas": [
             {
+              "numero": 34,
+              "nombre": "Tecnología de la Fabricación",
+              "para_cursar_aprobar": [11,10,12,21],
+              "para_cursar_cursar": [27,29]
+            },
+            {
+              "numero": 35,
+              "nombre": "Máquinas Alternativas y Turbomáquinas",
+              "para_cursar_aprobar": [13,17],
+              "para_cursar_cursar": [20,28,30,31,32]
+            },
+            {
               "numero": 36,
-              "nombre": "TECNOLOGÍA DE LA FABRICACIÓN",
-              "para_cursar_aprobar": [13, 12, 14, 23],
-              "para_cursar_cursar": [29, 31]
+              "nombre": "Instalaciones Industriales",
+              "para_cursar_aprobar": [10,14,17],
+              "para_cursar_cursar": [20,38,30,31,32]
             },
             {
               "numero": 37,
-              "nombre": "MÁQUINAS ALTERNATIVAS Y TURBOMÁQUINAS",
-              "para_cursar_aprobar": [15, 19],
-              "para_cursar_cursar": [30]
+              "nombre": "Organización Industrial",
+              "para_cursar_aprobar": [22],
+              "para_cursar_cursar": [26]
             },
             {
               "numero": 38,
-              "nombre": "INSTALACIONES INDUSTRIALES",
-              "para_cursar_aprobar": [12, 8],
-              "para_cursar_cursar": [22, 30, 32, 26, 33, 19]
+              "nombre": "Legislación",
+              "para_cursar_aprobar": [3],
+              "para_cursar_cursar": [22]
             },
             {
               "numero": 39,
-              "nombre": "ORGANIZACIÓN INDUSTRIAL",
-              "para_cursar_aprobar": [16],
-              "para_cursar_cursar": [28]
+              "nombre": "Mantenimiento",
+              "para_cursar_aprobar": [12,13,18,19],
+              "para_cursar_cursar": [20,26,27]
             },
             {
               "numero": 40,
-              "nombre": "MANTENIMIENTO",
-              "para_cursar_aprobar": [14, 15, 20, 12],
-              "para_cursar_cursar": [22, 28, 29]
-            },
-            {
-              "numero": 41,
-              "nombre": "PROYECTO FINAL",
-              "para_cursar_aprobar": [20, 21, 22, 23],
-              "para_cursar_cursar": [29, 31, 26, 33]
+              "nombre": "Proyecto Final",
+              "para_cursar_aprobar": [18,19,20,21],
+              "para_cursar_cursar": [27,29,31,32]
             }
           ]
         }
