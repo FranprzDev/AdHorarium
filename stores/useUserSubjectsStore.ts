@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { getSupabaseBrowserClient } from '@/lib/supabase';
 import { User } from '@supabase/supabase-js';
 
-export type SubjectStatus = "promocionada" | "aprobada" | "regular" | "cursando" | "no_cursada";
+export type SubjectStatus = "promocionada" | "regular" | "cursando" | "no_cursada";
 
 type UserSubjectState = {
     status: SubjectStatus;
@@ -79,12 +79,10 @@ export const useUserSubjectsStore = create<UserSubjectsState>((set, get) => ({
                 throw error;
             }
 
-            set((state) => ({
-                userSubjects: {
-                    ...state.userSubjects,
-                    [subject_number]: { status, grade },
-                },
-            }));
+            // After a successful update, refetch all subjects for the user and career
+            // to ensure the state is consistent across the app.
+            get().fetchUserSubjects(user, career_code);
+
         } catch (error) {
             console.error('Error updating user subject state:', error);
         }

@@ -4,6 +4,7 @@ import { Career } from '@/types/types'
 
 interface CareerState {
   careers: Career[]
+  careerNames: Record<string, string>
   selectedCareer: Career | null
   isLoading: boolean
   fetchCareers: () => Promise<void>
@@ -12,6 +13,7 @@ interface CareerState {
 
 export const useCareerStore = create<CareerState>((set, get) => ({
   careers: [],
+  careerNames: {},
   selectedCareer: null,
   isLoading: true,
   fetchCareers: async () => {
@@ -20,16 +22,27 @@ export const useCareerStore = create<CareerState>((set, get) => ({
     const { data, error } = await supabase
       .from('careers')
       .select('*')
-      .neq('code', 'CB') // Excluir Ciencias Básicas
-    
+      
     if (error) {
       console.error('Error fetching careers:', error)
       set({ careers: [], isLoading: false })
     } else {
-      const careers = data || []
-      set({ careers, isLoading: false })
-      if (careers.length > 0 && !get().selectedCareer) {
-        set({ selectedCareer: careers[0] })
+      const allCareers = data || []
+      const filteredCareers = allCareers.filter(c => c.code !== 'CB')
+      
+      const careerNameMap = allCareers.reduce((acc, career) => {
+        acc[career.code] = career.name
+        return acc
+      }, {} as Record<string, string>)
+
+      set({ 
+        careers: filteredCareers, 
+        careerNames: careerNameMap,
+        isLoading: false 
+      })
+
+      if (filteredCareers.length > 0 && !get().selectedCareer) {
+        set({ selectedCareer: filteredCareers[0] })
       }
     }
   },

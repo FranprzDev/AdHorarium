@@ -1,15 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getSupabaseBrowserClient } from '@/lib/supabase';
 import { Subject } from '@/types/types';
-import { useAuthStore } from '@/stores/useAuthStore';
-import { useUserSubjectsStore } from '@/stores/useUserSubjectsStore';
 
 export function useCorrelativesData(careerCode?: string) {
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const { user } = useAuthStore();
-    const { fetchUserSubjects } = useUserSubjectsStore();
 
     const fetchData = useCallback(async (code: string) => {
         setIsLoading(true);
@@ -28,10 +24,6 @@ export function useCorrelativesData(careerCode?: string) {
             }
             
             setSubjects(data || []);
-            
-            if (user) {
-                fetchUserSubjects(user, code);
-            }
 
         } catch (e: any) {
             setError(e.message);
@@ -39,7 +31,7 @@ export function useCorrelativesData(careerCode?: string) {
         } finally {
             setIsLoading(false);
         }
-    }, [user, fetchUserSubjects]);
+    }, []);
 
     useEffect(() => {
         if (careerCode) {
