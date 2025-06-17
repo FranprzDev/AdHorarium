@@ -221,14 +221,14 @@ export default function LandingPage() {
                 {isSigningIn ? "Iniciando sesión..." : "Comenzar gratis"}
                 <ArrowRight className="ml-2 h-6 w-6" />
               </Button>
-              <Link href="/demo">
+              <Link href="/careers">
                 <Button
                   variant="outline"
                   className="secondary-button text-xl px-10 py-8 flex items-center gap-3"
                   size="lg"
                 >
-                  <Sparkles className="h-6 w-6" />
-                  Ver demo interactivo
+                  <BookOpen className="h-6 w-6" />
+                  Ver planes de estudio
                 </Button>
               </Link>
             </motion.div>
@@ -372,8 +372,6 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-
-
 
         <footer className="py-12 border-t border-purple-500/30 mt-20">
           <div className="max-w-7xl mx-auto">

@@ -23,7 +23,7 @@ export default function DependencyView({ selectedSubject, allSubjects, onClose }
 
   return (
     <div className="p-4 md:p-8 animate-fade-in">
-        <Button onClick={onClose} variant="ghost" className="mb-6 text-slate-300 hover:text-white">
+        <Button onClick={onClose} variant="ghost" className="mb-6 text-slate-300 hover:text-white hover:bg-white/10">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Volver al Plan de Estudios
         </Button>

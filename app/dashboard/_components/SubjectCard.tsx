@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 interface SubjectCardProps {
   subject: Subject;
   onSelect?: (subject: Subject) => void;
+  showBadge?: boolean;
 }
 
 const statusConfig: Record<
@@ -25,7 +26,7 @@ const statusConfig: Record<
   no_cursada: { label: "", variant: "no_cursando" },
 };
 
-export default function SubjectCard({ subject, onSelect }: SubjectCardProps) {
+export default function SubjectCard({ subject, onSelect, showBadge = true }: SubjectCardProps) {
   const { userSubjects } = useUserSubjectsStore();
   const subjectState = userSubjects[subject.subject_number];
 
@@ -55,7 +56,7 @@ export default function SubjectCard({ subject, onSelect }: SubjectCardProps) {
       
       <div className="p-2 pt-0 mt-auto">
         <div className="flex-grow">
-            {subjectState && subjectState.status !== 'no_cursada' ? (
+            {showBadge && subjectState && subjectState.status !== 'no_cursada' ? (
                 <Badge 
                     variant={statusConfig[subjectState.status].variant} 
                     className="w-full justify-center"
