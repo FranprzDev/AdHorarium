@@ -23,9 +23,10 @@ interface ProfileHeaderProps {
   profile: Profile | null
   careers: Career[]
   onCareerChangeClick: () => void
+  isCareerChangeDisabled?: boolean
 }
 
-export function ProfileHeader({ user, profile, careers, onCareerChangeClick }: ProfileHeaderProps) {
+export function ProfileHeader({ user, profile, careers, onCareerChangeClick, isCareerChangeDisabled }: ProfileHeaderProps) {
   const selectedCareerName = careers.find((c) => c.id === profile?.career_id)?.name || "No asignada"
 
   const getUserInitials = () => {
@@ -72,11 +73,11 @@ export function ProfileHeader({ user, profile, careers, onCareerChangeClick }: P
           
           <Button 
             onClick={onCareerChangeClick} 
-            disabled={!user} 
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 transition-all duration-300"
+            disabled={!user || isCareerChangeDisabled} 
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Settings className="h-4 w-4 mr-2" />
-            Cambiar Carrera
+            {isCareerChangeDisabled ? "Carrera Seleccionada" : "Cambiar Carrera"}
           </Button>
         </div>
       </CardContent>

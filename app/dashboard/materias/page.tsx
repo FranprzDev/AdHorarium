@@ -15,6 +15,12 @@ import { NotebookPen, Loader2, AlertCircle, X } from "lucide-react"
 import type { SubjectWithStatus, SubjectStatus } from "@/types/course"
 import DeniedAccess from "./_components/DeniedAccess"
 import LoadingSubjects from "./_components/LoadingSubjects"
+import { LevelSelectionModal } from "@/components/level-selection-modal"
+import { toast } from "sonner"
+import { SubjectCard } from "@/components/subjects/subject-card"
+import { useAuthStore } from "@/stores/useAuthStore"
+import { CareerSelectionModal } from "@/components/career-selection-modal"
+
 export const statusLabels: Record<SubjectStatus, string> = {
     NO_CURSANDO: "No Cursando",
     CURSANDO: "Cursando",
@@ -30,40 +36,43 @@ export const statusLabels: Record<SubjectStatus, string> = {
   }
 
 export default function MateriasPage() {
-  const { subjects, loading, error, updateSubjectStatus } = useSubjects()
+  const {
+    subjects,
+    loading,
+    error,
+    updateSubjectStatus,
+    selectedLevel,
+    setSelectedLevel
+  } = useSubjects()
+  const [isCareerModalOpen, setCareerModalOpen] = useState(false)
+  const [isLevelModalOpen, setLevelModalOpen] = useState(false)
+  const { user } = useAuthStore()
   const [selectedSubject, setSelectedSubject] = useState<SubjectWithStatus | null>(null)
   const [gradeInput, setGradeInput] = useState("")
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const [updating, setUpdating] = useState<number | null>(null)
   const [updateError, setUpdateError] = useState<string | null>(null)
 
-  const subjectsByCareer = subjects.reduce(
-    (acc, subject) => {
-      const careerName = subject.career_name || "Sin carrera"
-      if (!acc[careerName]) {
-        acc[careerName] = []
-      }
-      acc[careerName].push(subject)
-      return acc
-    },
-    {} as Record<string, SubjectWithStatus[]>
+  if (loading) return <LoadingSubjects />
+  if (error) return <DeniedAccess message={error} />
+  if (!user) return <DeniedAccess />
+
+  const filteredSubjects = selectedLevel
+    ? subjects.filter(subject => subject.level === selectedLevel)
+    : subjects
+
+  const levels = Array.from(new Set(subjects.map(s => s.level))).sort(
+    (a, b) => a - b
   )
 
-  const careerNames = Object.keys(subjectsByCareer).sort()
-
-  const handleStatusChange = async (subjectId: number, status: SubjectStatus) => {
-    setUpdating(subjectId)
-    setUpdateError(null)
-    try {
-      const result = await updateSubjectStatus(subjectId, status)
-      if (!result.success) {
-        setUpdateError(result.error || "Error desconocido al actualizar la materia")
-      }
-    } catch (err) {
-      console.error("Error inesperado:", err)
-      setUpdateError("Error inesperado al actualizar la materia")
-    } finally {
-      setUpdating(null)
+  const handleUpdateSubjectStatus = async (
+    subjectId: number,
+    status: "PENDING" | "APPROVED" | "DISAPPROVED"
+  ) => {
+    const result = await updateSubjectStatus(subjectId, status)
+    if (result.success) {
+      console.log("Estado de la materia actualizado con éxito")
+    } else {
+      console.error("Error al actualizar el estado de la materia:", result.error)
     }
   }
 
@@ -120,14 +129,6 @@ export default function MateriasPage() {
     },
   }
 
-  if (loading) {
-    return <LoadingSubjects />
-  }
-
-  if (error) {
-    return <DeniedAccess />
-  }
-
   return (
     <AuroraBackground className="min-h-screen">
       <motion.div
@@ -140,6 +141,26 @@ export default function MateriasPage() {
         <p className="text-purple-200 mb-8">
           Gestiona el estado de tus materias y lleva un registro de tu progreso académico.
         </p>
+
+        <header className='mb-6 flex flex-col md:flex-row items-center justify-between gap-4'>
+          <h1 className='text-3xl font-bold text-white'>Materias</h1>
+          <div className='flex items-center gap-4'>
+            <Button
+              onClick={() =>
+                toast.info("Función deshabilitada", {
+                  description:
+                    "La selección de carrera no está disponible en esta sección."
+                })
+              }
+              className='cursor-not-allowed opacity-50'
+            >
+              Cambiar Carrera
+            </Button>
+            <Button onClick={() => setLevelModalOpen(true)}>
+              Seleccionar Nivel
+            </Button>
+          </div>
+        </header>
 
         {updateError && (
           <motion.div
@@ -163,91 +184,42 @@ export default function MateriasPage() {
           </motion.div>
         )}
 
-        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-8">
-          {careerNames.map((careerName) => {
-            const careerSubjects = subjectsByCareer[careerName]
+        {selectedLevel && (
+          <div className='mb-4'>
+            <h2 className='text-2xl font-semibold'>Nivel {selectedLevel}</h2>
+          </div>
+        )}
 
-            return (
-              <motion.div key={careerName} variants={itemVariants} className="glass-card p-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <Badge className="bg-purple-700 text-white px-3 py-1">{careerName}</Badge>
-                  <span className="text-sm text-purple-200">
-                    ({careerSubjects.length} materias)
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {careerSubjects.map((subject) => (
-                    <Card
-                      key={subject.id}
-                      className="bg-white/5 border-purple-500/20 hover:bg-white/10 transition-colors"
-                    >
-                      <CardContent className="p-4">
-                        <div className="space-y-3">
-                          <div className="flex items-start justify-between">
-                            <h3 className="text-white font-medium text-sm leading-tight">
-                              {subject.name}
-                            </h3>
-                            {subject.status === "PROMOCIONADO" && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => openGradeModal(subject)}
-                                className="h-8 w-8 p-0 text-purple-300 hover:text-white hover:bg-purple-700/30"
-                                disabled={updating === subject.id}
-                              >
-                                <NotebookPen className="h-4 w-4" />
-                              </Button>
-                            )}
-                          </div>
-
-                          <div className="space-y-2">
-                            <Select
-                              value={subject.status}
-                              onValueChange={(value) => 
-                                handleStatusChange(subject.id, value as SubjectStatus)
-                              }
-                              disabled={updating === subject.id}
-                            >
-                              <SelectTrigger className="h-8 text-xs bg-transparent border-purple-500/30 text-white">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {Object.entries(statusLabels).map(([status, label]) => (
-                                  <SelectItem key={status} value={status}>
-                                    <div className="flex items-center gap-2">
-                                      <div 
-                                        className={`w-2 h-2 rounded-full ${statusColors[status as SubjectStatus]}`} 
-                                      />
-                                      {label}
-                                    </div>
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-
-                            {subject.status === "PROMOCIONADO" && subject.grade && (
-                              <div className="text-xs text-green-300 font-medium">
-                                Nota: {subject.grade}/10
-                              </div>
-                            )}
-
-                            {updating === subject.id && (
-                              <div className="flex items-center gap-1 text-xs text-purple-300">
-                                <Loader2 className="h-3 w-3 animate-spin" />
-                                Actualizando...
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+        {filteredSubjects.length > 0 ? (
+          <motion.div
+            className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            {filteredSubjects.map(subject => (
+              <motion.div
+                key={subject.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <SubjectCard
+                  subject={subject}
+                  onStatusChange={handleUpdateSubjectStatus}
+                />
               </motion.div>
-            )
-          })}
-        </motion.div>
+            ))}
+          </motion.div>
+        ) : (
+          <div className='text-center py-10'>
+            <p className='text-lg'>
+              {selectedLevel
+                ? "No hay materias para el nivel seleccionado."
+                : "No hay materias para mostrar. Selecciona un nivel."}
+            </p>
+          </div>
+        )}
 
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogContent className="bg-gray-900 border-purple-500/30">
@@ -305,6 +277,19 @@ export default function MateriasPage() {
             </div>
           </DialogContent>
         </Dialog>
+
+        <LevelSelectionModal
+          isOpen={isLevelModalOpen}
+          onClose={() => setLevelModalOpen(false)}
+          levels={levels}
+          selectedLevel={selectedLevel}
+          onSelectLevel={setSelectedLevel}
+        />
+
+        <CareerSelectionModal
+          isOpen={isCareerModalOpen}
+          onClose={() => setCareerModalOpen(false)}
+        />
       </motion.div>
     </AuroraBackground>
   )

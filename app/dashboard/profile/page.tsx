@@ -90,6 +90,7 @@ export default function ProfilePage() {
               profile={profile}
               careers={careers}
               onCareerChangeClick={() => setIsModalOpen(true)}
+              isCareerChangeDisabled={true}
             />
           </motion.div>
 
