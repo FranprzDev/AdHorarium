@@ -20,6 +20,10 @@ export interface Subject {
   created_at: string
   career_name?: string
   typical_system_engineer: boolean
+  typical_year: number
+  typical_semester: number
+  credits: number
+  subject_number?: number
 }
 
 export interface UserSubject {

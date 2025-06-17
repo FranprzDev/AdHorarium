@@ -15,19 +15,20 @@ import { NotebookPen, Loader2, AlertCircle, X } from "lucide-react"
 import type { SubjectWithStatus, SubjectStatus } from "@/types/course"
 import DeniedAccess from "./_components/DeniedAccess"
 import LoadingSubjects from "./_components/LoadingSubjects"
+
 export const statusLabels: Record<SubjectStatus, string> = {
     NO_CURSANDO: "No Cursando",
     CURSANDO: "Cursando",
     REGULAR: "Regular",
     PROMOCIONADO: "Promocionado"
-  }
+}
   
-  export const statusColors: Record<SubjectStatus, string> = {
+export const statusColors: Record<SubjectStatus, string> = {
     NO_CURSANDO: "bg-gray-600",
     CURSANDO: "bg-blue-600",
     REGULAR: "bg-yellow-600",
     PROMOCIONADO: "bg-green-600"
-  }
+}
 
 export default function MateriasPage() {
   const { subjects, loading, error, updateSubjectStatus } = useSubjects()

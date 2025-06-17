@@ -132,7 +132,18 @@ export function MainLayout({ children }: MainLayoutProps) {
             {navItems.map((item) => {
               const isActive = pathname === item.path
               return (
-                <Link key={item.path} href={item.path} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-300 ${isActive ? "bg-purple-700 text-white" : "text-white hover:bg-purple-800/30"}`}>
+                <Link
+                  key={item.path}
+                  href={item.name === "Gestor de Horarios" ? "#" : item.path}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-300 ${
+                    isActive
+                      ? "bg-purple-700 text-white"
+                      : "text-white hover:bg-purple-800/30"
+                  } ${
+                    item.name === "Gestor de Horarios" &&
+                    "cursor-not-allowed opacity-50"
+                  }`}
+                >
                   {item.icon}
                   <span>{item.name}</span>
                   {isActive && (

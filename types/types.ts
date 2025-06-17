@@ -9,3 +9,19 @@ export interface Course {
   semester?: 1 | 2 // 1 for first semester, 2 for second semester
   isElective?: boolean // Flag for elective courses
 }
+
+export interface Career {
+    id: number;
+    name: string;
+    code: string;
+}
+
+export interface Subject {
+    career_code: string;
+    subject_number: number;
+    subject_name: string;
+    nivel: string;
+    must_approve_names: string[];
+    must_take_names: string[];
+    enables_names: string[];
+}

@@ -11,76 +11,71 @@ export const useSubjects = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { user, isLoading: authLoading } = useAuthStore()
-  const { careerId, isLoading: careerLoading } = useCareerStore()
+  const { selectedCareer, isLoading: careerLoading } = useCareerStore()
   const supabase = createClient()
 
   useEffect(() => {
-    if (!authLoading && !careerLoading && user && careerId) {
-        fetchSubjects()
-    }
-  }, [user, authLoading, careerId, careerLoading])
-
-  const fetchSubjects = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-
-      if (!user) {
-        setError("Usuario no autenticado")
-        return
-      }
-
-      if (!careerId) {
-        setError("No se encontró la carrera del usuario")
-        return
-      }
-
-
-
-      const { data: subjectsData, error: subjectsError } = await supabase
-        .from("subjects")
-        .select("*, career_name:careers(name)")
-        .or(`career_id.eq.${careerId},and(career_id.eq.6,typical_system_engineer.eq.true)`)
-        .order("name")
-
-        console.log(subjectsData)
-
-      if (subjectsError) {
-        setError(subjectsError.message)
-        return
-      }
-
-      const { data: userSubjects, error: userSubjectsError } = await supabase
-        .from("user_subjects")
-        .select("*")
-        .eq("user_id", user.id)
-
-      if (userSubjectsError) {
-        setError(userSubjectsError.message)
-        return
-      }
-
-      const userSubjectsMap = new Map(
-        userSubjects?.map((us) => [us.subject_id, us]) || []
-      )
-
-      const subjectsWithStatus: SubjectWithStatus[] = (subjectsData || []).map((subject) => {
-        const userSubject = userSubjectsMap.get(subject.id)
-        return {
-          ...subject,
-          career_name: subject.career_name?.name || "",
-          status: userSubject?.status || "NO_CURSANDO",
-          grade: userSubject?.grade,
+    const fetchSubjects = async (careerId: number) => {
+      try {
+        setLoading(true)
+        setError(null)
+  
+        if (!user) {
+          setError("Usuario no autenticado")
+          return
         }
-      })
+  
+        const { data: subjectsData, error: subjectsError } = await supabase
+          .from("subjects")
+          .select("*, career_name:careers(name)")
+          .or(`career_id.eq.${careerId},and(career_id.eq.6,typical_system_engineer.eq.true)`)
+          .order("name")
+  
+        if (subjectsError) {
+          setError(subjectsError.message)
+          return
+        }
+  
+        const { data: userSubjects, error: userSubjectsError } = await supabase
+          .from("user_subjects")
+          .select("*")
+          .eq("user_id", user.id)
+  
+        if (userSubjectsError) {
+          setError(userSubjectsError.message)
+          return
+        }
+  
+        const userSubjectsMap = new Map(
+          userSubjects?.map((us) => [us.subject_id, us]) || []
+        )
+  
+        const subjectsWithStatus: SubjectWithStatus[] = (subjectsData || []).map((subject) => {
+          const userSubject = userSubjectsMap.get(subject.id)
+          return {
+            ...subject,
+            career_name: subject.career_name?.name || "",
+            status: userSubject?.status || "NO_CURSANDO",
+            grade: userSubject?.grade,
+          }
+        })
+  
+        setSubjects(subjectsWithStatus)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Error desconocido")
+      } finally {
+        setLoading(false)
+      }
+    }
 
-      setSubjects(subjectsWithStatus)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error desconocido")
-    } finally {
+    if (authLoading || careerLoading) return
+
+    if (user && selectedCareer?.id) {
+      fetchSubjects(selectedCareer.id)
+    } else {
       setLoading(false)
     }
-  }
+  }, [user, authLoading, selectedCareer, careerLoading, supabase])
 
   const updateSubjectStatus = async (
     subjectId: number,
@@ -105,7 +100,6 @@ export const useSubjects = () => {
         )
 
       if (error) {
-        console.error("Error de Supabase:", error)
         return { success: false, error: error.message }
       }
 
@@ -120,7 +114,6 @@ export const useSubjects = () => {
       return { success: true }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Error desconocido"
-      console.error("Error en updateSubjectStatus:", err)
       return { success: false, error: errorMessage }
     }
   }
@@ -129,7 +122,6 @@ export const useSubjects = () => {
     subjects,
     loading,
     error,
-    updateSubjectStatus,
-    refetch: fetchSubjects,
+    updateSubjectStatus
   }
 } 
