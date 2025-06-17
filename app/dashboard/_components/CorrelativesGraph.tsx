@@ -9,6 +9,8 @@ import { Subject } from "@/types/types";
 import DependencyView from "./DependencyView";
 import { useIsMobile } from "@/components/ui/use-mobile";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useUserSubjectsStore } from "@/stores/useUserSubjectsStore";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 interface CorrelativesGraphProps {
   showBadges?: boolean;
@@ -16,9 +18,34 @@ interface CorrelativesGraphProps {
 
 export default function CorrelativesGraph({ showBadges = true }: CorrelativesGraphProps) {
   const selectedCareer = useCareerStore(state => state.selectedCareer);
-  const { subjects, isLoading, error } = useCorrelativesData(selectedCareer?.code);
+  const { subjects, isLoading: isLoadingSubjects, error } = useCorrelativesData(selectedCareer?.code);
+  const { user } = useAuthStore();
+  const { fetchUserSubjects } = useUserSubjectsStore();
+
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const isMobile = useIsMobile();
+  
+  const { isLoading: isLoadingUserSubjects } = useUserSubjectsStore();
+  const isLoading = isLoadingSubjects || isLoadingUserSubjects;
+
+  useEffect(() => {
+    if (user && selectedCareer) {
+      fetchUserSubjects(user, selectedCareer.code);
+    }
+  }, [user, selectedCareer, fetchUserSubjects]);
+
+  useEffect(() => {
+    const handleFocus = () => {
+      if (user && selectedCareer) {
+        fetchUserSubjects(user, selectedCareer.code);
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [user, selectedCareer, fetchUserSubjects]);
 
   const levels = useMemo(() => {
     if (!subjects) return [];

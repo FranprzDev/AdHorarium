@@ -17,10 +17,9 @@ interface SubjectCardProps {
 
 const statusConfig: Record<
   SubjectStatus,
-  { label: string; variant: "promocionado" | "aprobado" | "regular" | "cursando" | "no_cursando" | "default" }
+  { label: string; variant: "promocionado" | "regular" | "cursando" | "no_cursando" | "default" }
 > = {
   promocionada: { label: "PROMOCIONADO", variant: "promocionado" },
-  aprobada: { label: "APROBADO", variant: "aprobado" },
   regular: { label: "REGULAR", variant: "regular" },
   cursando: { label: "CURSANDO", variant: "cursando" },
   no_cursada: { label: "", variant: "no_cursando" },
@@ -62,7 +61,7 @@ export default function SubjectCard({ subject, onSelect, showBadge = true }: Sub
                     className="w-full justify-center"
                 >
                     {statusConfig[subjectState.status].label}
-                    {(subjectState.status === 'promocionada' || subjectState.status === 'aprobada') && subjectState.grade ? ` - ${subjectState.grade}` : ''}
+                    {subjectState.status === 'promocionada' && subjectState.grade ? ` - ${subjectState.grade}` : ''}
                 </Badge>
             ) : (
               <div className="h-[22px]"></div>
