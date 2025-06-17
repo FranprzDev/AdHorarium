@@ -10,7 +10,11 @@ import DependencyView from "./DependencyView";
 import { useIsMobile } from "@/components/ui/use-mobile";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export default function CorrelativesGraph() {
+interface CorrelativesGraphProps {
+  showBadges?: boolean;
+}
+
+export default function CorrelativesGraph({ showBadges = true }: CorrelativesGraphProps) {
   const selectedCareer = useCareerStore(state => state.selectedCareer);
   const { subjects, isLoading, error } = useCorrelativesData(selectedCareer?.code);
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
@@ -43,7 +47,7 @@ export default function CorrelativesGraph() {
     setSelectedSubject(null);
   };
 
-  if (isLoading) {
+  if (isLoading && subjects.length === 0) {
     return (
       <div className="p-4">
         {isMobile ? (
@@ -86,7 +90,18 @@ export default function CorrelativesGraph() {
   
   if (isMobile) {
     return (
-      <div className="p-4">
+      <div className="p-4 relative">
+         {isLoading && (
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
+            <div className="flex items-center gap-2 text-white">
+              <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span>Cargando...</span>
+            </div>
+          </div>
+        )}
         <Tabs defaultValue={levels[0]} className="w-full">
           <TabsList className="grid w-full grid-cols-5 bg-black/20">
             {levels.map(level => (
@@ -100,7 +115,8 @@ export default function CorrelativesGraph() {
                   <SubjectCard 
                     key={subject.subject_number} 
                     subject={subject} 
-                    onSelect={handleSelectSubject} 
+                    onSelect={handleSelectSubject}
+                    showBadge={showBadges}
                   />
                 ))}
               </div>
@@ -112,7 +128,18 @@ export default function CorrelativesGraph() {
   }
 
   return (
-    <div className="p-4 md:p-6">
+    <div className="p-4 md:p-6 relative">
+       {isLoading && (
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
+          <div className="flex items-center gap-2 text-white">
+            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Cargando plan de estudios...</span>
+          </div>
+        </div>
+      )}
       <div className="grid grid-cols-5 gap-x-6">
         {levels.map(level => (
           <div key={level} className="flex flex-col">
@@ -122,7 +149,8 @@ export default function CorrelativesGraph() {
                 <SubjectCard 
                   key={subject.subject_number} 
                   subject={subject} 
-                  onSelect={handleSelectSubject} 
+                  onSelect={handleSelectSubject}
+                  showBadge={showBadges}
                 />
               ))}
             </div>
