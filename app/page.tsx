@@ -12,28 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  GraduationCap,
-  BookOpen,
-  Calendar,
-  Search,
-  ArrowRight,
-  Github,
-  LogIn,
-  School,
-  Clock,
-  CheckCircle,
-  Users,
-  LayoutDashboard,
-  Target,
-  TrendingUp,
-  Shield,
-  Zap,
-  Star,
-  Quote,
-  Eye,
-  EyeOff,
-} from "lucide-react"
+import { GraduationCap, BookOpen, Calendar, Search, ArrowRight, Github, LogIn, School, Clock, CheckCircle, Users, LayoutDashboard, Target, TrendingUp, Shield, Zap, Star, Quote, Eye, EyeOff } from 'lucide-react'
 import Link from "next/link"
 
 export default function LandingPage() {
@@ -472,7 +451,7 @@ export default function LandingPage() {
       </div>
 
       {/* Login Modal */}
-      <Dialog open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen}>
+      <Dialog open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen} modal={true}>
         <DialogContent className="sm:max-w-md glass-card border-purple-500/30">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold gradient-text text-center">Iniciar Sesión</DialogTitle>
