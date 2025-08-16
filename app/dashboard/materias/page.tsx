@@ -6,29 +6,17 @@ import { AuroraBackground } from "@/components/ui/aurora-background"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useUserSubjectsStore, SubjectStatus } from "@/stores/useUserSubjectsStore"
+import { useUserSubjectsStore, type SubjectStatus } from "@/stores/useUserSubjectsStore"
 import { useAuthStore } from "@/stores/useAuthStore"
 import { useCareerStore } from "@/stores/useCareerStore"
-import { useCorrelativesData } from "@/app/dashboard/_hooks/useCorrelativesData"
 import { NotebookPen, Loader2, AlertCircle, X } from "lucide-react"
 import DeniedAccess from "./_components/DeniedAccess"
 import LoadingSubjects from "./_components/LoadingSubjects"
-import { Subject } from "@/types/types"
+import type { Subject } from "@/types/types"
 import { getSupabaseBrowserClient } from "@/lib/supabase"
 
 export const statusLabels: Record<SubjectStatus, string> = {
@@ -64,82 +52,73 @@ export default function MateriasPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [updating, setUpdating] = useState<number | null>(null)
   const [updateError, setUpdateError] = useState<string | null>(null)
-  const [filter, setFilter] = useState<'all' | 'basic' | 'career'>('all')
+  const [filter, setFilter] = useState<"all" | "basic" | "career">("all")
 
   useEffect(() => {
     const fetchAllSubjectsForCareer = async () => {
-      if (!selectedCareer) return;
+      if (!selectedCareer) return
 
-      setSubjectsLoading(true);
-      setError(null);
-      const supabase = getSupabaseBrowserClient();
-      
+      setSubjectsLoading(true)
+      setError(null)
+      const supabase = getSupabaseBrowserClient()
+
       try {
         // Fetch career-specific subjects
         const { data: careerData, error: careerError } = await supabase
-          .from('complete_subjects_info')
-          .select('*')
-          .eq('career_code', selectedCareer.code);
+          .from("complete_subjects_info")
+          .select("*")
+          .eq("career_code", selectedCareer.code)
 
-        if (careerError) throw careerError;
+        if (careerError) throw careerError
 
         // Fetch basic subjects
         const { data: basicData, error: basicError } = await supabase
-          .from('complete_subjects_info')
-          .select('*')
-          .eq('career_code', 'CB');
-        
-        if (basicError) throw basicError;
+          .from("complete_subjects_info")
+          .select("*")
+          .eq("career_code", "CB")
 
-        const combinedData = [...(careerData || []), ...(basicData || [])];
-        setAllSubjects(combinedData);
-        
+        if (basicError) throw basicError
+
+        const combinedData = [...(careerData || []), ...(basicData || [])]
+        setAllSubjects(combinedData)
       } catch (e: any) {
-        setError(e.message);
-        setAllSubjects([]);
+        setError(e.message)
+        setAllSubjects([])
       } finally {
-        setSubjectsLoading(false);
+        setSubjectsLoading(false)
       }
-    };
+    }
 
-    fetchAllSubjectsForCareer();
-  }, [selectedCareer]);
+    fetchAllSubjectsForCareer()
+  }, [selectedCareer])
 
   useEffect(() => {
     if (user && selectedCareer) {
-      fetchUserSubjects(user, selectedCareer.code);
+      fetchUserSubjects(user, selectedCareer.code)
     }
-  }, [user, selectedCareer, fetchUserSubjects]);
+  }, [user, selectedCareer, fetchUserSubjects])
 
-  const subjectsWithStatus = allSubjects.map(subject => ({
+  const subjectsWithStatus = allSubjects.map((subject) => ({
     ...subject,
     status: userSubjects[subject.subject_number]?.status || "no_cursada",
     grade: userSubjects[subject.subject_number]?.grade || null,
   }))
 
-  const cienciasBasicasSubjects = subjectsWithStatus.filter(s => s.career_code === 'CB');
-  const careerSubjects = subjectsWithStatus.filter(s => s.career_code !== 'CB');
-  const careerGroupName = selectedCareer?.name || 'Materias de Carrera';
+  const cienciasBasicasSubjects = subjectsWithStatus.filter((s) => s.career_code === "CB")
+  const careerSubjects = subjectsWithStatus.filter((s) => s.career_code !== "CB")
+  const careerGroupName = selectedCareer?.name || "Materias de Carrera"
 
   const renderSubjectGroup = (title: string, subjects: typeof subjectsWithStatus) => {
-    if (subjects.length === 0) return null;
+    if (subjects.length === 0) return null
 
     return (
-      <motion.div
-        key={title}
-        variants={itemVariants}
-        className="glass-card p-6"
-      >
+      <motion.div key={title} variants={itemVariants} className="glass-card p-6">
         <div className="flex items-center gap-3 mb-6">
-          <Badge className="bg-purple-700 text-white px-3 py-1">
-            {title}
-          </Badge>
-          <span className="text-sm text-purple-200">
-            ({subjects.length} materias)
-          </span>
+          <Badge className="bg-purple-700 text-white px-3 py-1">{title}</Badge>
+          <span className="text-sm text-purple-200">({subjects.length} materias)</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {subjects.map(subject => (
+          {subjects.map((subject) => (
             <Card
               key={subject.subject_number}
               className="bg-white/5 border-purple-500/20 hover:bg-white/10 transition-colors"
@@ -147,9 +126,7 @@ export default function MateriasPage() {
               <CardContent className="p-4">
                 <div className="space-y-3">
                   <div className="flex items-start justify-between">
-                    <h3 className="text-white font-medium text-sm leading-tight">
-                      {subject.subject_name}
-                    </h3>
+                    <h3 className="text-white font-medium text-sm leading-tight">{subject.subject_name}</h3>
                     {subject.status === "promocionada" && (
                       <Button
                         variant="ghost"
@@ -165,38 +142,25 @@ export default function MateriasPage() {
                   <div className="space-y-2">
                     <Select
                       value={subject.status}
-                      onValueChange={value =>
-                        handleStatusChange(
-                          subject.subject_number,
-                          value as SubjectStatus
-                        )
-                      }
+                      onValueChange={(value) => handleStatusChange(subject.subject_number, value as SubjectStatus)}
                       disabled={updating === subject.subject_number}
                     >
                       <SelectTrigger className="h-8 text-xs bg-transparent border-purple-500/30 text-white">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {Object.entries(statusLabels).map(
-                          ([status, label]) => (
-                            <SelectItem key={status} value={status}>
-                              <div className="flex items-center gap-2">
-                                <div
-                                  className={`w-2 h-2 rounded-full ${
-                                    statusColors[status as SubjectStatus]
-                                  }`}
-                                />
-                                {label}
-                              </div>
-                            </SelectItem>
-                          )
-                        )}
+                        {Object.entries(statusLabels).map(([status, label]) => (
+                          <SelectItem key={status} value={status}>
+                            <div className="flex items-center gap-2">
+                              <div className={`w-2 h-2 rounded-full ${statusColors[status as SubjectStatus]}`} />
+                              {label}
+                            </div>
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     {subject.status === "promocionada" && subject.grade && (
-                      <div className="text-xs text-green-300 font-medium">
-                        Nota: {subject.grade}/10
-                      </div>
+                      <div className="text-xs text-green-300 font-medium">Nota: {subject.grade}/10</div>
                     )}
                     {updating === subject.subject_number && (
                       <div className="flex items-center gap-1 text-xs text-purple-300">
@@ -214,10 +178,7 @@ export default function MateriasPage() {
     )
   }
 
-  const handleStatusChange = async (
-    subjectNumber: number,
-    status: SubjectStatus
-  ) => {
+  const handleStatusChange = async (subjectNumber: number, status: SubjectStatus) => {
     if (!user || !selectedCareer) return
     setUpdating(subjectNumber)
     setUpdateError(null)
@@ -227,9 +188,7 @@ export default function MateriasPage() {
         selectedCareer.code,
         subjectNumber,
         status,
-        status === "promocionada"
-          ? userSubjects[subjectNumber]?.grade
-          : null
+        status === "promocionada" ? userSubjects[subjectNumber]?.grade : null,
       )
     } catch (err) {
       console.error("Error inesperado:", err)
@@ -242,7 +201,7 @@ export default function MateriasPage() {
   const handleGradeSubmit = async () => {
     if (!selectedSubject || !user || !selectedCareer) return
 
-    const grade = parseFloat(gradeInput)
+    const grade = Number.parseFloat(gradeInput)
     if (isNaN(grade) || grade < 1 || grade > 10) {
       setUpdateError("La nota debe ser un número entre 1 y 10")
       return
@@ -251,13 +210,7 @@ export default function MateriasPage() {
     setUpdating(selectedSubject.subject_number)
     setUpdateError(null)
     try {
-      await updateUserSubjectState(
-        user,
-        selectedCareer.code,
-        selectedSubject.subject_number,
-        "promocionada",
-        grade
-      )
+      await updateUserSubjectState(user, selectedCareer.code, selectedSubject.subject_number, "promocionada", grade)
       setIsModalOpen(false)
       setGradeInput("")
       setSelectedSubject(null)
@@ -310,44 +263,47 @@ export default function MateriasPage() {
         transition={{ duration: 0.5 }}
         className="container mx-auto px-4 py-8"
       >
-        <h1 className="text-3xl md:text-4xl font-bold gradient-text mb-6">
-          Gestor de Materias
-        </h1>
+        <h1 className="text-3xl md:text-4xl font-bold gradient-text mb-6">Gestor de Materias</h1>
         <p className="text-purple-200 mb-8">
-          Gestiona el estado de tus materias y lleva un registro de tu progreso
-          académico.
+          Gestiona el estado de tus materias y lleva un registro de tu progreso académico.
         </p>
 
         <div className="flex flex-wrap items-center gap-3 mb-8">
           <p className="text-sm font-medium text-purple-200">Filtrar por:</p>
           <Button
             size="sm"
-            onClick={() => setFilter('all')}
-            variant={filter === 'all' ? 'default' : 'outline'}
-            className={filter === 'all' 
-              ? 'bg-purple-600 border-purple-600 hover:bg-purple-700 text-white' 
-              : 'bg-transparent border-purple-500/30 text-white hover:bg-white/10'}
+            onClick={() => setFilter("all")}
+            variant={filter === "all" ? "default" : "outline"}
+            className={
+              filter === "all"
+                ? "bg-purple-600 border-purple-600 hover:bg-purple-700 text-white"
+                : "bg-transparent border-purple-500/30 text-white hover:bg-white/10"
+            }
           >
             Todas
           </Button>
           <Button
             size="sm"
-            onClick={() => setFilter('basic')}
-            variant={filter === 'basic' ? 'default' : 'outline'}
-            className={filter === 'basic' 
-              ? 'bg-purple-600 border-purple-600 hover:bg-purple-700 text-white' 
-              : 'bg-transparent border-purple-500/30 text-white hover:bg-white/10'}
+            onClick={() => setFilter("basic")}
+            variant={filter === "basic" ? "default" : "outline"}
+            className={
+              filter === "basic"
+                ? "bg-purple-600 border-purple-600 hover:bg-purple-700 text-white"
+                : "bg-transparent border-purple-500/30 text-white hover:bg-white/10"
+            }
             disabled={cienciasBasicasSubjects.length === 0}
           >
             Ciencias Básicas
           </Button>
           <Button
             size="sm"
-            onClick={() => setFilter('career')}
-            variant={filter === 'career' ? 'default' : 'outline'}
-            className={filter === 'career' 
-              ? 'bg-purple-600 border-purple-600 hover:bg-purple-700 text-white' 
-              : 'bg-transparent border-purple-500/30 text-white hover:bg-white/10'}
+            onClick={() => setFilter("career")}
+            variant={filter === "career" ? "default" : "outline"}
+            className={
+              filter === "career"
+                ? "bg-purple-600 border-purple-600 hover:bg-purple-700 text-white"
+                : "bg-transparent border-purple-500/30 text-white hover:bg-white/10"
+            }
             disabled={careerSubjects.length === 0}
           >
             {careerGroupName}
@@ -376,22 +332,16 @@ export default function MateriasPage() {
           </motion.div>
         )}
 
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="space-y-8"
-        >
-          { (filter === 'all' || filter === 'basic') && renderSubjectGroup('Ciencias Básicas', cienciasBasicasSubjects) }
-          { (filter === 'all' || filter === 'career') && renderSubjectGroup(careerGroupName, careerSubjects) }
+        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-8">
+          {(filter === "all" || filter === "basic") && renderSubjectGroup("Ciencias Básicas", cienciasBasicasSubjects)}
+          {(filter === "all" || filter === "career") && renderSubjectGroup(careerGroupName, careerSubjects)}
         </motion.div>
 
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>
-                Ingresar nota para {selectedSubject?.subject_name}
-              </DialogTitle>
+              <DialogTitle>Ingresar nota para {selectedSubject?.subject_name}</DialogTitle>
+              <DialogDescription>Ingresa la nota final obtenida en esta materia (escala de 1 a 10).</DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <Label htmlFor="grade">Nota final (1-10)</Label>
@@ -399,7 +349,7 @@ export default function MateriasPage() {
                 id="grade"
                 type="number"
                 value={gradeInput}
-                onChange={e => setGradeInput(e.target.value)}
+                onChange={(e) => setGradeInput(e.target.value)}
                 min="1"
                 max="10"
               />

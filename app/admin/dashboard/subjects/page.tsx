@@ -9,7 +9,14 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+} from "@/components/ui/dialog"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -211,6 +218,9 @@ export default function SubjectsManagement() {
           <DialogContent className="glass-card border-purple-500/30">
             <DialogHeader>
               <DialogTitle className="gradient-text">Crear Nueva Materia</DialogTitle>
+              <DialogDescription className="text-purple-200">
+                Completa la información para crear una nueva materia en el sistema.
+              </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleCreateSubject} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
