@@ -57,4 +57,4 @@ export function AverageGradeCard({ averageGrade, approvedSubjectsCount }: Averag
       </CardContent>
     </Card>
   )
-} 
+}

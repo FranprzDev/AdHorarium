@@ -47,4 +47,4 @@ export const useCareerStore = create<CareerState>((set, get) => ({
     }
   },
   selectCareer: (career) => set({ selectedCareer: career }),
-})) 
+}))

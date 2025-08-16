@@ -186,4 +186,4 @@ export default function CorrelativesGraph({ showBadges = true }: CorrelativesGra
       </div>
     </div>
   );
-} 
+}

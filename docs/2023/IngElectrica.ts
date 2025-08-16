@@ -285,4 +285,3 @@ export const plan_ing_electrica_2023: RegimenCorrelatividades = {
       "practica_profesional_supervisada": "No se especifica información adicional para la Práctica Profesional Supervisada en el documento."
     }
   }
-  

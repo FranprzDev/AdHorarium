@@ -82,4 +82,4 @@ export function ProfileHeader({ user, profile, careers, onCareerChangeClick }: P
       </CardContent>
     </Card>
   )
-} 
+}

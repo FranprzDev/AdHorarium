@@ -71,4 +71,4 @@ export default function DependencyView({ selectedSubject, allSubjects, onClose }
         </div>
     </div>
   );
-} 
+}

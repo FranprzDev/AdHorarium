@@ -42,4 +42,4 @@ export function useCorrelativesData(careerCode?: string) {
     }, [careerCode, fetchData]);
 
     return { subjects, isLoading, error };
-} 
+}

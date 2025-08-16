@@ -153,4 +153,4 @@ export function useProfile(): UseProfileReturn {
     error,
     handleCareerChange
   }
-} 
+}

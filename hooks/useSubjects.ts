@@ -108,4 +108,4 @@ export const useSubjects = () => {
   }
 
   return { subjects, loading, error, updateSubjectStatus }
-} 
+}

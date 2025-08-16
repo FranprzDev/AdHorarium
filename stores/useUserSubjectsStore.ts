@@ -87,4 +87,4 @@ export const useUserSubjectsStore = create<UserSubjectsState>((set, get) => ({
             console.error('Error updating user subject state:', error);
         }
     }
-})); 
+}));
