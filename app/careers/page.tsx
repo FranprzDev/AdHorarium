@@ -6,4 +6,4 @@ export default function CareersPage() {
     return (
         <CorrelativesGraph showBadges={false} />
     )
-} 
+}

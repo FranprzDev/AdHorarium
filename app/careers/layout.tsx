@@ -28,4 +28,4 @@ export default function CareersLayout({
       </motion.div>
     </AuroraBackground>
   );
-} 
+}

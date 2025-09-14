@@ -281,4 +281,3 @@ export const plan_ing_civil_2023: RegimenCorrelatividades = {
         "practica_profesional_supervisada": "Ninguna condición adicional explícita para Práctica Profesional Supervisada."
       }
     }
-  

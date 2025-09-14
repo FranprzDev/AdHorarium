@@ -70,4 +70,4 @@ export default function SubjectCard({ subject, onSelect, showBadge = true }: Sub
       </div>
     </Card>
   );
-} 
+}

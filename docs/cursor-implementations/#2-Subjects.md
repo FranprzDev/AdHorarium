@@ -23,7 +23,7 @@ Este documento detalla la implementación de un sistema completo de materias con
 ## 1. Cambios en la Base de Datos
 
 ### 1.1 Nueva Tabla: student_subjects
-```sql
+\`\`\`sql
 CREATE TABLE public.student_subjects (
   id BIGSERIAL PRIMARY KEY,
   student_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -38,10 +38,10 @@ CREATE TABLE public.student_subjects (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   UNIQUE(student_id, subject_id)
 );
-```
+\`\`\`
 
 ### 1.2 Tabla de Correlativas
-```sql
+\`\`\`sql
 CREATE TABLE public.subject_correlatives (
   id BIGSERIAL PRIMARY KEY,
   subject_id BIGINT NOT NULL REFERENCES public.subjects(id) ON DELETE CASCADE,
@@ -50,18 +50,18 @@ CREATE TABLE public.subject_correlatives (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   UNIQUE(subject_id, correlative_subject_id, requirement_type)
 );
-```
+\`\`\`
 
 ### 1.3 Índices para Optimización
-```sql
+\`\`\`sql
 CREATE INDEX idx_student_subjects_student_id ON public.student_subjects(student_id);
 CREATE INDEX idx_student_subjects_status ON public.student_subjects(status);
 CREATE INDEX idx_subject_correlatives_subject_id ON public.subject_correlatives(subject_id);
 CREATE INDEX idx_subject_correlatives_correlative ON public.subject_correlatives(correlative_subject_id);
-```
+\`\`\`
 
 ### 1.4 RLS Policies
-```sql
+\`\`\`sql
 ALTER TABLE public.student_subjects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.subject_correlatives ENABLE ROW LEVEL SECURITY;
 
@@ -76,12 +76,12 @@ FOR UPDATE USING (auth.uid() = student_id);
 
 CREATE POLICY "Everyone can view correlatives" ON public.subject_correlatives
 FOR SELECT USING (true);
-```
+\`\`\`
 
 ## 2. Nuevos Tipos TypeScript
 
 ### 2.1 Actualizar types/course.ts
-```typescript
+\`\`\`typescript
 export enum SubjectStatus {
   CURSANDO = 'CURSANDO',
   REGULAR = 'REGULAR',
@@ -132,12 +132,12 @@ export interface SubjectWithProgress {
   canEnroll: boolean
   missingCorrelatives: Subject[]
 }
-```
+\`\`\`
 
 ## 3. Store de Zustand para Materias
 
 ### 3.1 stores/useSubjectsStore.ts
-```typescript
+\`\`\`typescript
 import { create } from 'zustand'
 import { getSupabaseBrowserClient } from '@/lib/supabase'
 import { Subject, StudentSubject, SubjectWithProgress, SubjectStatus } from '@/types/course'
@@ -316,12 +316,12 @@ export const useSubjectsStore = create<SubjectsState>()((set, get) => ({
     })
   }
 }))
-```
+\`\`\`
 
 ## 4. Componentes de UI
 
 ### 4.1 components/subjects/SubjectCard.tsx
-```typescript
+\`\`\`typescript
 'use client'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -451,10 +451,10 @@ export function SubjectCard({ subjectData, onStatusChange }: SubjectCardProps) {
     </Card>
   )
 }
-```
+\`\`\`
 
 ### 4.2 components/subjects/SubjectsGrid.tsx
-```typescript
+\`\`\`typescript
 'use client'
 
 import { useEffect } from 'react'
@@ -591,12 +591,12 @@ export function SubjectsGrid() {
     </div>
   )
 }
-```
+\`\`\`
 
 ## 5. Script de Migración de Datos
 
 ### 5.1 scripts/migrate-correlatives.ts
-```typescript
+\`\`\`typescript
 import { createClient } from '@supabase/supabase-js'
 import { plan_ing_civil_2023 } from '@/docs/2023/IngCivil'
 import { plan_ing_sistemas_2023 } from '@/docs/2023/IngEnSistemas'
@@ -689,7 +689,7 @@ async function migrateCorrelatives() {
 }
 
 migrateCorrelatives().catch(console.error)
-```
+\`\`\`
 
 ## 6. Plan de Implementación
 

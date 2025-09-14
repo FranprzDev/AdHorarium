@@ -8,6 +8,7 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "UTN FRT - Herramientas para Estudiantes",
   description: "Herramientas para estudiantes de ingeniería de la UTN FRT",
+    generator: 'v0.app'
 }
 
 export default function RootLayout({

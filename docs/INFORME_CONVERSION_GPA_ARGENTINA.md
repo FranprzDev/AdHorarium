@@ -56,7 +56,7 @@ Basándose en estándares internacionales y documentación oficial de institucio
 
 ### 2.2 Función de Conversión
 
-```javascript
+\`\`\`javascript
 const convertToGPA = (argentineGrade: number): number => {
   if (argentineGrade >= 10) return 4.0
   if (argentineGrade >= 8) return 3.7
@@ -65,7 +65,7 @@ const convertToGPA = (argentineGrade: number): number => {
   if (argentineGrade >= 4) return 1.0
   return 0.0
 }
-```
+\`\`\`
 
 ## 3. Justificación de la Conversión
 
@@ -145,4 +145,4 @@ Sin embargo, es crucial recordar que esta conversión debe complementarse con in
 **Documento preparado por:** Sistema AdHorarium  
 **Fecha de elaboración:** Enero 2025  
 **Versión:** 1.0  
-**Próxima revisión:** Enero 2026 
+**Próxima revisión:** Enero 2026

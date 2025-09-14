@@ -34,4 +34,4 @@ export function SubjectsCountCard({ approvedSubjectsCount }: SubjectsCountCardPr
       </CardContent>
     </Card>
   )
-} 
+}

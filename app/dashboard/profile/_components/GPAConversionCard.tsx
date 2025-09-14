@@ -63,4 +63,4 @@ export function GPAConversionCard() {
       </CardContent>
     </Card>
   )
-} 
+}
