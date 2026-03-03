@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import { getSupabaseBrowserClient } from '@/lib/supabase'
 import { Career } from '@/types/types'
 
 interface CareerState {
@@ -16,35 +15,39 @@ export const useCareerStore = create<CareerState>((set, get) => ({
   careerNames: {},
   selectedCareer: null,
   isLoading: true,
+
   fetchCareers: async () => {
     set({ isLoading: true })
-    const supabase = getSupabaseBrowserClient()
-    const { data, error } = await supabase
-      .from('careers')
-      .select('*')
-      
-    if (error) {
-      console.error('Error fetching careers:', error)
-      set({ careers: [], isLoading: false })
-    } else {
-      const allCareers = data || []
-      const filteredCareers = allCareers.filter(c => c.code !== 'CB')
-      
-      const careerNameMap = allCareers.reduce((acc, career) => {
-        acc[career.code] = career.name
-        return acc
-      }, {} as Record<string, string>)
+    try {
+      const res = await fetch('/api/careers')
+      if (!res.ok) throw new Error('Error fetching careers')
 
-      set({ 
-        careers: filteredCareers, 
+      const { careers: data } = await res.json()
+      const allCareers: Career[] = data || []
+      const filteredCareers = allCareers.filter((c) => c.code !== 'CB')
+
+      const careerNameMap = allCareers.reduce(
+        (acc, career) => {
+          acc[career.code] = career.name
+          return acc
+        },
+        {} as Record<string, string>
+      )
+
+      set({
+        careers: filteredCareers,
         careerNames: careerNameMap,
-        isLoading: false 
+        isLoading: false,
       })
 
       if (filteredCareers.length > 0 && !get().selectedCareer) {
         set({ selectedCareer: filteredCareers[0] })
       }
+    } catch (error) {
+      console.error('Error fetching careers:', error)
+      set({ careers: [], isLoading: false })
     }
   },
+
   selectCareer: (career) => set({ selectedCareer: career }),
-})) 
+}))

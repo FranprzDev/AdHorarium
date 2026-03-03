@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { useAuthStore } from "@/stores/useAuthStore"
-import { getSupabaseBrowserClient } from "@/lib/supabase"
 import { CareerSelectionModal } from "@/components/career-selection-modal"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -16,91 +15,78 @@ interface MainLayoutProps {
   children: React.ReactNode
 }
 
-interface Profile {
-  id: string;
-  career_id: number | null;
-}
-
 interface Career {
-  id: number;
-  name: string;
+  id: number
+  name: string
 }
 
 export function MainLayout({ children }: MainLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const pathname = usePathname()
   const { user, signOut } = useAuthStore()
-  
-  const [profile, setProfile] = useState<Profile | null>(null)
+
   const [careers, setCareers] = useState<Career[]>([])
+  const [careerAssigned, setCareerAssigned] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const supabase = getSupabaseBrowserClient()
 
   useEffect(() => {
     setIsSidebarOpen(false)
   }, [pathname])
 
   useEffect(() => {
-    async function fetchCareers() {
-      const { data, error } = await supabase.from("careers").select("id, name")
-      if (error) console.error("Error fetching careers:", error)
-      else setCareers(data)
-    }
-
-    async function checkUserProfile() {
+    async function loadData() {
       if (!user) return
 
-      const { data: profileData, error } = await supabase
-        .from("profiles")
-        .select("id, career_id")
-        .eq("id", user.id)
-        .maybeSingle()
+      try {
+        const [careersRes, profileRes] = await Promise.all([
+          fetch("/api/careers"),
+          fetch(`/api/profile?userId=${user.id}`),
+        ])
 
-      if (error) {
-        console.error("Error real al obtener el perfil en layout:", error)
-        return
-      }
+        if (careersRes.ok) {
+          const { careers: data } = await careersRes.json()
+          setCareers(data || [])
+        }
 
-      if (!profileData) {
-        setProfile({ id: user.id, career_id: null })
-        setIsModalOpen(true)
-        return
-      }
-
-      setProfile(profileData)
-      if (!profileData.career_id) {
-        setIsModalOpen(true)
+        if (profileRes.ok) {
+          const { profile } = await profileRes.json()
+          if (!profile?.career_id) {
+            setCareerAssigned(false)
+            setIsModalOpen(true)
+          } else {
+            setCareerAssigned(true)
+          }
+        } else {
+          setCareerAssigned(false)
+          setIsModalOpen(true)
+        }
+      } catch (err) {
+        console.error("Error loading layout data:", err)
       }
     }
 
-    fetchCareers()
-    checkUserProfile()
-  }, [user, supabase])
+    loadData()
+  }, [user])
 
   const handleCareerChange = async (careerId: number) => {
     if (!user) return
-    const { error } = await supabase
-      .from("profiles")
-      .upsert({ id: user.id, career_id: careerId, updated_at: new Date().toISOString() }, { onConflict: 'id' })
-
-    if (error) {
-      console.error("Error updating career:", error)
-      return
+    try {
+      await fetch("/api/profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id, career_id: careerId }),
+      })
+      setCareerAssigned(true)
+      setIsModalOpen(false)
+    } catch (err) {
+      console.error("Error updating career:", err)
     }
-
-    const { data } = await supabase
-      .from("profiles")
-      .select("id, career_id")
-      .eq("id", user.id)
-      .maybeSingle()
-
-    setProfile(data ?? { id: user.id, career_id: careerId })
-    setIsModalOpen(false)
   }
 
   const getUserInitials = () => {
-    if (!user?.email) return "U"
-    return user.email.charAt(0).toUpperCase()
+    if (user?.full_name) return user.full_name.charAt(0).toUpperCase()
+    if (user?.email) return user.email.charAt(0).toUpperCase()
+    return "U"
   }
 
   const navItems = [
@@ -113,7 +99,12 @@ export function MainLayout({ children }: MainLayoutProps) {
   return (
     <div className="min-h-screen gradient-bg">
       <div className="fixed top-4 left-4 z-50 md:hidden">
-        <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="text-white hover:bg-purple-800/30">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="text-white hover:bg-purple-800/30"
+        >
           {isSidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </Button>
       </div>
@@ -125,29 +116,32 @@ export function MainLayout({ children }: MainLayoutProps) {
       >
         <div className="flex flex-col h-full p-4">
           <div className="flex items-center justify-center mb-8 mt-4">
-            <Link href="/dashboard" className="text-2xl font-bold gradient-text">UTN FRT</Link>
+            <Link href="/dashboard" className="text-2xl font-bold gradient-text">
+              UTN FRT
+            </Link>
           </div>
 
           <nav className="flex-1 space-y-2">
             {navItems.map((item) => {
               const isActive = pathname === item.path
+              const isDisabled = item.name === "Gestor de Horarios"
               return (
                 <Link
                   key={item.path}
-                  href={item.name === "Gestor de Horarios" ? "#" : item.path}
+                  href={isDisabled ? "#" : item.path}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-300 ${
-                    isActive
-                      ? "bg-purple-700 text-white"
-                      : "text-white hover:bg-purple-800/30"
-                  } ${
-                    item.name === "Gestor de Horarios" &&
-                    "cursor-not-allowed opacity-50"
-                  }`}
+                    isActive ? "bg-purple-700 text-white" : "text-white hover:bg-purple-800/30"
+                  } ${isDisabled ? "cursor-not-allowed opacity-50" : ""}`}
                 >
                   {item.icon}
                   <span>{item.name}</span>
                   {isActive && (
-                    <motion.div className="absolute inset-0 rounded-lg" layoutId="sidebar-highlight" transition={{ type: "spring", duration: 0.5 }} style={{ zIndex: -1 }} />
+                    <motion.div
+                      className="absolute inset-0 rounded-lg"
+                      layoutId="sidebar-highlight"
+                      transition={{ type: "spring", duration: 0.5 }}
+                      style={{ zIndex: -1 }}
+                    />
                   )}
                 </Link>
               )
@@ -157,12 +151,12 @@ export function MainLayout({ children }: MainLayoutProps) {
           <div className="pt-4 border-t border-purple-500/30 mt-auto">
             <div className="flex items-center gap-3 mb-4">
               <Avatar>
-                <AvatarImage src={user?.user_metadata?.avatar_url} />
+                <AvatarImage src={user?.avatar_url ?? undefined} />
                 <AvatarFallback className="bg-purple-700">{getUserInitials()}</AvatarFallback>
               </Avatar>
               <div className="overflow-hidden">
                 <p className="text-sm font-medium text-white truncate">
-                  {user?.user_metadata?.full_name || user?.email}
+                  {user?.full_name || user?.email}
                 </p>
                 <p className="text-xs text-purple-200 truncate">{user?.email}</p>
               </div>
@@ -175,8 +169,12 @@ export function MainLayout({ children }: MainLayoutProps) {
                   Perfil
                 </Link>
               </Button>
-
-              <Button variant="ghost" size="sm" className="flex-1 text-white hover:bg-purple-800/30" onClick={() => signOut()}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="flex-1 text-white hover:bg-purple-800/30"
+                onClick={() => signOut()}
+              >
                 <LogOut className="h-4 w-4 mr-2" />
                 Salir
               </Button>
@@ -185,14 +183,14 @@ export function MainLayout({ children }: MainLayoutProps) {
         </div>
       </aside>
 
-      <main className={`min-h-screen transition-all duration-300 ${isSidebarOpen ? "md:ml-64" : "md:ml-64"}`}>
+      <main className="min-h-screen md:ml-64">
         <div className="container mx-auto p-4 md:p-6 pt-16 md:pt-6">{children}</div>
       </main>
 
       <CareerSelectionModal
         isOpen={isModalOpen}
         careers={careers}
-        currentCareerId={profile?.career_id ?? null}
+        currentCareerId={null}
         onSelectCareer={handleCareerChange}
         onClose={() => setIsModalOpen(false)}
       />

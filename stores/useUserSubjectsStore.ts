@@ -1,90 +1,68 @@
-import { create } from 'zustand';
-import { getSupabaseBrowserClient } from '@/lib/supabase';
-import { User } from '@supabase/supabase-js';
+import { create } from 'zustand'
+import { AuthUser } from '@/stores/useAuthStore'
 
-export type SubjectStatus = "promocionada" | "regular" | "cursando" | "no_cursada";
+export type SubjectStatus = "promocionada" | "regular" | "cursando" | "no_cursada"
 
 type UserSubjectState = {
-    status: SubjectStatus;
-    grade: number | null;
-};
+  status: SubjectStatus
+  grade: number | null
+}
 
 type UserSubjectsState = {
-    userSubjects: Record<number, UserSubjectState>;
-    isLoading: boolean;
-    fetchUserSubjects: (user: any, career_code: string) => Promise<void>;
-    updateUserSubjectState: (
-        user: any,
-        career_code: string,
-        subject_number: number,
-        status: SubjectStatus,
-        grade?: number | null
-    ) => Promise<void>;
-};
+  userSubjects: Record<number, UserSubjectState>
+  isLoading: boolean
+  fetchUserSubjects: (user: AuthUser, career_code: string) => Promise<void>
+  updateUserSubjectState: (
+    user: AuthUser,
+    career_code: string,
+    subject_number: number,
+    status: SubjectStatus,
+    grade?: number | null
+  ) => Promise<void>
+}
 
 export const useUserSubjectsStore = create<UserSubjectsState>((set, get) => ({
-    userSubjects: {},
-    isLoading: true,
-    fetchUserSubjects: async (user, career_code) => {
-        if (!user || !career_code) return;
-        set({ isLoading: true });
-        const supabase = getSupabaseBrowserClient();
-        try {
-            const { data, error } = await supabase
-                .from('user_subject_states')
-                .select('subject_number, status, grade')
-                .eq('user_id', user.id)
-                .eq('career_code', career_code);
+  userSubjects: {},
+  isLoading: true,
 
-            if (error) {
-                throw error;
-            }
+  fetchUserSubjects: async (user, career_code) => {
+    if (!user || !career_code) return
+    set({ isLoading: true })
+    try {
+      const res = await fetch(
+        `/api/user-subjects?userId=${user.id}&career_code=${career_code}`
+      )
+      if (!res.ok) throw new Error('Error fetching user subjects')
+      const { subjects } = await res.json()
 
-            const userSubjectsMap = data.reduce((acc: Record<number, UserSubjectState>, subject: { subject_number: number, status: any, grade: any }) => {
-                acc[subject.subject_number] = {
-                    status: subject.status,
-                    grade: subject.grade,
-                };
-                return acc;
-            }, {} as Record<number, UserSubjectState>);
+      const userSubjectsMap = (subjects || []).reduce(
+        (acc: Record<number, UserSubjectState>, s: any) => {
+          acc[s.subject_number] = { status: s.status, grade: s.grade }
+          return acc
+        },
+        {} as Record<number, UserSubjectState>
+      )
 
-            set({ userSubjects: userSubjectsMap });
-        } catch (error) {
-            console.error('Error fetching user subjects:', error);
-        } finally {
-            set({ isLoading: false });
-        }
-    },
-    updateUserSubjectState: async (
-        user,
-        career_code,
-        subject_number,
-        status,
-        grade = null
-    ) => {
-        if (!user || !career_code) return;
-        const supabase = getSupabaseBrowserClient();
-        try {
-            const { error } = await supabase
-                .from('user_subject_states')
-                .upsert({
-                    user_id: user.id,
-                    career_code,
-                    subject_number,
-                    status,
-                    grade,
-                }, { onConflict: 'user_id,career_code,subject_number' });
-
-            if (error) {
-                throw error;
-            }
-
-            // After a successful update, refetch all subjects for the user and career
-            // to ensure the state is consistent across the app.
-            get().fetchUserSubjects(user, career_code);
-
-        } catch (error) {
-            console.error('Error updating user subject state:', error);
-        }
+      set({ userSubjects: userSubjectsMap })
+    } catch (error) {
+      console.error('Error fetching user subjects:', error)
+    } finally {
+      set({ isLoading: false })
     }
-})); 
+  },
+
+  updateUserSubjectState: async (user, career_code, subject_number, status, grade = null) => {
+    if (!user || !career_code) return
+    try {
+      const res = await fetch('/api/user-subjects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, career_code, subject_number, status, grade }),
+      })
+      if (!res.ok) throw new Error('Error updating user subject')
+      get().fetchUserSubjects(user, career_code)
+    } catch (error) {
+      console.error('Error updating user subject state:', error)
+    }
+  },
+}))

@@ -1,109 +1,110 @@
-import { create, StateCreator } from 'zustand'
+import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { User, Session } from '@supabase/supabase-js'
-import { getSupabaseBrowserClient } from '@/lib/supabase'
 
-type AuthState = {
-  user: User | null
-  session: Session | null
-  isLoading: boolean
-  signIn: (provider: 'google') => Promise<void>
-  signOut: () => Promise<void>
+export interface AuthUser {
+  id: string
+  email: string
+  full_name: string | null
+  avatar_url: string | null
+  provider: string
 }
 
-const authStoreCreator: StateCreator<AuthState> = (set) => ({
-  user: null,
-  session: null,
-  isLoading: true,
-
-  signIn: async (provider: 'google') => {
-    const supabase = getSupabaseBrowserClient()
-    set({ isLoading: true })
-    const REDIRECT_URL = 'https://v0-web-app-with-gsap-ztvhv0.vercel.app/dashboard'
-    
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: REDIRECT_URL,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          },
-        },
-      })
-      if (error) {
-          console.error('Error signing in:', error.message)
-          alert(`Error signing in: ${error.message}`)
-      }
-    } catch (error) {
-      console.error('Unexpected error during sign in:', error)
-      alert('An unexpected error occurred. Please try again later.')
-    } finally {
-      set({ isLoading: false })
-    }
-  },
-
-  signOut: async () => {
-    const supabase = getSupabaseBrowserClient()
-    set({ isLoading: true })
-    try {
-      const { error } = await supabase.auth.signOut()
-      if (error) throw error
-      set({ user: null, session: null })
-    } catch (error) {
-      console.error('Error signing out:', error)
-    } finally {
-      set({ isLoading: false })
-    }
-  },
-})
+type AuthState = {
+  user: AuthUser | null
+  isLoading: boolean
+  error: string | null
+  signInWithPassword: (email: string, password: string) => Promise<void>
+  signUp: (email: string, password: string, full_name: string) => Promise<void>
+  signInWithGoogle: () => void
+  signOut: () => Promise<void>
+  fetchMe: () => Promise<void>
+  clearError: () => void
+}
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    authStoreCreator,
+    (set) => ({
+      user: null,
+      isLoading: false,
+      error: null,
+
+      clearError: () => set({ error: null }),
+
+      fetchMe: async () => {
+        set({ isLoading: true })
+        try {
+          const res = await fetch('/api/auth/me')
+          if (res.ok) {
+            const { user } = await res.json()
+            set({ user, isLoading: false })
+          } else {
+            set({ user: null, isLoading: false })
+          }
+        } catch {
+          set({ user: null, isLoading: false })
+        }
+      },
+
+      signInWithPassword: async (email: string, password: string) => {
+        set({ isLoading: true, error: null })
+        try {
+          const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+          })
+          const data = await res.json()
+          if (!res.ok) {
+            set({ error: data.error || 'Error al iniciar sesión', isLoading: false })
+            return
+          }
+          set({ user: data.user, isLoading: false, error: null })
+        } catch {
+          set({ error: 'Error de conexión. Intentá de nuevo.', isLoading: false })
+        }
+      },
+
+      signUp: async (email: string, password: string, full_name: string) => {
+        set({ isLoading: true, error: null })
+        try {
+          const res = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password, full_name }),
+          })
+          const data = await res.json()
+          if (!res.ok) {
+            set({ error: data.error || 'Error al registrarse', isLoading: false })
+            return
+          }
+          set({ user: data.user, isLoading: false, error: null })
+        } catch {
+          set({ error: 'Error de conexión. Intentá de nuevo.', isLoading: false })
+        }
+      },
+
+      signInWithGoogle: () => {
+        window.location.href = '/api/auth/google'
+      },
+
+      signOut: async () => {
+        set({ isLoading: true })
+        try {
+          await fetch('/api/auth/logout', { method: 'POST' })
+          set({ user: null, isLoading: false, error: null })
+        } catch {
+          set({ isLoading: false })
+        }
+      },
+    }),
     {
       name: 'auth-storage',
-      partialize: (state) => ({
-        user: state.user,
-        session: state.session,
-      }),
+      partialize: (state) => ({ user: state.user }),
     }
   )
 )
 
+// Verificar sesión activa al cargar la app
 if (typeof window !== 'undefined') {
-  const supabase = getSupabaseBrowserClient()
-  
-  supabase.auth.getSession().then(({ data: { session } }) => {
-    const currentState = useAuthStore.getState()
-    
-    if (session && !currentState.user) {
-      useAuthStore.setState({ 
-        session, 
-        user: session.user,
-        isLoading: false 
-      })
-    } 
-    else if (!session && currentState.user) {
-      useAuthStore.setState({ 
-        user: null, 
-        session: null, 
-        isLoading: false 
-      })
-    }
-    // Si ambos coinciden, solo actualizar isLoading
-    else {
-      useAuthStore.setState({ isLoading: false })
-    }
-  })
-  
-  // Escuchar cambios de autenticación
-  supabase.auth.onAuthStateChange(async (_event, session) => {
-    useAuthStore.setState({ 
-      session, 
-      user: session?.user ?? null,
-      isLoading: false
-    })
-  })
-} 
+  useAuthStore.getState().fetchMe()
+}
