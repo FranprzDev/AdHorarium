@@ -29,7 +29,6 @@ import { NotebookPen, Loader2, AlertCircle, X } from "lucide-react"
 import DeniedAccess from "./_components/DeniedAccess"
 import LoadingSubjects from "./_components/LoadingSubjects"
 import { Subject } from "@/types/types"
-import { getSupabaseBrowserClient } from "@/lib/supabase"
 
 export const statusLabels: Record<SubjectStatus, string> = {
   no_cursada: "No Cursando",
@@ -72,28 +71,25 @@ export default function MateriasPage() {
 
       setSubjectsLoading(true);
       setError(null);
-      const supabase = getSupabaseBrowserClient();
-      
+
       try {
-        // Fetch career-specific subjects
-        const { data: careerData, error: careerError } = await supabase
-          .from('complete_subjects_info')
-          .select('*')
-          .eq('career_code', selectedCareer.code);
+        const [careerRes, basicRes] = await Promise.all([
+          fetch(`/api/subjects?careerCode=${selectedCareer.code}`),
+          fetch(`/api/subjects?careerCode=CB`),
+        ]);
 
-        if (careerError) throw careerError;
+        if (!careerRes.ok || !basicRes.ok) throw new Error("Error al cargar materias");
 
-        // Fetch basic subjects
-        const { data: basicData, error: basicError } = await supabase
-          .from('complete_subjects_info')
-          .select('*')
-          .eq('career_code', 'CB');
-        
-        if (basicError) throw basicError;
+        const [careerData, basicData] = await Promise.all([
+          careerRes.json(),
+          basicRes.json(),
+        ]);
 
-        const combinedData = [...(careerData || []), ...(basicData || [])];
+        const combinedData = [
+          ...(careerData.subjects || []),
+          ...(basicData.subjects || []),
+        ];
         setAllSubjects(combinedData);
-        
       } catch (e: any) {
         setError(e.message);
         setAllSubjects([]);

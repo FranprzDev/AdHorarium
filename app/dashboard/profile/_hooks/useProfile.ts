@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { useAuthStore } from "@/stores/useAuthStore"
-import { getSupabaseBrowserClient } from "@/lib/supabase"
 
 interface Profile {
   id: string
@@ -14,19 +13,6 @@ interface Profile {
 interface Career {
   id: number
   name: string
-}
-
-interface UserSubject {
-  id: number
-  user_id: string
-  subject_id: number
-  status: string
-  grade: number | null
-  created_at: string
-  updated_at: string
-  subjects: {
-    name: string
-  } | null
 }
 
 interface UseProfileReturn {
@@ -47,8 +33,6 @@ export function useProfile(): UseProfileReturn {
   const [approvedSubjectsCount, setApprovedSubjectsCount] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  
-  const supabase = getSupabaseBrowserClient()
 
   const fetchProfileData = async () => {
     if (!user) return
@@ -57,61 +41,37 @@ export function useProfile(): UseProfileReturn {
       setIsLoading(true)
       setError(null)
 
-      const [profileResponse, careersResponse, gradesResponse] = await Promise.all([
-        supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .single(),
-        
-        supabase
-          .from("careers")
-          .select("id, name"),
-        
-        supabase
-          .from("user_subjects")
-          .select(`
-            id,
-            user_id,
-            subject_id,
-            status,
-            grade,
-            created_at,
-            updated_at,
-            subjects (
-              name
-            )
-          `)
-          .eq("user_id", user.id)
-          .eq("status", "PROMOCIONADO")
-          .not("grade", "is", null)
+      const [profileRes, careersRes] = await Promise.all([
+        fetch("/api/profile"),
+        fetch("/api/careers"),
       ])
 
-      if (profileResponse.error) throw profileResponse.error
-      if (careersResponse.error) throw careersResponse.error
-      if (gradesResponse.error) throw gradesResponse.error
+      if (!profileRes.ok) throw new Error("Error al cargar el perfil")
+      if (!careersRes.ok) throw new Error("Error al cargar las carreras")
 
-      setProfile(profileResponse.data)
-      setCareers(careersResponse.data || [])
+      const profileData = await profileRes.json()
+      const careersData = await careersRes.json()
 
-      const approvedWithGrades = gradesResponse.data || []
-      setApprovedSubjectsCount(approvedWithGrades.length)
+      setProfile(profileData.profile)
+      setCareers(careersData.careers || [])
 
-      if (approvedWithGrades.length > 0) {
-        const validGrades = approvedWithGrades.filter(subject => subject.grade !== null)
-        if (validGrades.length > 0) {
-          const totalGrades = validGrades.reduce((sum, subject) => sum + (subject.grade || 0), 0)
-          const average = totalGrades / validGrades.length
-          setAverageGrade(Number(average.toFixed(2)))
+      // Calculate stats from user-subjects
+      const subjectsRes = await fetch("/api/user-subjects")
+      if (subjectsRes.ok) {
+        const subjectsData = await subjectsRes.json()
+        const promoted = (subjectsData.subjects || []).filter(
+          (s: any) => s.status === "promocionada" && s.grade !== null
+        )
+        setApprovedSubjectsCount(promoted.length)
+        if (promoted.length > 0) {
+          const total = promoted.reduce((sum: number, s: any) => sum + (s.grade || 0), 0)
+          setAverageGrade(Number((total / promoted.length).toFixed(2)))
         } else {
           setAverageGrade(null)
         }
-      } else {
-        setAverageGrade(null)
       }
-
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al cargar los datos del perfil')
+      setError(err instanceof Error ? err.message : "Error al cargar los datos del perfil")
     } finally {
       setIsLoading(false)
     }
@@ -119,24 +79,17 @@ export function useProfile(): UseProfileReturn {
 
   const handleCareerChange = async (careerId: number) => {
     if (!user) return
-
     try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ career_id: careerId })
-        .eq("id", user.id)
-
-      if (error) throw error
-
-      const { data } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single()
-      
-      setProfile(data)
+      const res = await fetch("/api/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ career_id: careerId }),
+      })
+      if (!res.ok) throw new Error("Error al actualizar la carrera")
+      const data = await res.json()
+      setProfile(data.profile)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al actualizar la carrera')
+      setError(err instanceof Error ? err.message : "Error al actualizar la carrera")
     }
   }
 
@@ -151,6 +104,6 @@ export function useProfile(): UseProfileReturn {
     approvedSubjectsCount,
     isLoading,
     error,
-    handleCareerChange
+    handleCareerChange,
   }
-} 
+}
