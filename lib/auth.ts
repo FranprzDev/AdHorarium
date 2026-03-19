@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers'
-import { sql } from '@/lib/neon'
+import { getSql } from '@/lib/neon'
 
 export interface AuthUser {
   id: string
@@ -7,6 +7,7 @@ export interface AuthUser {
   full_name: string | null
   avatar_url: string | null
   provider: string
+  role: string
 }
 
 export interface SessionData {
@@ -19,6 +20,7 @@ export const SESSION_DURATION_DAYS = 30
 export const SESSION_DURATION_SECONDS = SESSION_DURATION_DAYS * 24 * 60 * 60
 
 export async function createSession(userId: string): Promise<string> {
+  const sql = getSql()
   const expiresAt = new Date()
   expiresAt.setDate(expiresAt.getDate() + SESSION_DURATION_DAYS)
 
@@ -31,8 +33,9 @@ export async function createSession(userId: string): Promise<string> {
 }
 
 export async function getCurrentUser(sessionId: string): Promise<AuthUser | null> {
+  const sql = getSql()
   const result = await sql`
-    SELECT u.id, u.email, u.full_name, u.avatar_url, u.provider
+    SELECT u.id, u.email, u.full_name, u.avatar_url, u.provider, u.role
     FROM sessions s
     JOIN users u ON s.user_id = u.id
     WHERE s.id = ${sessionId}
@@ -56,5 +59,6 @@ export async function getSession(): Promise<SessionData | null> {
 }
 
 export async function deleteSession(sessionId: string): Promise<void> {
+  const sql = getSql()
   await sql`DELETE FROM sessions WHERE id = ${sessionId}`
 }

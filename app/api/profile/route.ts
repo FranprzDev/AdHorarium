@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { sql } from '@/lib/neon'
+import { getSql } from '@/lib/neon'
 import { getSession } from '@/lib/auth'
 
 export async function GET() {
@@ -9,10 +9,11 @@ export async function GET() {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
 
+    const sql = getSql()
     const result = await sql`
       SELECT up.id, up.career_id, up.bio,
              c.code as career_code, c.name as career_name,
-             u.full_name, u.email, u.avatar_url
+             u.full_name, u.email, u.avatar_url, u.role
       FROM user_profiles up
       JOIN users u ON u.id = up.id
       LEFT JOIN careers c ON up.career_id = c.id
@@ -36,6 +37,7 @@ export async function PATCH(request: NextRequest) {
 
     const body = await request.json()
     const { career_id, bio } = body
+    const sql = getSql()
 
     await sql`
       INSERT INTO user_profiles (id, career_id, bio, updated_at)
@@ -49,7 +51,7 @@ export async function PATCH(request: NextRequest) {
     const result = await sql`
       SELECT up.id, up.career_id, up.bio,
              c.code as career_code, c.name as career_name,
-             u.full_name, u.email, u.avatar_url
+             u.full_name, u.email, u.avatar_url, u.role
       FROM user_profiles up
       JOIN users u ON u.id = up.id
       LEFT JOIN careers c ON up.career_id = c.id

@@ -25,3 +25,14 @@ export interface Subject {
     must_take_names: string[];
     enables_names: string[];
 }
+
+export interface User {
+  id: string
+  email: string
+  full_name: string | null
+  avatar_url: string | null
+  provider: string
+  role: 'user' | 'admin'
+  created_at?: string
+  updated_at?: string
+}

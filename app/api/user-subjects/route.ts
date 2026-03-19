@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { sql } from '@/lib/neon'
+import { getSql } from '@/lib/neon'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    const sql = getSql()
     const subjects = await sql`
       SELECT subject_number, status, grade
       FROM user_subject_states
@@ -31,6 +32,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Faltan parámetros requeridos' }, { status: 400 })
     }
 
+    const sql = getSql()
     await sql`
       INSERT INTO user_subject_states (user_id, career_code, subject_number, status, grade)
       VALUES (${userId}, ${career_code}, ${subject_number}, ${status}, ${grade ?? null})

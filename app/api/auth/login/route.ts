@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { sql } from '@/lib/neon'
+import { getSql } from '@/lib/neon'
 import { createSession, SESSION_COOKIE_NAME, SESSION_DURATION_SECONDS } from '@/lib/auth'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
@@ -22,9 +22,10 @@ export async function POST(request: NextRequest) {
     }
 
     const { email, password } = parsed.data
+    const sql = getSql()
 
     const users = await sql`
-      SELECT id, email, full_name, avatar_url, password_hash, provider
+      SELECT id, email, full_name, avatar_url, password_hash, provider, role
       FROM users
       WHERE email = ${email.toLowerCase().trim()}
       LIMIT 1
@@ -41,7 +42,7 @@ export async function POST(request: NextRequest) {
 
     if (!user.password_hash) {
       return NextResponse.json(
-        { error: 'Esta cuenta usa Google para iniciar sesión' },
+        { error: 'Esta cuenta no tiene contraseña configurada' },
         { status: 401 }
       )
     }
@@ -63,6 +64,7 @@ export async function POST(request: NextRequest) {
         full_name: user.full_name,
         avatar_url: user.avatar_url,
         provider: user.provider,
+        role: user.role,
       },
     })
 

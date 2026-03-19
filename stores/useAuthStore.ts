@@ -7,6 +7,7 @@ export interface AuthUser {
   full_name: string | null
   avatar_url: string | null
   provider: string
+  role: 'user' | 'admin'
 }
 
 type AuthState = {
@@ -15,7 +16,6 @@ type AuthState = {
   error: string | null
   signInWithPassword: (email: string, password: string) => Promise<void>
   signUp: (email: string, password: string, full_name: string) => Promise<void>
-  signInWithGoogle: () => void
   signOut: () => Promise<void>
   fetchMe: () => Promise<void>
   clearError: () => void
@@ -81,10 +81,6 @@ export const useAuthStore = create<AuthState>()(
         } catch {
           set({ error: 'Error de conexión. Intentá de nuevo.', isLoading: false })
         }
-      },
-
-      signInWithGoogle: () => {
-        window.location.href = '/api/auth/google'
       },
 
       signOut: async () => {

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { sql } from "@/lib/neon"
+import { getSql } from "@/lib/neon"
 import { getSession } from "@/lib/auth"
 
 export async function GET(request: Request) {
@@ -14,6 +14,7 @@ export async function GET(request: Request) {
 
     const session = await getSession()
     const userId = session?.user?.id ?? null
+    const sql = getSql()
 
     // Fetch subjects for the career
     let rawSubjects: any[]

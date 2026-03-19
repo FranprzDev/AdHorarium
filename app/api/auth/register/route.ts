@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { sql } from '@/lib/neon'
+import { getSql } from '@/lib/neon'
 import { createSession, SESSION_COOKIE_NAME, SESSION_DURATION_SECONDS } from '@/lib/auth'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
@@ -24,6 +24,7 @@ export async function POST(request: NextRequest) {
 
     const { email, password, full_name } = parsed.data
     const normalizedEmail = email.toLowerCase().trim()
+    const sql = getSql()
 
     const existing = await sql`
       SELECT id FROM users WHERE email = ${normalizedEmail} LIMIT 1
@@ -39,9 +40,9 @@ export async function POST(request: NextRequest) {
     const password_hash = await bcrypt.hash(password, 12)
 
     const result = await sql`
-      INSERT INTO users (email, password_hash, full_name, provider)
-      VALUES (${normalizedEmail}, ${password_hash}, ${full_name}, 'email')
-      RETURNING id, email, full_name, avatar_url, provider
+      INSERT INTO users (email, password_hash, full_name, provider, role)
+      VALUES (${normalizedEmail}, ${password_hash}, ${full_name}, 'email', 'user')
+      RETURNING id, email, full_name, avatar_url, provider, role
     `
 
     const newUser = result[0]
@@ -59,6 +60,7 @@ export async function POST(request: NextRequest) {
         full_name: newUser.full_name,
         avatar_url: newUser.avatar_url,
         provider: newUser.provider,
+        role: newUser.role,
       },
     }, { status: 201 })
 
