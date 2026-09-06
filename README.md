@@ -1,30 +1,33 @@
-# Web app with GSAP
+# AdHorarium
 
-*Automatically synced with your [v0.dev](https://v0.dev) deployments*
+Academic planner for UTN engineering careers, built as coursework for **Seminario Integrador**. Next.js + Zustand + Google auth. In Spanish.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/franprzdevs-projects/v0-web-app-with-gsap)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.dev-black?style=for-the-badge)](https://v0.dev/chat/projects/2N7KChvtc8n)
+## Problem
 
-## Overview
+UTN students juggle correlatives, class schedules and final-exam tables across scattered PDFs and word of mouth. Picking which subjects to take each semester is guesswork.
 
-This repository will stay in sync with your deployed chats on [v0.dev](https://v0.dev).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.dev](https://v0.dev).
+## What it does
 
-## Deployment
+- Interactive correlatives plan per career (data for Sistemas 2008/2023 plans plus Civil, Eléctrica, Electrónica, Mecánica in `docs/2023`)
+- Dashboard with subjects, schedules (`horarios`), exam tables (`mesas`) and profile tracking
+- Argentine grades (1–10) → US GPA conversion, documented in `docs/INFORME_CONVERSION_GPA_ARGENTINA.md`
+- Google sign-in, demo mode at `/demo`
 
-Your project is live at:
+## Quickstart
 
-**[https://vercel.com/franprzdevs-projects/v0-web-app-with-gsap](https://vercel.com/franprzdevs-projects/v0-web-app-with-gsap)**
+```bash
+pnpm install
+pnpm dev
+```
 
-## Build your app
+## Structure
 
-Continue building your app on:
+| Path | What |
+| --- | --- |
+| `app/` | Landing, careers, dashboard (materias, horarios, mesas, profile) |
+| `data/` · `docs/2023/` | Career plans and subject datasets |
+| `stores/` | Auth, career and user-subjects state (Zustand) |
+| `docs/` | Academic docs, including the GPA conversion report |
 
-**[https://v0.dev/chat/projects/2N7KChvtc8n](https://v0.dev/chat/projects/2N7KChvtc8n)**
-
-## How It Works
-
-1. Create and modify your project using [v0.dev](https://v0.dev)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+> [!NOTE]
+> Academic project — career data mirrors UTN plans and may drift from the official ones.
