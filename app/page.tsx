@@ -19,7 +19,6 @@ import {
   Clock,
   CheckCircle,
   Users,
-  Sparkles,
   LayoutDashboard,
   Target,
   TrendingUp,
@@ -309,7 +308,7 @@ export default function LandingPage() {
                           ))}
                         </div>
                       </div>
-                      <p className="text-purple-200 mb-6 italic leading-relaxed flex-1">"{testimonial.content}"</p>
+                      <p className="text-purple-200 mb-6 italic leading-relaxed flex-1">&ldquo;{testimonial.content}&rdquo;</p>
                       <div className="border-t border-purple-400/20 pt-4">
                         <div className="font-semibold text-white">{testimonial.name}</div>
                         <div className="text-purple-300 text-sm">{testimonial.career}</div>

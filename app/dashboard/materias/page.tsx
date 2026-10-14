@@ -24,7 +24,6 @@ import { Label } from "@/components/ui/label"
 import { useUserSubjectsStore } from "@/stores/useUserSubjectsStore"
 import { useAuthStore } from "@/stores/useAuthStore"
 import { useCareerStore } from "@/stores/useCareerStore"
-import { useCorrelativesData } from "@/app/dashboard/_hooks/useCorrelativesData"
 import { NotebookPen, Loader2, AlertCircle, X } from "lucide-react"
 import DeniedAccess from "./_components/DeniedAccess"
 import LoadingSubjects from "./_components/LoadingSubjects"
@@ -37,7 +36,7 @@ import { SubjectFilter, SubjectStatus } from "@/types/enums"
 
 export default function MateriasPage() {
   const { user } = useAuthStore()
-  const { selectedCareer, careerNames } = useCareerStore()
+  const { selectedCareer } = useCareerStore()
   const {
     userSubjects,
     isLoading: userSubjectsLoading,

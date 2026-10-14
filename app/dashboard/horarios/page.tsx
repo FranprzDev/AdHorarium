@@ -58,12 +58,6 @@ export default function HorariosPage() {
     }))
   }
 
-  const isAllCoursesSelected = (level: number) => {
-    const levelCourses = coursesByLevel[level]
-    const selectedLevelCourses = selectedCourses[level] || []
-    return levelCourses.length === selectedLevelCourses.length && levelCourses.length > 0
-  }
-
   const getSelectedCoursesCount = (level: number) => {
     return (selectedCourses[level] || []).length
   }
