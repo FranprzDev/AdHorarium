@@ -201,7 +201,7 @@ export const plan_ing_electrica_2023: RegimenCorrelatividades = {
       },
       {
         "numero": 30,
-        "nombre": "Instalaciones Eléctricas Y Luminoctenia",
+        "nombre": "Instalaciones Eléctricas y Luminotecnia",
         "para_cursar_aprobar": [6,13,12,11,17,9],
         "para_cursar_cursar": [18,22,23]
       },

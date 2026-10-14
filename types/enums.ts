@@ -66,6 +66,29 @@ export enum ExamViewMode {
   Table = "table",
 }
 
+/** Role of an application user, stored in `users.role`. */
+export enum UserRole {
+  Student = "student",
+  Admin = "admin",
+}
+
+/** Codes of the careers seeded from the official UTN plans, stored in `careers.code`. */
+export enum CareerCode {
+  Sistemas = "ISI",
+  Electronica = "IE",
+  Civil = "IC",
+  Mecanica = "IM",
+  EnergiaElectrica = "IEE",
+}
+
+/** Environment variables the server reads explicitly. */
+export enum EnvVar {
+  DatabaseUrl = "DATABASE_URL",
+  AdminEmails = "ADMIN_EMAILS",
+  AuthGoogleId = "AUTH_GOOGLE_ID",
+  AuthGoogleSecret = "AUTH_GOOGLE_SECRET",
+}
+
 /** OAuth providers enabled for sign in. */
 export enum AuthProvider {
   Google = "google",
