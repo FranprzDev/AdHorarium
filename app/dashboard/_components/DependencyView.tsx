@@ -4,6 +4,7 @@ import { Subject } from "@/types/types";
 import SubjectCard from "./SubjectCard";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { getEnabledSubjects, getPrerequisiteSubjects } from "@/lib/correlatives";
 
 interface DependencyViewProps {
   selectedSubject: Subject;
@@ -12,14 +13,8 @@ interface DependencyViewProps {
 }
 
 export default function DependencyView({ selectedSubject, allSubjects, onClose }: DependencyViewProps) {
-  const prerequisites = allSubjects.filter(s =>
-    selectedSubject.must_approve_names.includes(s.subject_name) ||
-    selectedSubject.must_take_names.includes(s.subject_name)
-  ).sort((a, b) => a.nivel.localeCompare(b.nivel));
-
-  const dependencies = allSubjects.filter(s =>
-    selectedSubject.enables_names.includes(s.subject_name)
-  ).sort((a, b) => a.nivel.localeCompare(b.nivel));
+  const prerequisites = getPrerequisiteSubjects(selectedSubject, allSubjects);
+  const dependencies = getEnabledSubjects(selectedSubject, allSubjects);
 
   return (
     <div className="p-4 md:p-8 animate-fade-in">

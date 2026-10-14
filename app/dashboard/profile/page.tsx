@@ -6,6 +6,7 @@ import { AuroraBackground } from "@/components/ui/aurora-background"
 import { CareerSelectionModal } from "@/components/career-selection-modal"
 import { useProfile } from "./_hooks/useProfile"
 import { useAuthStore } from "@/stores/useAuthStore"
+import { convertToGPA } from "@/lib/gpa"
 import {
   ProfileHeader,
   AverageGradeCard,
@@ -29,16 +30,7 @@ export default function ProfilePage() {
 
   const selectedCareerName = careers.find((c) => c.id === profile?.career_id)?.name || "No asignada"
 
-  const convertToGPA = (argentineGrade: number): number => {
-    if (argentineGrade >= 10) return 4.0
-    if (argentineGrade >= 8) return 3.7
-    if (argentineGrade >= 7) return 3.0
-    if (argentineGrade >= 6) return 2.3
-    if (argentineGrade >= 4) return 1.0
-    return 0.0
-  }
-
-  const gpaEquivalent = averageGrade ? convertToGPA(averageGrade) : null
+  const gpaEquivalent = averageGrade !== null ? convertToGPA(averageGrade) : null
 
   const onCareerChange = async (careerId: number) => {
     await handleCareerChange(careerId)

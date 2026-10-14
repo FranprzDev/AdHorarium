@@ -205,7 +205,7 @@ export const plan_ing_civil_2023: RegimenCorrelatividades = {
     {
       "numero": 31,
       "nombre": "Hidrología y Obras Hidráulicas",
-      "para_cursar_aprobar": [16,1820,21,24,25],
+      "para_cursar_aprobar": [16,18,20,21,24,25],
       "para_cursar_cursar": [9,10,11,12,13,14]
     },
     {

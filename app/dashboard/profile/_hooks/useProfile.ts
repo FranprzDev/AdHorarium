@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from "react"
 import { useAuthStore } from "@/stores/useAuthStore"
 import { getSupabaseBrowserClient } from "@/lib/supabase"
+import { averageGrade as computeAverageGrade } from "@/lib/gpa"
+import { LegacyUserSubjectStatus } from "@/types/enums"
 
 interface Profile {
   id: string
@@ -14,6 +16,10 @@ interface Profile {
 interface Career {
   id: number
   name: string
+}
+
+type PromotedGradeRow = {
+  grade: number | null
 }
 
 interface UseProfileReturn {
@@ -57,21 +63,11 @@ export function useProfile(): UseProfileReturn {
         
         supabase
           .from("user_subjects")
-          .select(`
-            id,
-            user_id,
-            subject_id,
-            status,
-            grade,
-            created_at,
-            updated_at,
-            subjects (
-              name
-            )
-          `)
+          .select("grade")
           .eq("user_id", user.id)
-          .eq("status", "PROMOCIONADO")
+          .eq("status", LegacyUserSubjectStatus.Promocionado)
           .not("grade", "is", null)
+          .overrideTypes<PromotedGradeRow[], { merge: false }>()
       ])
 
       if (profileResponse.error) throw profileResponse.error
@@ -81,21 +77,12 @@ export function useProfile(): UseProfileReturn {
       setProfile(profileResponse.data)
       setCareers(careersResponse.data || [])
 
-      const approvedWithGrades = gradesResponse.data || []
-      setApprovedSubjectsCount(approvedWithGrades.length)
-
-      if (approvedWithGrades.length > 0) {
-        const validGrades = approvedWithGrades.filter(subject => subject.grade !== null)
-        if (validGrades.length > 0) {
-          const totalGrades = validGrades.reduce((sum, subject) => sum + (subject.grade || 0), 0)
-          const average = totalGrades / validGrades.length
-          setAverageGrade(Number(average.toFixed(2)))
-        } else {
-          setAverageGrade(null)
-        }
-      } else {
-        setAverageGrade(null)
+      const grades: number[] = []
+      for (const row of gradesResponse.data ?? []) {
+        if (row.grade !== null) grades.push(row.grade)
       }
+      setApprovedSubjectsCount(grades.length)
+      setAverageGrade(computeAverageGrade(grades))
 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar los datos del perfil')

@@ -376,7 +376,8 @@ export const coursesData2008: Course[] = [
     level: 5,
     regularesParaCursar: ["25", "26", "29", "31"],
     aprobadasParaCursar: ["8", "9", "16", "18", "19", "20", "22", "23", "24"],
-    aprobadasParaRendir: ["todas"],
+    // UTN rule: every other mandatory subject of the plan must be approved to sit the final project exam.
+    aprobadasParaRendir: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "33", "34", "35"],
     hours: 6,
   },
   {

@@ -164,7 +164,7 @@ export const plan_ing_electronica_2023: RegimenCorrelatividades = {
         "numero": 24,
         "nombre": "Teoría de los Circuitos II",
         "para_cursar_aprobar": [7,11],
-        "para_cursar_cursar": [10.15]
+        "para_cursar_cursar": [10,15]
       },
       {
         "numero": 25,
