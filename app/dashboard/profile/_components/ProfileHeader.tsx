@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { BadgeVariant } from "@/types/enums"
 import { Separator } from "@/components/ui/separator"
 import { User, GraduationCap, Settings } from "lucide-react"
 import type { User as SupabaseUser } from '@supabase/supabase-js'
@@ -65,7 +66,7 @@ export function ProfileHeader({ user, profile, careers, onCareerChangeClick }: P
               <GraduationCap className="h-5 w-5 mr-3" />
               <span>Carrera</span>
             </div>
-            <Badge variant="secondary" className="bg-purple-600/30 text-purple-100 border-purple-400/30">
+            <Badge variant={BadgeVariant.Secondary} className="bg-purple-600/30 text-purple-100 border-purple-400/30">
               {selectedCareerName}
             </Badge>
           </div>

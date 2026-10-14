@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import type { Course } from "@/types/course"
+import type { Course } from "@/types/types"
 import { cn } from "@/lib/utils"
 
 interface CourseCardProps {

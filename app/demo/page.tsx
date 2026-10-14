@@ -8,11 +8,23 @@ import { Tabs, Switch, Button } from "@/components/ui/acernity-ui"
 import { coursesData2008 } from "@/data/courses-2008"
 import { AuroraBackground } from "@/components/ui/aurora-background"
 import { ArrowLeft, Info } from "lucide-react"
+import { CorrelativePurpose, CorrelativeType, StudyPlan } from "@/types/enums"
+
+const CORRELATIVE_PURPOSE_VALUES = new Set<string>(Object.values(CorrelativePurpose))
+const CORRELATIVE_TYPE_VALUES = new Set<string>(Object.values(CorrelativeType))
+
+function isCorrelativePurpose(value: string): value is CorrelativePurpose {
+  return CORRELATIVE_PURPOSE_VALUES.has(value)
+}
+
+function isCorrelativeType(value: string): value is CorrelativeType {
+  return CORRELATIVE_TYPE_VALUES.has(value)
+}
 
 export default function DemoPage() {
-  const [plan, setPlan] = useState<"2008" | "2023">("2008")
-  const [filterType, setFilterType] = useState<"regulares" | "aprobadas">("regulares")
-  const [filterPurpose, setFilterPurpose] = useState<"cursar" | "rendir">("cursar")
+  const plan = StudyPlan.Plan2008
+  const [filterType, setFilterType] = useState<CorrelativeType>(CorrelativeType.Regulares)
+  const [filterPurpose, setFilterPurpose] = useState<CorrelativePurpose>(CorrelativePurpose.Cursar)
   const [hideElectives, setHideElectives] = useState<boolean>(true)
 
   const coursesData = coursesData2008
@@ -41,11 +53,13 @@ export default function DemoPage() {
                   <span className="text-sm text-slate-200">Para:</span>
                   <Tabs
                     tabs={[
-                      { label: "Cursar", value: "cursar" },
-                      { label: "Rendir", value: "rendir" },
+                      { label: "Cursar", value: CorrelativePurpose.Cursar },
+                      { label: "Rendir", value: CorrelativePurpose.Rendir },
                     ]}
                     value={filterPurpose}
-                    onChange={(value) => setFilterPurpose(value as "cursar" | "rendir")}
+                    onChange={(value) => {
+                      if (isCorrelativePurpose(value)) setFilterPurpose(value)
+                    }}
                   />
                 </div>
 
@@ -53,11 +67,13 @@ export default function DemoPage() {
                   <span className="text-sm text-slate-200">Filtro:</span>
                   <Tabs
                     tabs={[
-                      { label: "Regulares", value: "regulares" },
-                      { label: "Aprobadas", value: "aprobadas" },
+                      { label: "Regulares", value: CorrelativeType.Regulares },
+                      { label: "Aprobadas", value: CorrelativeType.Aprobadas },
                     ]}
                     value={filterType}
-                    onChange={(value) => setFilterType(value as "regulares" | "aprobadas")}
+                    onChange={(value) => {
+                      if (isCorrelativeType(value)) setFilterType(value)
+                    }}
                   />
                 </div>
 

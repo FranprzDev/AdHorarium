@@ -2,12 +2,13 @@ import { create, StateCreator } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { User, Session } from '@supabase/supabase-js'
 import { getSupabaseBrowserClient } from '@/lib/supabase'
+import { AuthProvider } from '@/types/enums'
 
 type AuthState = {
   user: User | null
   session: Session | null
   isLoading: boolean
-  signIn: (provider: 'google') => Promise<void>
+  signIn: (provider: AuthProvider) => Promise<void>
   signOut: () => Promise<void>
 }
 
@@ -16,7 +17,7 @@ const authStoreCreator: StateCreator<AuthState> = (set) => ({
   session: null,
   isLoading: true,
 
-  signIn: async (provider: 'google') => {
+  signIn: async (provider: AuthProvider) => {
     const supabase = getSupabaseBrowserClient()
     set({ isLoading: true })
     const REDIRECT_URL = 'https://v0-web-app-with-gsap-ztvhv0.vercel.app/dashboard'

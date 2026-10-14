@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getSupabaseBrowserClient } from '@/lib/supabase';
 import { Subject } from '@/types/types';
+import { getErrorMessage } from '@/lib/errors';
 
 export function useCorrelativesData(careerCode?: string) {
     const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -25,8 +26,8 @@ export function useCorrelativesData(careerCode?: string) {
             
             setSubjects(data || []);
 
-        } catch (e: any) {
-            setError(e.message);
+        } catch (e) {
+            setError(getErrorMessage(e));
             setSubjects([]);
         } finally {
             setIsLoading(false);

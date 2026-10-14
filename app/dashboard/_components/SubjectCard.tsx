@@ -6,24 +6,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useUserSubjectsStore, SubjectStatus } from "@/stores/useUserSubjectsStore";
+import { useUserSubjectsStore } from "@/stores/useUserSubjectsStore";
 import { Badge } from "@/components/ui/badge";
+import { SUBJECT_STATUS_BADGES } from "@/lib/subject-status";
+import { BadgeVariant, SubjectStatus } from "@/types/enums";
 
 interface SubjectCardProps {
   subject: Subject;
   onSelect?: (subject: Subject) => void;
   showBadge?: boolean;
 }
-
-const statusConfig: Record<
-  SubjectStatus,
-  { label: string; variant: "promocionado" | "regular" | "cursando" | "no_cursando" | "default" }
-> = {
-  promocionada: { label: "PROMOCIONADO", variant: "promocionado" },
-  regular: { label: "REGULAR", variant: "regular" },
-  cursando: { label: "CURSANDO", variant: "cursando" },
-  no_cursada: { label: "", variant: "no_cursando" },
-};
 
 export default function SubjectCard({ subject, onSelect, showBadge = true }: SubjectCardProps) {
   const { userSubjects } = useUserSubjectsStore();
@@ -46,7 +38,7 @@ export default function SubjectCard({ subject, onSelect, showBadge = true }: Sub
             <CardTitle className="text-sm font-medium text-slate-200 leading-tight">
               {subject.subject_name}
             </CardTitle>
-            <Badge variant="outline" className="text-xs border-neutral-600 text-neutral-400 whitespace-nowrap">
+            <Badge variant={BadgeVariant.Outline} className="text-xs border-neutral-600 text-neutral-400 whitespace-nowrap">
               Nivel {subject.nivel}
             </Badge>
           </div>
@@ -55,13 +47,13 @@ export default function SubjectCard({ subject, onSelect, showBadge = true }: Sub
       
       <div className="p-2 pt-0 mt-auto">
         <div className="flex-grow">
-            {showBadge && subjectState && subjectState.status !== 'no_cursada' ? (
+            {showBadge && subjectState && subjectState.status !== SubjectStatus.NoCursada ? (
                 <Badge 
-                    variant={statusConfig[subjectState.status].variant} 
+                    variant={SUBJECT_STATUS_BADGES[subjectState.status].variant} 
                     className="w-full justify-center"
                 >
-                    {statusConfig[subjectState.status].label}
-                    {subjectState.status === 'promocionada' && subjectState.grade ? ` - ${subjectState.grade}` : ''}
+                    {SUBJECT_STATUS_BADGES[subjectState.status].label}
+                    {subjectState.status === SubjectStatus.Promocionada && subjectState.grade ? ` - ${subjectState.grade}` : ''}
                 </Badge>
             ) : (
               <div className="h-[22px]"></div>

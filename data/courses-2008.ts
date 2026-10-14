@@ -1,4 +1,4 @@
-import type { Course } from "@/types/course"
+import type { Course } from "@/types/types"
 
 export const coursesData2008: Course[] = [
   // Nivel I (Primer Año)

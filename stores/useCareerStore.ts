@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { getSupabaseBrowserClient } from '@/lib/supabase'
 import { Career } from '@/types/types'
+import { BASIC_SCIENCES_CAREER_CODE } from '@/lib/careers'
 
 interface CareerState {
   careers: Career[]
@@ -28,7 +29,7 @@ export const useCareerStore = create<CareerState>((set, get) => ({
       set({ careers: [], isLoading: false })
     } else {
       const allCareers = data || []
-      const filteredCareers = allCareers.filter(c => c.code !== 'CB')
+      const filteredCareers = allCareers.filter(c => c.code !== BASIC_SCIENCES_CAREER_CODE)
       
       const careerNameMap = allCareers.reduce((acc, career) => {
         acc[career.code] = career.name

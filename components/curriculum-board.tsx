@@ -2,15 +2,16 @@
 
 import { useEffect, useRef, useState, useCallback, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import type { Course } from "@/types/course"
+import type { Course } from "@/types/types"
 import { Badge, Button } from "@/components/ui/acernity-ui"
 import CourseCard from "@/components/course-card"
 import { Eye } from "lucide-react"
+import { CorrelativePurpose, CorrelativeType, StudyPlan } from "@/types/enums"
 
 interface CurriculumBoardProps {
-  plan: "2008" | "2023"
-  filterType: "regulares" | "aprobadas"
-  filterPurpose: "cursar" | "rendir"
+  plan: StudyPlan
+  filterType: CorrelativeType
+  filterPurpose: CorrelativePurpose
   coursesData: Course[]
   hideElectives: boolean
 }
@@ -37,8 +38,8 @@ export default function CurriculumBoard({
   // Get correlatives based on filter settings - memoized to prevent infinite loop
   const getCorrelatives = useCallback(
     (course: Course): string[] => {
-      return filterPurpose === "cursar"
-        ? filterType === "regulares"
+      return filterPurpose === CorrelativePurpose.Cursar
+        ? filterType === CorrelativeType.Regulares
           ? course.regularesParaCursar
           : course.aprobadasParaCursar
         : course.aprobadasParaRendir
