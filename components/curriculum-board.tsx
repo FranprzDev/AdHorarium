@@ -7,6 +7,7 @@ import { Badge, Button } from "@/components/ui/acernity-ui"
 import CourseCard from "@/components/course-card"
 import { Eye } from "lucide-react"
 import { CorrelativePurpose, CorrelativeType } from "@/types/enums"
+import { getCorrelatives as getCourseCorrelatives } from "@/lib/correlatives"
 
 interface CurriculumBoardProps {
   filterType: CorrelativeType
@@ -34,13 +35,7 @@ export default function CurriculumBoard({
 
   // Get correlatives based on filter settings - memoized to prevent infinite loop
   const getCorrelatives = useCallback(
-    (course: Course): string[] => {
-      return filterPurpose === CorrelativePurpose.Cursar
-        ? filterType === CorrelativeType.Regulares
-          ? course.regularesParaCursar
-          : course.aprobadasParaCursar
-        : course.aprobadasParaRendir
-    },
+    (course: Course): string[] => getCourseCorrelatives(course, filterPurpose, filterType),
     [filterType, filterPurpose],
   )
 

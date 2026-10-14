@@ -13,6 +13,14 @@ export enum SubjectStatus {
   NoCursada = "no_cursada",
 }
 
+/**
+ * Status values of the `user_subjects` table read by the profile page.
+ * Kept separate from `SubjectStatus` because that table uses its own upper-case values.
+ */
+export enum LegacyUserSubjectStatus {
+  Promocionado = "PROMOCIONADO",
+}
+
 /** Visual variants supported by the shared `Badge` component. */
 export enum BadgeVariant {
   Default = "default",

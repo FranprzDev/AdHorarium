@@ -30,6 +30,7 @@ import LoadingSubjects from "./_components/LoadingSubjects"
 import { Subject } from "@/types/types"
 import { getSupabaseBrowserClient } from "@/lib/supabase"
 import { getErrorMessage } from "@/lib/errors"
+import { isValidArgentineGrade } from "@/lib/gpa"
 import { SUBJECT_STATUS_COLORS, SUBJECT_STATUS_LABELS, isSubjectStatus } from "@/lib/subject-status"
 import { BASIC_SCIENCES_CAREER_CODE, BASIC_SCIENCES_CAREER_NAME } from "@/lib/careers"
 import { SubjectFilter, SubjectStatus } from "@/types/enums"
@@ -227,7 +228,7 @@ export default function MateriasPage() {
     if (!selectedSubject || !user || !selectedCareer) return
 
     const grade = parseFloat(gradeInput)
-    if (isNaN(grade) || grade < 1 || grade > 10) {
+    if (!isValidArgentineGrade(grade)) {
       setUpdateError("La nota debe ser un número entre 1 y 10")
       return
     }
