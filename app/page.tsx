@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation"
 import { signIn, useSession } from "next-auth/react"
 import { AuthProvider } from "@/types/enums"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import {
   GraduationCap,
   BookOpen,
@@ -16,16 +15,14 @@ import {
   Github,
   LogIn,
   School,
-  Clock,
   CheckCircle,
-  Users,
   LayoutDashboard,
+  Network,
+  Settings,
   Target,
   TrendingUp,
   Shield,
   Zap,
-  Star,
-  Quote,
 } from "lucide-react"
 import Link from "next/link"
 
@@ -56,64 +53,58 @@ export default function LandingPage() {
   const features = [
     {
       icon: <BookOpen className="h-8 w-8 text-violet-300" />,
-      title: "Plan de Correlativas Inteligente",
-      description: "Visualiza y gestiona el plan de correlativas de tu carrera con un sistema inteligente que te sugiere el mejor camino académico.",
-      benefits: ["Visualización interactiva", "Sugerencias personalizadas", "Seguimiento de progreso"]
+      title: "Plan de correlativas",
+      description: "Consultá el plan de estudios de cada ingeniería con sus correlativas para cursar y para rendir. Los planes se pueden ver sin iniciar sesión.",
+      benefits: ["Planes públicos por carrera", "Correlativas regulares y aprobadas", "Materias ordenadas por nivel"],
     },
     {
-      icon: <Calendar className="h-8 w-8 text-violet-300" />,
-      title: "Gestor de Horarios Avanzado",
-      description: "Crea y organiza tu horario de cursado con detección automática de conflictos y optimización de tiempos libres.",
-      benefits: ["Detección de conflictos", "Optimización automática", "Sincronización multiplataforma"]
+      icon: <GraduationCap className="h-8 w-8 text-violet-300" />,
+      title: "Estado de tus materias",
+      description: "Marcá cada materia como no cursada, cursando, regular o promocionada y cargá la nota de las que promocionaste.",
+      benefits: ["Progreso guardado en tu cuenta", "Notas de 1 a 10", "Filtro por ciencias básicas y materias de carrera"],
+    },
+    {
+      icon: <Network className="h-8 w-8 text-violet-300" />,
+      title: "Grafo de correlativas",
+      description: "Elegí una materia y mirá qué necesitás para cursarla y qué materias te habilita.",
+      benefits: ["Requisitos de cada materia", "Materias que habilita", "Vista por nivel"],
     },
     {
       icon: <Search className="h-8 w-8 text-violet-300" />,
-      title: "Buscador de Mesa Inteligente",
-      description: "Encuentra rápidamente información sobre mesas de examen con filtros avanzados y notificaciones automáticas.",
-      benefits: ["Búsqueda instantánea", "Filtros avanzados", "Notificaciones personalizadas"]
+      title: "Buscador de mesa",
+      description: "Encontrá en qué mesa de examen (Mesa I, II o III) se rinde cada materia de tu carrera.",
+      benefits: ["Materias agrupadas por mesa", "Búsqueda por carrera"],
+    },
+    {
+      icon: <TrendingUp className="h-8 w-8 text-violet-300" />,
+      title: "Promedio y conversión GPA",
+      description: "Calculá tu promedio con las notas que cargaste y su equivalencia aproximada en la escala GPA de 0 a 4.",
+      benefits: ["Promedio de materias promocionadas", "Tabla de equivalencias GPA"],
+    },
+    {
+      icon: <Calendar className="h-8 w-8 text-violet-300" />,
+      title: "Horarios (en desarrollo)",
+      description: "Una primera versión para seleccionar las materias de cada nivel que querés cursar. Todavía no arma ni compara horarios.",
+      benefits: ["Selección de materias por nivel"],
     },
   ]
 
-  const benefits = [
+  const facts = [
     {
-      icon: <Clock className="h-6 w-6 text-violet-300" />,
-      title: "Ahorra tiempo valioso",
-      description: "Automatiza la planificación académica y optimiza tu tiempo de estudio"
+      icon: <Shield className="h-6 w-6 text-violet-300" />,
+      title: "Ingreso con Google",
+      description: "Iniciás sesión con tu cuenta de Google. Qué datos guardamos y para qué está detallado en la política de privacidad.",
     },
     {
-      icon: <TrendingUp className="h-6 w-6 text-violet-300" />,
-      title: "Mejora tu rendimiento",
-      description: "Organización eficiente que se traduce en mejores resultados académicos"
+      icon: <Settings className="h-6 w-6 text-violet-300" />,
+      title: "Planes mantenidos por administradores",
+      description: "Las materias y correlativas se cargan desde los planes oficiales y los administradores las corrigen desde un panel propio.",
     },
     {
-      icon: <Users className="h-6 w-6 text-violet-300" />,
-      title: "Únete a la comunidad",
-      description: "Conecta con otros estudiantes y comparte experiencias académicas"
+      icon: <Github className="h-6 w-6 text-violet-300" />,
+      title: "Código abierto",
+      description: "El código está publicado en GitHub. Si encontrás un error en un plan o en la app, podés reportarlo ahí.",
     },
-  ]
-
-  const testimonials = [
-    {
-      name: "María González",
-      career: "Ingeniería en Sistemas",
-      year: "4to año",
-      content: "AdHorarium me ayudó a organizar mi carrera de manera increíble. Ahora puedo planificar mis materias sin conflictos y optimizar mi tiempo de estudio.",
-      rating: 5
-    },
-    {
-      name: "Carlos Rodríguez",
-      career: "Ingeniería Civil",
-      year: "3er año",
-      content: "La función de correlativas es genial. Me permite ver exactamente qué materias puedo cursar y cuáles son mis prioridades para avanzar más rápido.",
-      rating: 5
-    },
-    {
-      name: "Ana Martínez",
-      career: "Ingeniería Química",
-      year: "5to año",
-      content: "El buscador de mesa me salvó muchas veces. Ya no tengo que buscar en mil lugares para saber cuándo y dónde rendir mis finales.",
-      rating: 5
-    }
   ]
 
   const containerVariants = {
@@ -194,7 +185,7 @@ export default function LandingPage() {
             >
               Tu carrera universitaria,
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-violet-400">
-                organizada y optimizada
+                en un solo lugar
               </span>
             </motion.h1>
             
@@ -204,8 +195,8 @@ export default function LandingPage() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              <strong>AdHorarium</strong> es la plataforma definitiva para estudiantes de ingeniería de la UTN FRT. 
-              Gestiona correlativas, optimiza horarios y encuentra información de mesas con inteligencia artificial.
+              <strong>AdHorarium</strong> es una herramienta para estudiantes de ingeniería de la UTN FRT: consultá el plan
+              de correlativas, registrá el estado y las notas de tus materias y averiguá en qué mesa se rinde cada una.
             </motion.p>
             
             <motion.div
@@ -239,12 +230,12 @@ export default function LandingPage() {
 
         <motion.section className="py-20" variants={containerVariants} initial="hidden" animate="visible">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-4xl font-bold gradient-text text-center mb-4">¿Por qué elegir AdHorarium?</h2>
+            <h2 className="text-4xl font-bold gradient-text text-center mb-4">Qué es AdHorarium</h2>
             <p className="text-xl text-purple-200 text-center mb-16 max-w-3xl mx-auto">
-              Más que una herramienta, es tu compañero académico inteligente
+              Un proyecto hecho por estudiantes para estudiantes de ingeniería de la UTN FRT
             </p>
             <div className="grid md:grid-cols-3 gap-8">
-              {benefits.map((benefit, index) => (
+              {facts.map((benefit, index) => (
                 <motion.div key={index} variants={itemVariants} className="glass-card p-8 text-center group hover:scale-105 transition-transform duration-300 h-full flex flex-col">
                   <div className="flex justify-center mb-6">
                     <div className="p-4 rounded-full bg-gradient-to-r from-purple-600/20 to-pink-600/20 group-hover:from-purple-600/30 group-hover:to-pink-600/30 transition-colors">
@@ -261,9 +252,9 @@ export default function LandingPage() {
 
         <motion.section className="py-20" variants={containerVariants} initial="hidden" animate="visible">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-4xl font-bold gradient-text text-center mb-4">Características que marcan la diferencia</h2>
+            <h2 className="text-4xl font-bold gradient-text text-center mb-4">Lo que podés hacer hoy</h2>
             <p className="text-xl text-purple-200 text-center mb-16 max-w-3xl mx-auto">
-              Herramientas diseñadas específicamente para estudiantes de ingeniería
+              Estas son las herramientas que ya funcionan en la app
             </p>
             <div className="grid lg:grid-cols-3 gap-8">
               {features.map((feature, index) => (
@@ -287,45 +278,6 @@ export default function LandingPage() {
 
         <section className="py-20">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-4xl font-bold gradient-text text-center mb-4">Lo que dicen nuestros estudiantes</h2>
-            <p className="text-xl text-purple-200 text-center mb-16 max-w-3xl mx-auto">
-              Testimonios reales de estudiantes que transformaron su experiencia académica
-            </p>
-            <div className="grid md:grid-cols-3 gap-8">
-              {testimonials.map((testimonial, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.2 }}
-                  className="h-full"
-                >
-                  <Card className="glass-card p-6 h-full flex flex-col">
-                    <CardContent className="p-0 flex flex-col h-full">
-                      <div className="flex items-center mb-4">
-                        <Quote className="h-8 w-8 text-purple-400 mr-3" />
-                        <div className="flex">
-                          {[...Array(testimonial.rating)].map((_, i) => (
-                            <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
-                          ))}
-                        </div>
-                      </div>
-                      <p className="text-purple-200 mb-6 italic leading-relaxed flex-1">&ldquo;{testimonial.content}&rdquo;</p>
-                      <div className="border-t border-purple-400/20 pt-4">
-                        <div className="font-semibold text-white">{testimonial.name}</div>
-                        <div className="text-purple-300 text-sm">{testimonial.career}</div>
-                        <div className="text-purple-400 text-xs">{testimonial.year}</div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="py-20">
-          <div className="max-w-7xl mx-auto">
             <h2 className="text-4xl font-bold gradient-text text-center mb-16">Cómo funciona AdHorarium</h2>
             <div className="glass-card p-12 max-w-4xl mx-auto">
               <div className="space-y-12">
@@ -333,19 +285,19 @@ export default function LandingPage() {
                   {
                     step: 1,
                     title: "Inicia sesión de forma segura",
-                    description: "Accede con tu cuenta de Google de forma rápida y segura. Tu privacidad está protegida con los más altos estándares de seguridad.",
+                    description: "Ingresá con tu cuenta de Google. No hace falta crear una contraseña nueva.",
                     icon: <Shield className="h-8 w-8 text-green-400" />
                   },
                   {
                     step: 2,
-                    title: "Configura tu perfil académico",
-                    description: "Selecciona tu carrera y año de cursado. AdHorarium se adapta automáticamente a tu plan de estudios específico.",
+                    title: "Elegí tu carrera",
+                    description: "Seleccioná tu carrera para ver su plan de estudios y empezar a cargar el estado de tus materias.",
                     icon: <Target className="h-8 w-8 text-blue-400" />
                   },
                   {
                     step: 3,
-                    title: "Explora las herramientas inteligentes",
-                    description: "Utiliza el plan de correlativas, gestor de horarios y buscador de mesa. Cada herramienta está optimizada para tu éxito académico.",
+                    title: "Usá las herramientas",
+                    description: "Marcá tus materias, revisá qué te falta para cursar cada una, buscá tu mesa de examen y mirá tu promedio.",
                     icon: <Zap className="h-8 w-8 text-purple-400" />
                   }
                 ].map((item, index) => (
