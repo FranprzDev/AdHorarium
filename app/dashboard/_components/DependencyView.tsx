@@ -1,14 +1,14 @@
 "use client";
 
-import { Subject } from "@/types/types";
+import type { PlanSubject } from "@/types/types";
 import SubjectCard from "./SubjectCard";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { getEnabledSubjects, getPrerequisiteSubjects } from "@/lib/correlatives";
 
 interface DependencyViewProps {
-  selectedSubject: Subject;
-  allSubjects: Subject[];
+  selectedSubject: PlanSubject;
+  allSubjects: PlanSubject[];
   onClose: () => void;
 }
 
@@ -32,7 +32,7 @@ export default function DependencyView({ selectedSubject, allSubjects, onClose }
                     </h3>
                     <div className="space-y-2">
                         {prerequisites.length > 0 ? (
-                            prerequisites.map(subject => <SubjectCard key={subject.subject_number} subject={subject} />)
+                            prerequisites.map(subject => <SubjectCard key={subject.id} subject={subject} />)
                         ) : (
                             <p className="text-center text-sm text-slate-500 pt-4">No tiene requisitos previos.</p>
                         )}
@@ -56,7 +56,7 @@ export default function DependencyView({ selectedSubject, allSubjects, onClose }
                     </h3>
                     <div className="space-y-2">
                         {dependencies.length > 0 ? (
-                            dependencies.map(subject => <SubjectCard key={subject.subject_number} subject={subject} />)
+                            dependencies.map(subject => <SubjectCard key={subject.id} subject={subject} />)
                         ) : (
                              <p className="text-center text-sm text-slate-500 pt-4">No habilita materias futuras.</p>
                         )}

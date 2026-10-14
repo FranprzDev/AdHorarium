@@ -1,124 +1,59 @@
 "use client"
 
-import { useState, useMemo, useEffect, useCallback } from "react"
-import { getSupabaseBrowserClient } from "@/lib/supabase"
+import { useEffect, useState } from "react"
+import { getSubjectsByExamTableAction } from "@/app/actions/catalog"
+import { getMyCareerIdAction } from "@/app/actions/student"
 import { useCareerStore } from "@/stores/useCareerStore"
-import { BASIC_SCIENCES_CAREER_NAME } from "@/lib/careers"
-import { EXAM_TABLES, SubjectsByExamTable, createEmptyExamTableMap, examTableFromId } from "@/lib/exam-tables"
-
-type Career = { id: number; name: string }
-
-type SubjectExamTableRow = {
-  name: string
-  career_id: number
-  exam_table_id: number | null
-  careers: { name: string } | null
-}
-
-/** Subjects grouped by career name and then by exam table. */
-type TransformedData = Record<string, SubjectsByExamTable>
+import type { SubjectsByExamTable } from "@/lib/exam-tables"
 
 export function useMesas() {
-  const [allSubjectsData, setAllSubjectsData] = useState<TransformedData>({})
-  const [careers, setCareers] = useState<Career[]>([])
+  const { careers, selectedCareer: storeCareer, fetchCareers, isLoading: careersLoading } = useCareerStore()
   const [selectedCareer, setSelectedCareer] = useState<string>("")
-  const [loading, setLoading] = useState(true)
-  const supabase = getSupabaseBrowserClient()
-  const careerId = useCareerStore((state) => state.selectedCareer?.id ?? null)
-
-  const fetchSubjects = useCallback(
-    async (targetCareerId: number | null) => {
-      setLoading(true)
-
-      const basicCareer = careers.find((c) => c.name.toLowerCase().includes("ciencias"))
-      const basicCareerId = basicCareer ? basicCareer.id : null
-      const careersToQuery = [...new Set([targetCareerId, basicCareerId])].filter(Boolean) as number[]
-
-      if (careersToQuery.length === 0) {
-        setAllSubjectsData({})
-        setLoading(false)
-        return
-      }
-
-      const { data: subjectsData, error: subjectsError } = await supabase
-        .from("subjects")
-        .select("name, career_id, exam_table_id, careers(name)")
-        .in("career_id", careersToQuery)
-        .overrideTypes<SubjectExamTableRow[], { merge: false }>()
-
-      if (subjectsError) {
-        console.error("Error cargando materias:", subjectsError)
-        setAllSubjectsData({})
-        setLoading(false)
-        return
-      }
-
-      const transformedData: TransformedData = {}
-      for (const subject of subjectsData ?? []) {
-        if (!subject.careers) continue
-        const careerName = subject.careers.name
-        if (!transformedData[careerName]) {
-          transformedData[careerName] = createEmptyExamTableMap()
-        }
-        if (subject.exam_table_id) {
-          transformedData[careerName][examTableFromId(subject.exam_table_id)].push(subject.name)
-        }
-      }
-      setAllSubjectsData(transformedData)
-      setLoading(false)
-    },
-    [supabase, careers],
-  )
+  const [careerSubjects, setCareerSubjects] = useState<SubjectsByExamTable | null>(null)
+  const [subjectsLoading, setSubjectsLoading] = useState(false)
 
   useEffect(() => {
-    const fetchCareers = async () => {
-      setLoading(true)
-      const { data: careersData, error: careersError } = await supabase.from("careers").select("id, name")
-      if (careersError) {
-        console.error("Error cargando carreras:", careersError)
-        setLoading(false)
-        return
-      }
-      const allCareers = careersData || []
-      setCareers(allCareers)
-
-      const initialCareer = allCareers.find((c) => c.id === careerId)
-      if (initialCareer) {
-        setSelectedCareer(initialCareer.name)
-      }
-      setLoading(false)
+    if (careers.length > 0) return
+    const load = async () => {
+      const myCareer = await getMyCareerIdAction()
+      await fetchCareers(myCareer.ok ? myCareer.data : null)
     }
-
-    fetchCareers()
-  }, [careerId, supabase])
+    void load()
+  }, [careers.length, fetchCareers])
 
   useEffect(() => {
-    if (selectedCareer && careers.length > 0) {
-      const career = careers.find((c) => c.name === selectedCareer)
-      fetchSubjects(career?.id ?? null)
-    } else if (!selectedCareer && careers.length > 0) {
-      fetchSubjects(null)
+    if (!selectedCareer && storeCareer) setSelectedCareer(storeCareer.name)
+  }, [selectedCareer, storeCareer])
+
+  useEffect(() => {
+    const career = careers.find((item) => item.name === selectedCareer)
+    if (!career) {
+      setCareerSubjects(null)
+      return
     }
-  }, [selectedCareer, careers, fetchSubjects])
-
-  const careerSubjects = useMemo(() => {
-    if (!selectedCareer || Object.keys(allSubjectsData).length === 0) return null
-
-    const userCareerSubjects = allSubjectsData[selectedCareer] ?? createEmptyExamTableMap()
-    const basicSubjects = allSubjectsData[BASIC_SCIENCES_CAREER_NAME] ?? createEmptyExamTableMap()
-
-    const merged = createEmptyExamTableMap()
-    for (const table of EXAM_TABLES) {
-      merged[table] = [...new Set([...userCareerSubjects[table], ...basicSubjects[table]])]
+    let cancelled = false
+    const load = async () => {
+      setSubjectsLoading(true)
+      const result = await getSubjectsByExamTableAction(career.id)
+      if (cancelled) return
+      if (result.ok) setCareerSubjects(result.data)
+      else {
+        console.error("Error cargando materias:", result.error)
+        setCareerSubjects(null)
+      }
+      setSubjectsLoading(false)
     }
-    return merged
-  }, [selectedCareer, allSubjectsData])
+    void load()
+    return () => {
+      cancelled = true
+    }
+  }, [careers, selectedCareer])
 
   return {
-    loading,
+    loading: careersLoading || subjectsLoading,
     careers,
     selectedCareer,
     setSelectedCareer,
     careerSubjects,
   }
-} 
+}
