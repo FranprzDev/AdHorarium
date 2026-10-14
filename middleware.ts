@@ -1,18 +1,28 @@
 import NextAuth from "next-auth"
 import { NextResponse } from "next/server"
-import { createBaseAuthConfig, SIGN_IN_PAGE } from "@/auth.config"
+import { createBaseAuthConfig } from "@/auth.config"
 import { AccessDecision, decideAccess, isUserRole } from "@/lib/auth/roles"
 
-const { auth } = NextAuth(() => createBaseAuthConfig())
+const FORBIDDEN_REDIRECT = "/dashboard"
 
-export default auth((request) => {
-  const tokenRole = request.auth?.user?.role
-  const role = request.auth?.user && isUserRole(tokenRole) ? tokenRole : null
-  const decision = decideAccess(request.nextUrl.pathname, role)
-  if (decision === AccessDecision.RequireSignIn) return NextResponse.redirect(new URL(SIGN_IN_PAGE, request.nextUrl))
-  if (decision === AccessDecision.Forbidden) return NextResponse.redirect(new URL("/dashboard", request.nextUrl))
-  return NextResponse.next()
+const { auth } = NextAuth(() => {
+  const base = createBaseAuthConfig()
+  return {
+    ...base,
+    callbacks: {
+      ...base.callbacks,
+      authorized({ auth: session, request }) {
+        const tokenRole = session?.user?.role
+        const role = session?.user && isUserRole(tokenRole) ? tokenRole : null
+        const decision = decideAccess(request.nextUrl.pathname, role)
+        if (decision === AccessDecision.Forbidden) return NextResponse.redirect(new URL(FORBIDDEN_REDIRECT, request.nextUrl))
+        return decision === AccessDecision.Allow
+      },
+    },
+  }
 })
+
+export default auth
 
 export const config = {
   matcher: ["/dashboard/:path*", "/admin/:path*"],
