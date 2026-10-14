@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo, useEffect, useCallback } from "react"
-import { createClient } from "@/utils/supabase/client"
+import { getSupabaseBrowserClient } from "@/lib/supabase"
 import { useCareerStore } from "@/stores/useCareerStore"
 
 type Career = { id: number; name: string }
@@ -20,8 +20,8 @@ export function useMesas() {
   const [careers, setCareers] = useState<Career[]>([])
   const [selectedCareer, setSelectedCareer] = useState<string>("")
   const [loading, setLoading] = useState(true)
-  const supabase = createClient()
-  const { careerId } = useCareerStore()
+  const supabase = getSupabaseBrowserClient()
+  const careerId = useCareerStore((state) => state.selectedCareer?.id ?? null)
 
   const fetchSubjects = useCallback(
     async (targetCareerId: number | null) => {
