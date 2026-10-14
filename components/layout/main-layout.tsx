@@ -13,7 +13,8 @@ import type { Career } from "@/types/types"
 import { CareerSelectionModal } from "@/components/career-selection-modal"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { BookOpen, Calendar, Search, Menu, X, LogOut, User as UserIcon, GraduationCap } from "lucide-react"
+import { BookOpen, Calendar, Search, Menu, X, LogOut, User as UserIcon, GraduationCap, ShieldCheck } from "lucide-react"
+import { isAdmin } from "@/lib/auth/roles"
 
 interface MainLayoutProps {
   children: React.ReactNode
@@ -70,6 +71,7 @@ export function MainLayout({ children }: MainLayoutProps) {
     { name: "Gestor de Materias", path: "/dashboard/materias", icon: <GraduationCap className="h-5 w-5" /> },
     { name: "Gestor de Horarios", path: "/dashboard/horarios", icon: <Calendar className="h-5 w-5" /> },
     { name: "Buscador de Mesa", path: "/dashboard/mesas", icon: <Search className="h-5 w-5" /> },
+    ...(isAdmin(user?.role) ? [{ name: "Administración", path: "/admin", icon: <ShieldCheck className="h-5 w-5" /> }] : []),
   ]
 
   return (
