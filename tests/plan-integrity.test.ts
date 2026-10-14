@@ -10,6 +10,7 @@ import {
   type PlanNode,
 } from "@/lib/plan-integrity"
 import { coursesData2008 } from "@/data/courses-2008"
+import { MAX_SUBJECT_LEVEL } from "@/db/schema"
 import { plan_ing_civil_2023 } from "@/docs/2023/IngCivil"
 import { plan_ing_electrica_2023 } from "@/docs/2023/IngElectrica"
 import { plan_ing_electronica_2023 } from "@/docs/2023/IngElectronica"
@@ -50,10 +51,10 @@ describe.each(PLANS)("%s plan integrity", (_name, nodes) => {
     expect(findForwardLevelReferences(nodes)).toEqual([])
   })
 
-  it("uses levels 1 to 5 only", () => {
+  it("uses levels 1 to 6 only", () => {
     for (const node of nodes) {
       expect(node.level).toBeGreaterThanOrEqual(1)
-      expect(node.level).toBeLessThanOrEqual(5)
+      expect(node.level).toBeLessThanOrEqual(MAX_SUBJECT_LEVEL)
     }
   })
 })
