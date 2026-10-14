@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useAuthStore } from "@/stores/useAuthStore"
 import { getSupabaseBrowserClient } from "@/lib/supabase"
 
@@ -14,19 +14,6 @@ interface Profile {
 interface Career {
   id: number
   name: string
-}
-
-interface UserSubject {
-  id: number
-  user_id: string
-  subject_id: number
-  status: string
-  grade: number | null
-  created_at: string
-  updated_at: string
-  subjects: {
-    name: string
-  } | null
 }
 
 interface UseProfileReturn {
@@ -50,7 +37,7 @@ export function useProfile(): UseProfileReturn {
   
   const supabase = getSupabaseBrowserClient()
 
-  const fetchProfileData = async () => {
+  const fetchProfileData = useCallback(async () => {
     if (!user) return
 
     try {
@@ -115,7 +102,7 @@ export function useProfile(): UseProfileReturn {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [user, supabase])
 
   const handleCareerChange = async (careerId: number) => {
     if (!user) return
@@ -142,7 +129,7 @@ export function useProfile(): UseProfileReturn {
 
   useEffect(() => {
     fetchProfileData()
-  }, [user])
+  }, [fetchProfileData])
 
   return {
     profile,

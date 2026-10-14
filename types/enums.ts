@@ -52,12 +52,6 @@ export enum CorrelativeType {
   Aprobadas = "aprobadas",
 }
 
-/** Curriculum plan years available in the app. */
-export enum StudyPlan {
-  Plan2008 = "2008",
-  Plan2023 = "2023",
-}
-
 /** Layout of the exam table search results. */
 export enum ExamViewMode {
   List = "list",

@@ -6,13 +6,11 @@ import { useEffect, useRef, useState } from "react"
 
 interface AuroraBackgroundProps extends React.HTMLProps<HTMLDivElement> {
   children: React.ReactNode
-  showRadialGradient?: boolean
   className?: string
 }
 
 export const AuroraBackground = ({
   children,
-  showRadialGradient = true,
   className,
   ...props
 }: AuroraBackgroundProps) => {

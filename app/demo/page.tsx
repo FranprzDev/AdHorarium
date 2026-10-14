@@ -8,7 +8,7 @@ import { Tabs, Switch, Button } from "@/components/ui/acernity-ui"
 import { coursesData2008 } from "@/data/courses-2008"
 import { AuroraBackground } from "@/components/ui/aurora-background"
 import { ArrowLeft, Info } from "lucide-react"
-import { CorrelativePurpose, CorrelativeType, StudyPlan } from "@/types/enums"
+import { CorrelativePurpose, CorrelativeType } from "@/types/enums"
 
 const CORRELATIVE_PURPOSE_VALUES = new Set<string>(Object.values(CorrelativePurpose))
 const CORRELATIVE_TYPE_VALUES = new Set<string>(Object.values(CorrelativeType))
@@ -22,7 +22,6 @@ function isCorrelativeType(value: string): value is CorrelativeType {
 }
 
 export default function DemoPage() {
-  const plan = StudyPlan.Plan2008
   const [filterType, setFilterType] = useState<CorrelativeType>(CorrelativeType.Regulares)
   const [filterPurpose, setFilterPurpose] = useState<CorrelativePurpose>(CorrelativePurpose.Cursar)
   const [hideElectives, setHideElectives] = useState<boolean>(true)
@@ -101,7 +100,6 @@ export default function DemoPage() {
           </div>
 
           <CurriculumBoard
-            plan={plan}
             filterType={filterType}
             filterPurpose={filterPurpose}
             coursesData={coursesData}

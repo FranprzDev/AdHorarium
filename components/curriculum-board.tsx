@@ -6,10 +6,9 @@ import type { Course } from "@/types/types"
 import { Badge, Button } from "@/components/ui/acernity-ui"
 import CourseCard from "@/components/course-card"
 import { Eye } from "lucide-react"
-import { CorrelativePurpose, CorrelativeType, StudyPlan } from "@/types/enums"
+import { CorrelativePurpose, CorrelativeType } from "@/types/enums"
 
 interface CurriculumBoardProps {
-  plan: StudyPlan
   filterType: CorrelativeType
   filterPurpose: CorrelativePurpose
   coursesData: Course[]
@@ -17,14 +16,12 @@ interface CurriculumBoardProps {
 }
 
 export default function CurriculumBoard({
-  plan,
   filterType,
   filterPurpose,
   coursesData,
   hideElectives,
 }: CurriculumBoardProps) {
   const boardRef = useRef<HTMLDivElement>(null)
-  const svgRef = useRef<SVGSVGElement>(null)
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null)
   const [relatedCourses, setRelatedCourses] = useState<string[]>([])
   const [prerequisites, setPrerequisites] = useState<string[]>([])
