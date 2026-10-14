@@ -12,10 +12,3 @@ export function createEmptyExamTableMap(): SubjectsByExamTable {
     [ExamTable.MesaIII]: [],
   }
 }
-
-/** Maps the `exam_tables.id` foreign key to its exam table (1 → Mesa I, 2 → Mesa II, otherwise Mesa III). */
-export function examTableFromId(examTableId: number): ExamTable {
-  if (examTableId === 1) return ExamTable.MesaI
-  if (examTableId === 2) return ExamTable.MesaII
-  return ExamTable.MesaIII
-}

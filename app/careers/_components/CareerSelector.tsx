@@ -9,7 +9,7 @@ export default function CareerSelector() {
     const { careers, selectedCareer, selectCareer, fetchCareers, isLoading } = useCareerStore();
 
     useEffect(() => {
-        fetchCareers();
+        void fetchCareers();
     }, [fetchCareers]);
 
     const handleCareerChange = (careerCode: string) => {

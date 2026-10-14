@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { SUBJECT_STATUS_BADGES, SUBJECT_STATUS_COLORS, SUBJECT_STATUS_LABELS, isSubjectStatus } from "@/lib/subject-status"
-import { EXAM_TABLES, createEmptyExamTableMap, examTableFromId } from "@/lib/exam-tables"
+import { EXAM_TABLES, createEmptyExamTableMap } from "@/lib/exam-tables"
 import { getErrorMessage } from "@/lib/errors"
 import { BadgeVariant, ExamTable, SubjectStatus } from "@/types/enums"
 
@@ -37,12 +37,6 @@ describe("isSubjectStatus", () => {
 })
 
 describe("exam tables", () => {
-  it("maps exam_table_id to Mesa I/II/III", () => {
-    expect(examTableFromId(1)).toBe(ExamTable.MesaI)
-    expect(examTableFromId(2)).toBe(ExamTable.MesaII)
-    expect(examTableFromId(3)).toBe(ExamTable.MesaIII)
-  })
-
   it("creates an independent empty map with every table", () => {
     const first = createEmptyExamTableMap()
     const second = createEmptyExamTableMap()

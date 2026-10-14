@@ -1,6 +1,6 @@
 "use client";
 
-import { Subject } from "@/types/types";
+import type { PlanSubject } from "@/types/types";
 import {
   Card,
   CardHeader,
@@ -12,14 +12,14 @@ import { SUBJECT_STATUS_BADGES } from "@/lib/subject-status";
 import { BadgeVariant, SubjectStatus } from "@/types/enums";
 
 interface SubjectCardProps {
-  subject: Subject;
-  onSelect?: (subject: Subject) => void;
+  subject: PlanSubject;
+  onSelect?: (subject: PlanSubject) => void;
   showBadge?: boolean;
 }
 
 export default function SubjectCard({ subject, onSelect, showBadge = true }: SubjectCardProps) {
   const { userSubjects } = useUserSubjectsStore();
-  const subjectState = userSubjects[subject.subject_number];
+  const subjectState = userSubjects[subject.id];
 
   const handleCardClick = () => {
     if (onSelect) {
@@ -36,10 +36,10 @@ export default function SubjectCard({ subject, onSelect, showBadge = true }: Sub
         <CardHeader className="p-3">
           <div className="flex justify-between items-start gap-2">
             <CardTitle className="text-sm font-medium text-slate-200 leading-tight">
-              {subject.subject_name}
+              {subject.name}
             </CardTitle>
             <Badge variant={BadgeVariant.Outline} className="text-xs border-neutral-600 text-neutral-400 whitespace-nowrap">
-              Nivel {subject.nivel}
+              Nivel {subject.level}
             </Badge>
           </div>
         </CardHeader>

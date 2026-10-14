@@ -12,7 +12,8 @@ import {
   type CourseStates,
 } from "@/lib/correlatives"
 import { coursesData2008 } from "@/data/courses-2008"
-import type { Course, Subject } from "@/types/types"
+import type { Course, PlanSubject } from "@/types/types"
+import { buildPlanSubjects } from "@/lib/plan-subjects"
 import { CorrelativePurpose, CorrelativeType, SubjectStatus } from "@/types/enums"
 
 function course(code: string, level: number, overrides: Partial<Course> = {}): Course {
@@ -141,33 +142,46 @@ describe("getAvailableCourses", () => {
 })
 
 describe("DB subject dependency helpers", () => {
-  function subject(name: string, nivel: string, overrides: Partial<Subject> = {}): Subject {
-    return {
-      career_code: "SIS",
-      subject_number: Number(nivel) * 10 + name.length,
-      subject_name: name,
-      nivel,
-      must_approve_names: [],
-      must_take_names: [],
-      enables_names: [],
-      ...overrides,
-    }
+  const row = (id: number, name: string, level: number) => ({
+    id,
+    careerId: 1,
+    number: id,
+    name,
+    level,
+    hours: null,
+    isElective: false,
+    isBasicScience: false,
+    examTable: null,
+  })
+  const take = (subjectId: number, requiredSubjectId: number, requirementType: CorrelativeType) => ({
+    subjectId,
+    requiredSubjectId,
+    purpose: CorrelativePurpose.Cursar,
+    requirementType,
+  })
+  const all: PlanSubject[] = buildPlanSubjects(
+    [row(4, "Métodos", 3), row(3, "Análisis II", 2), row(1, "Análisis I", 1), row(2, "Álgebra", 1)],
+    [
+      take(3, 1, CorrelativeType.Regulares),
+      take(3, 2, CorrelativeType.Regulares),
+      take(4, 1, CorrelativeType.Aprobadas),
+      take(4, 3, CorrelativeType.Regulares),
+    ],
+  )
+  const byName = (name: string) => {
+    const found = all.find((s) => s.name === name)
+    if (!found) throw new Error(name)
+    return found
   }
 
-  const algebra = subject("Álgebra", "1")
-  const analisis = subject("Análisis I", "1")
-  const analisis2 = subject("Análisis II", "2", { must_take_names: ["Análisis I", "Álgebra"], enables_names: ["Métodos"] })
-  const metodos = subject("Métodos", "3", { must_approve_names: ["Análisis I"], must_take_names: ["Análisis II"] })
-  const all = [metodos, analisis2, analisis, algebra]
-
   it("finds prerequisites from approve and take lists, sorted by level", () => {
-    expect(getPrerequisiteSubjects(metodos, all).map((s) => s.subject_name)).toEqual(["Análisis I", "Análisis II"])
-    expect(getPrerequisiteSubjects(analisis2, all).map((s) => s.subject_name).sort()).toEqual(["Análisis I", "Álgebra"])
-    expect(getPrerequisiteSubjects(algebra, all)).toEqual([])
+    expect(getPrerequisiteSubjects(byName("Métodos"), all).map((s) => s.name)).toEqual(["Análisis I", "Análisis II"])
+    expect(getPrerequisiteSubjects(byName("Análisis II"), all).map((s) => s.name).sort()).toEqual(["Análisis I", "Álgebra"])
+    expect(getPrerequisiteSubjects(byName("Álgebra"), all)).toEqual([])
   })
 
   it("finds the subjects a subject enables", () => {
-    expect(getEnabledSubjects(analisis2, all).map((s) => s.subject_name)).toEqual(["Métodos"])
-    expect(getEnabledSubjects(metodos, all)).toEqual([])
+    expect(getEnabledSubjects(byName("Análisis II"), all).map((s) => s.name)).toEqual(["Métodos"])
+    expect(getEnabledSubjects(byName("Métodos"), all)).toEqual([])
   })
 })

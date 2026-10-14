@@ -1,51 +1,38 @@
-import { create } from 'zustand'
-import { getSupabaseBrowserClient } from '@/lib/supabase'
-import { Career } from '@/types/types'
-import { BASIC_SCIENCES_CAREER_CODE } from '@/lib/careers'
+import { create } from "zustand"
+import { getCareersAction } from "@/app/actions/catalog"
+import type { Career } from "@/types/types"
 
 interface CareerState {
   careers: Career[]
-  careerNames: Record<string, string>
   selectedCareer: Career | null
   isLoading: boolean
-  fetchCareers: () => Promise<void>
+  error: string | null
+  fetchCareers: (preferredCareerId?: number | null) => Promise<void>
   selectCareer: (career: Career | null) => void
+  selectCareerById: (careerId: number) => void
 }
 
 export const useCareerStore = create<CareerState>((set, get) => ({
   careers: [],
-  careerNames: {},
   selectedCareer: null,
   isLoading: true,
-  fetchCareers: async () => {
-    set({ isLoading: true })
-    const supabase = getSupabaseBrowserClient()
-    const { data, error } = await supabase
-      .from('careers')
-      .select('*')
-      
-    if (error) {
-      console.error('Error fetching careers:', error)
-      set({ careers: [], isLoading: false })
-    } else {
-      const allCareers = data || []
-      const filteredCareers = allCareers.filter(c => c.code !== BASIC_SCIENCES_CAREER_CODE)
-      
-      const careerNameMap = allCareers.reduce((acc, career) => {
-        acc[career.code] = career.name
-        return acc
-      }, {} as Record<string, string>)
-
-      set({ 
-        careers: filteredCareers, 
-        careerNames: careerNameMap,
-        isLoading: false 
-      })
-
-      if (filteredCareers.length > 0 && !get().selectedCareer) {
-        set({ selectedCareer: filteredCareers[0] })
-      }
+  error: null,
+  fetchCareers: async (preferredCareerId = null) => {
+    set({ isLoading: true, error: null })
+    const result = await getCareersAction()
+    if (!result.ok) {
+      set({ careers: [], isLoading: false, error: result.error })
+      return
     }
+    const careers = result.data
+    const current = get().selectedCareer
+    const preferred = careers.find((career) => career.id === preferredCareerId)
+    const kept = careers.find((career) => career.id === current?.id)
+    set({ careers, isLoading: false, selectedCareer: preferred ?? kept ?? careers[0] ?? null })
   },
   selectCareer: (career) => set({ selectedCareer: career }),
-})) 
+  selectCareerById: (careerId) => {
+    const career = get().careers.find((item) => item.id === careerId)
+    if (career) set({ selectedCareer: career })
+  },
+}))

@@ -18,10 +18,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      # Placeholder values: the build only needs syntactically valid Supabase settings,
-      # it never talks to a real project. Real values live in Vercel env vars.
-      NEXT_PUBLIC_SUPABASE_URL: http://localhost:54321
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+      # Placeholder values: CI never connects to a real database or OAuth app.
+      # Real values live in Vercel env vars.
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+      AUTH_SECRET: ci-placeholder-auth-secret
+      AUTH_GOOGLE_ID: ci-placeholder-google-id
+      AUTH_GOOGLE_SECRET: ci-placeholder-google-secret
+      ADMIN_EMAILS: admin@example.com
       NEXT_TELEMETRY_DISABLED: "1"
     steps:
       - uses: actions/checkout@v4

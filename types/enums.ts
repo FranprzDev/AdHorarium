@@ -1,8 +1,8 @@
 /**
  * Finite domains used across the app.
  *
- * String values are part of the persisted contract (Supabase rows, URL/query
- * values, Radix `value` props), so they must not be renamed.
+ * String values are part of the persisted contract (Postgres enums in db/schema.ts,
+ * URL/query values, Radix `value` props), so they must not be renamed.
  */
 
 /** Academic state of a subject for a student, stored in `user_subject_states.status`. */
@@ -11,14 +11,6 @@ export enum SubjectStatus {
   Regular = "regular",
   Cursando = "cursando",
   NoCursada = "no_cursada",
-}
-
-/**
- * Status values of the `user_subjects` table read by the profile page.
- * Kept separate from `SubjectStatus` because that table uses its own upper-case values.
- */
-export enum LegacyUserSubjectStatus {
-  Promocionado = "PROMOCIONADO",
 }
 
 /** Visual variants supported by the shared `Badge` component. */

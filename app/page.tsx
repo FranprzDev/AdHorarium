@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { useRouter } from "next/navigation"
-import { useAuthStore } from "@/stores/useAuthStore"
+import { signIn, useSession } from "next-auth/react"
 import { AuthProvider } from "@/types/enums"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -31,7 +31,9 @@ import Link from "next/link"
 
 export default function LandingPage() {
   const router = useRouter()
-  const { signIn, isLoading, user } = useAuthStore()
+  const { data: session, status } = useSession()
+  const user = session?.user
+  const isLoading = status === "loading"
   const [isSigningIn, setIsSigningIn] = useState(false)
 
   useEffect(() => {
@@ -43,7 +45,7 @@ export default function LandingPage() {
   const handleSignIn = async () => {
     try {
       setIsSigningIn(true)
-      await signIn(AuthProvider.Google)
+      await signIn(AuthProvider.Google, { redirectTo: "/dashboard" })
     } catch (error) {
       console.error("Error signing in:", error)
     } finally {

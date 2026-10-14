@@ -1,3 +1,5 @@
+import type { ExamTable, SubjectStatus } from "@/types/enums"
+
 export interface Course {
   code: string
   name: string
@@ -11,17 +13,31 @@ export interface Course {
 }
 
 export interface Career {
-    id: number;
-    name: string;
-    code: string;
+  id: number
+  code: string
+  name: string
+  plan: string
 }
 
-export interface Subject {
-    career_code: string;
-    subject_number: number;
-    subject_name: string;
-    nivel: string;
-    must_approve_names: string[];
-    must_take_names: string[];
-    enables_names: string[];
+export interface PlanSubject {
+  id: number
+  careerId: number
+  number: number
+  name: string
+  level: number
+  hours: number | null
+  isElective: boolean
+  isBasicScience: boolean
+  examTable: ExamTable | null
+  regularToTakeIds: number[]
+  approvedToTakeIds: number[]
+  approvedToSitIds: number[]
+  enablesIds: number[]
 }
+
+export type UserSubjectState = {
+  status: SubjectStatus
+  grade: number | null
+}
+
+export type UserSubjectStates = Record<number, UserSubjectState>

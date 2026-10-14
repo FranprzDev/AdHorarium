@@ -5,7 +5,6 @@ import { motion } from "framer-motion"
 import { AuroraBackground } from "@/components/ui/aurora-background"
 import { CareerSelectionModal } from "@/components/career-selection-modal"
 import { useProfile } from "./_hooks/useProfile"
-import { useAuthStore } from "@/stores/useAuthStore"
 import { convertToGPA } from "@/lib/gpa"
 import {
   ProfileHeader,
@@ -16,7 +15,6 @@ import {
 } from "./_components"
 
 export default function ProfilePage() {
-  const { user } = useAuthStore()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const {
     profile,
@@ -28,7 +26,7 @@ export default function ProfilePage() {
     handleCareerChange
   } = useProfile()
 
-  const selectedCareerName = careers.find((c) => c.id === profile?.career_id)?.name || "No asignada"
+  const selectedCareerName = profile?.careerName ?? "No asignada"
 
   const gpaEquivalent = averageGrade !== null ? convertToGPA(averageGrade) : null
 
@@ -78,9 +76,7 @@ export default function ProfilePage() {
             className="lg:col-span-4"
           >
             <ProfileHeader
-              user={user}
               profile={profile}
-              careers={careers}
               onCareerChangeClick={() => setIsModalOpen(true)}
             />
           </motion.div>
@@ -117,7 +113,7 @@ export default function ProfilePage() {
           <CareerSelectionModal
             isOpen={isModalOpen}
             careers={careers}
-            currentCareerId={profile?.career_id ?? null}
+            currentCareerId={profile?.careerId ?? null}
             onSelectCareer={onCareerChange}
             onClose={() => setIsModalOpen(false)}
           />

@@ -1,16 +1,17 @@
 "use client";
 
-import { useCorrelativesData } from "../_hooks/useCorrelativesData";
+import { usePlanSubjects } from "../_hooks/usePlanSubjects";
 import { useCareerStore } from "@/stores/useCareerStore";
 import SubjectCard from "./SubjectCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useMemo, useState } from "react";
-import { Subject } from "@/types/types";
+import type { PlanSubject } from "@/types/types";
+import { groupByLevel } from "@/lib/plan-subjects";
 import DependencyView from "./DependencyView";
 import { useIsMobile } from "@/components/ui/use-mobile";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUserSubjectsStore } from "@/stores/useUserSubjectsStore";
-import { useAuthStore } from "@/stores/useAuthStore";
+import { useSession } from "next-auth/react";
 
 interface CorrelativesGraphProps {
   showBadges?: boolean;
@@ -18,26 +19,30 @@ interface CorrelativesGraphProps {
 
 export default function CorrelativesGraph({ showBadges = true }: CorrelativesGraphProps) {
   const selectedCareer = useCareerStore(state => state.selectedCareer);
-  const { subjects, isLoading: isLoadingSubjects, error } = useCorrelativesData(selectedCareer?.code);
-  const { user } = useAuthStore();
-  const { fetchUserSubjects } = useUserSubjectsStore();
+  const careerId = selectedCareer?.id ?? null;
+  const { subjects, isLoading: isLoadingSubjects, error } = usePlanSubjects(careerId);
+  const { status } = useSession();
+  const isAuthenticated = status === "authenticated";
+  const { fetchUserSubjects, clear } = useUserSubjectsStore();
 
-  const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
+  const [selectedSubject, setSelectedSubject] = useState<PlanSubject | null>(null);
   const isMobile = useIsMobile();
   
   const { isLoading: isLoadingUserSubjects } = useUserSubjectsStore();
   const isLoading = isLoadingSubjects || isLoadingUserSubjects;
 
   useEffect(() => {
-    if (user && selectedCareer) {
-      fetchUserSubjects(user, selectedCareer.code);
+    if (isAuthenticated && careerId !== null) {
+      void fetchUserSubjects(careerId);
+    } else {
+      clear();
     }
-  }, [user, selectedCareer, fetchUserSubjects]);
+  }, [isAuthenticated, careerId, fetchUserSubjects, clear]);
 
   useEffect(() => {
     const handleFocus = () => {
-      if (user && selectedCareer) {
-        fetchUserSubjects(user, selectedCareer.code);
+      if (isAuthenticated && careerId !== null) {
+        void fetchUserSubjects(careerId);
       }
     };
 
@@ -45,28 +50,17 @@ export default function CorrelativesGraph({ showBadges = true }: CorrelativesGra
     return () => {
       window.removeEventListener('focus', handleFocus);
     };
-  }, [user, selectedCareer, fetchUserSubjects]);
+  }, [isAuthenticated, careerId, fetchUserSubjects]);
 
-  const levels = useMemo(() => {
-    if (!subjects) return [];
-    const uniqueLevels = [...new Set(subjects.map(s => s.nivel))].sort();
-    return uniqueLevels;
-  }, [subjects]);
-
-  const groupedSubjects = useMemo(() => {
-    const groups: { [key: string]: Subject[] } = {};
-    if (!subjects) return groups;
-    for (const level of levels) {
-      groups[level] = subjects.filter(s => s.nivel === level);
-    }
-    return groups;
-  }, [subjects, levels]);
+  const groupedSubjects = useMemo(() => groupByLevel(subjects), [subjects]);
+  const levels = useMemo(() => [...groupedSubjects.keys()], [groupedSubjects]);
+  const levelColumns = { gridTemplateColumns: `repeat(${Math.max(levels.length, 1)}, minmax(0, 1fr))` };
 
   useEffect(() => {
     setSelectedSubject(null);
   }, [selectedCareer]);
 
-  const handleSelectSubject = (subject: Subject) => {
+  const handleSelectSubject = (subject: PlanSubject) => {
     setSelectedSubject(subject);
   };
   
@@ -129,18 +123,18 @@ export default function CorrelativesGraph({ showBadges = true }: CorrelativesGra
             </div>
           </div>
         )}
-        <Tabs defaultValue={levels[0]} className="w-full">
-          <TabsList className="grid w-full grid-cols-5 bg-black/20">
+        <Tabs defaultValue={String(levels[0])} className="w-full">
+          <TabsList className="grid w-full bg-black/20" style={levelColumns}>
             {levels.map(level => (
-              <TabsTrigger key={level} value={level}>{level}</TabsTrigger>
+              <TabsTrigger key={level} value={String(level)}>{level}</TabsTrigger>
             ))}
           </TabsList>
           {levels.map(level => (
-            <TabsContent key={level} value={level}>
+            <TabsContent key={level} value={String(level)}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                {groupedSubjects[level] && groupedSubjects[level].map(subject => (
+                {groupedSubjects.get(level)?.map(subject => (
                   <SubjectCard 
-                    key={subject.subject_number} 
+                    key={subject.id} 
                     subject={subject} 
                     onSelect={handleSelectSubject}
                     showBadge={showBadges}
@@ -167,14 +161,14 @@ export default function CorrelativesGraph({ showBadges = true }: CorrelativesGra
           </div>
         </div>
       )}
-      <div className="grid grid-cols-5 gap-x-6">
+      <div className="grid gap-x-6" style={levelColumns}>
         {levels.map(level => (
           <div key={level} className="flex flex-col">
             <h2 className="text-xl font-bold mb-4 text-center text-slate-300">Nivel {level}</h2>
             <div className="flex flex-col flex-grow">
-              {groupedSubjects[level] && groupedSubjects[level].map(subject => (
+              {groupedSubjects.get(level)?.map(subject => (
                 <SubjectCard 
-                  key={subject.subject_number} 
+                  key={subject.id} 
                   subject={subject} 
                   onSelect={handleSelectSubject}
                   showBadge={showBadges}

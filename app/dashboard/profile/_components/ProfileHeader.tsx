@@ -5,33 +5,19 @@ import { Badge } from "@/components/ui/badge"
 import { BadgeVariant } from "@/types/enums"
 import { Separator } from "@/components/ui/separator"
 import { User, GraduationCap, Settings } from "lucide-react"
-import type { User as SupabaseUser } from '@supabase/supabase-js'
-
-interface Profile {
-  id: string
-  full_name: string
-  avatar_url: string
-  career_id: number | null
-}
-
-interface Career {
-  id: number
-  name: string
-}
+import type { StudentProfile } from "@/db/queries/student"
 
 interface ProfileHeaderProps {
-  user: SupabaseUser | null
-  profile: Profile | null
-  careers: Career[]
+  profile: StudentProfile | null
   onCareerChangeClick: () => void
 }
 
-export function ProfileHeader({ user, profile, careers, onCareerChangeClick }: ProfileHeaderProps) {
-  const selectedCareerName = careers.find((c) => c.id === profile?.career_id)?.name || "No asignada"
+export function ProfileHeader({ profile, onCareerChangeClick }: ProfileHeaderProps) {
+  const selectedCareerName = profile?.careerName ?? "No asignada"
 
   const getUserInitials = () => {
-    if (!user?.email) return "U"
-    return user.email.charAt(0).toUpperCase()
+    if (!profile?.email) return "U"
+    return profile.email.charAt(0).toUpperCase()
   }
 
   return (
@@ -40,7 +26,7 @@ export function ProfileHeader({ user, profile, careers, onCareerChangeClick }: P
         <div className="flex justify-center mb-4">
           <div className="relative">
             <Avatar className="h-32 w-32 border-4 border-purple-400/30 transition-all duration-300 hover:border-purple-400/60 hover:shadow-lg hover:shadow-purple-500/25">
-              <AvatarImage src={user?.user_metadata?.avatar_url} />
+              <AvatarImage src={profile?.image ?? undefined} />
               <AvatarFallback className="bg-gradient-to-br from-purple-600 to-pink-600 text-3xl font-bold text-white">
                 {getUserInitials()}
               </AvatarFallback>
@@ -48,9 +34,9 @@ export function ProfileHeader({ user, profile, careers, onCareerChangeClick }: P
           </div>
         </div>
         <CardTitle className="text-2xl text-white mb-2">
-          {user?.user_metadata?.full_name || profile?.full_name || "Usuario"}
+          {profile?.name ?? "Usuario"}
         </CardTitle>
-        <p className="text-purple-200 mb-4">{user?.email}</p>
+        <p className="text-purple-200 mb-4">{profile?.email}</p>
         <div className="flex items-center justify-center text-purple-300 text-sm">
           <User className="h-4 w-4 mr-2" />
           <span>Cuenta Google</span>

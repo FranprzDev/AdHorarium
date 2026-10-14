@@ -1,4 +1,5 @@
-import type { Course, Subject } from "@/types/types"
+import type { Course, PlanSubject } from "@/types/types"
+import { compareByLevelAndNumber } from "@/lib/plan-subjects"
 import { CorrelativePurpose, CorrelativeType, SubjectStatus } from "@/types/enums"
 
 /** Status of each course in a plan, keyed by course code. Missing codes count as not taken. */
@@ -76,22 +77,14 @@ export function getAvailableCourses(
   return courses.filter((course) => isAvailable(course, states))
 }
 
-function compareByLevel(a: Subject, b: Subject): number {
-  return a.nivel.localeCompare(b.nivel)
-}
-
-/** Subjects required (to approve or to take) before the selected subject, sorted by level. */
-export function getPrerequisiteSubjects(selected: Subject, allSubjects: ReadonlyArray<Subject>): Subject[] {
-  return allSubjects
-    .filter(
-      (subject) =>
-        selected.must_approve_names.includes(subject.subject_name) ||
-        selected.must_take_names.includes(subject.subject_name),
-    )
-    .sort(compareByLevel)
+/** Subjects required (regular or approved) before taking the selected subject, sorted by level. */
+export function getPrerequisiteSubjects(selected: PlanSubject, allSubjects: ReadonlyArray<PlanSubject>): PlanSubject[] {
+  const required = new Set([...selected.regularToTakeIds, ...selected.approvedToTakeIds])
+  return allSubjects.filter((subject) => required.has(subject.id)).sort(compareByLevelAndNumber)
 }
 
 /** Subjects the selected subject enables, sorted by level. */
-export function getEnabledSubjects(selected: Subject, allSubjects: ReadonlyArray<Subject>): Subject[] {
-  return allSubjects.filter((subject) => selected.enables_names.includes(subject.subject_name)).sort(compareByLevel)
+export function getEnabledSubjects(selected: PlanSubject, allSubjects: ReadonlyArray<PlanSubject>): PlanSubject[] {
+  const enabled = new Set(selected.enablesIds)
+  return allSubjects.filter((subject) => enabled.has(subject.id)).sort(compareByLevelAndNumber)
 }

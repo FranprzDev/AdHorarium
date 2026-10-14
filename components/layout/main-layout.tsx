@@ -5,8 +5,11 @@ import { useState, useEffect } from "react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { useAuthStore } from "@/stores/useAuthStore"
-import { getSupabaseBrowserClient } from "@/lib/supabase"
+import { signOut, useSession } from "next-auth/react"
+import { getCareersAction } from "@/app/actions/catalog"
+import { getMyCareerIdAction, selectMyCareerAction } from "@/app/actions/student"
+import { useCareerStore } from "@/stores/useCareerStore"
+import type { Career } from "@/types/types"
 import { CareerSelectionModal } from "@/components/career-selection-modal"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -16,85 +19,44 @@ interface MainLayoutProps {
   children: React.ReactNode
 }
 
-interface Profile {
-  id: string;
-  career_id: number | null;
-}
-
-interface Career {
-  id: number;
-  name: string;
-}
-
 export function MainLayout({ children }: MainLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const pathname = usePathname()
-  const { user, signOut } = useAuthStore()
-  
-  const [profile, setProfile] = useState<Profile | null>(null)
+  const { data: session } = useSession()
+  const user = session?.user
+  const selectCareerById = useCareerStore((state) => state.selectCareerById)
+
+  const [careerId, setCareerId] = useState<number | null>(null)
   const [careers, setCareers] = useState<Career[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const supabase = getSupabaseBrowserClient()
 
   useEffect(() => {
     setIsSidebarOpen(false)
   }, [pathname])
 
   useEffect(() => {
-    async function fetchCareers() {
-      const { data, error } = await supabase.from("careers").select("id, name")
-      if (error) console.error("Error fetching careers:", error)
-      else setCareers(data)
-    }
-
-    async function checkUserProfile() {
-      if (!user) return
-
-      const { data: profileData, error } = await supabase
-        .from("profiles")
-        .select("id, career_id")
-        .eq("id", user.id)
-        .maybeSingle()
-
-      if (error) {
-        console.error("Error real al obtener el perfil en layout:", error)
+    const load = async () => {
+      const [careersResult, careerResult] = await Promise.all([getCareersAction(), getMyCareerIdAction()])
+      if (careersResult.ok) setCareers(careersResult.data)
+      else console.error("Error fetching careers:", careersResult.error)
+      if (!careerResult.ok) {
+        console.error("Error al obtener la carrera del usuario:", careerResult.error)
         return
       }
-
-      if (!profileData) {
-        setProfile({ id: user.id, career_id: null })
-        setIsModalOpen(true)
-        return
-      }
-
-      setProfile(profileData)
-      if (!profileData.career_id) {
-        setIsModalOpen(true)
-      }
+      setCareerId(careerResult.data)
+      if (careerResult.data === null) setIsModalOpen(true)
     }
+    void load()
+  }, [])
 
-    fetchCareers()
-    checkUserProfile()
-  }, [user, supabase])
-
-  const handleCareerChange = async (careerId: number) => {
-    if (!user) return
-    const { error } = await supabase
-      .from("profiles")
-      .upsert({ id: user.id, career_id: careerId, updated_at: new Date().toISOString() }, { onConflict: 'id' })
-
-    if (error) {
-      console.error("Error updating career:", error)
+  const handleCareerChange = async (selectedCareerId: number) => {
+    const result = await selectMyCareerAction(selectedCareerId)
+    if (!result.ok) {
+      console.error("Error updating career:", result.error)
       return
     }
-
-    const { data } = await supabase
-      .from("profiles")
-      .select("id, career_id")
-      .eq("id", user.id)
-      .maybeSingle()
-
-    setProfile(data ?? { id: user.id, career_id: careerId })
+    setCareerId(result.data)
+    selectCareerById(result.data)
     setIsModalOpen(false)
   }
 
@@ -157,12 +119,12 @@ export function MainLayout({ children }: MainLayoutProps) {
           <div className="pt-4 border-t border-purple-500/30 mt-auto">
             <div className="flex items-center gap-3 mb-4">
               <Avatar>
-                <AvatarImage src={user?.user_metadata?.avatar_url} />
+                <AvatarImage src={user?.image ?? undefined} />
                 <AvatarFallback className="bg-purple-700">{getUserInitials()}</AvatarFallback>
               </Avatar>
               <div className="overflow-hidden">
                 <p className="text-sm font-medium text-white truncate">
-                  {user?.user_metadata?.full_name || user?.email}
+                  {user?.name ?? user?.email}
                 </p>
                 <p className="text-xs text-purple-200 truncate">{user?.email}</p>
               </div>
@@ -176,7 +138,7 @@ export function MainLayout({ children }: MainLayoutProps) {
                 </Link>
               </Button>
 
-              <Button variant="ghost" size="sm" className="flex-1 text-white hover:bg-purple-800/30" onClick={() => signOut()}>
+              <Button variant="ghost" size="sm" className="flex-1 text-white hover:bg-purple-800/30" onClick={() => void signOut({ redirectTo: "/" })}>
                 <LogOut className="h-4 w-4 mr-2" />
                 Salir
               </Button>
@@ -192,7 +154,7 @@ export function MainLayout({ children }: MainLayoutProps) {
       <CareerSelectionModal
         isOpen={isModalOpen}
         careers={careers}
-        currentCareerId={profile?.career_id ?? null}
+        currentCareerId={careerId}
         onSelectCareer={handleCareerChange}
         onClose={() => setIsModalOpen(false)}
       />

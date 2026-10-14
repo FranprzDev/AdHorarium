@@ -22,22 +22,21 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useUserSubjectsStore } from "@/stores/useUserSubjectsStore"
-import { useAuthStore } from "@/stores/useAuthStore"
 import { useCareerStore } from "@/stores/useCareerStore"
 import { NotebookPen, Loader2, AlertCircle, X } from "lucide-react"
 import DeniedAccess from "./_components/DeniedAccess"
 import LoadingSubjects from "./_components/LoadingSubjects"
-import { Subject } from "@/types/types"
-import { getSupabaseBrowserClient } from "@/lib/supabase"
-import { getErrorMessage } from "@/lib/errors"
+import type { PlanSubject } from "@/types/types"
+import { usePlanSubjects } from "../_hooks/usePlanSubjects"
+import { getMyCareerIdAction } from "@/app/actions/student"
 import { isValidArgentineGrade } from "@/lib/gpa"
 import { SUBJECT_STATUS_COLORS, SUBJECT_STATUS_LABELS, isSubjectStatus } from "@/lib/subject-status"
-import { BASIC_SCIENCES_CAREER_CODE, BASIC_SCIENCES_CAREER_NAME } from "@/lib/careers"
+import { BASIC_SCIENCES_CAREER_NAME } from "@/lib/careers"
 import { SubjectFilter, SubjectStatus } from "@/types/enums"
 
 export default function MateriasPage() {
-  const { user } = useAuthStore()
-  const { selectedCareer } = useCareerStore()
+  const { selectedCareer, fetchCareers, careers } = useCareerStore()
+  const careerId = selectedCareer?.id ?? null
   const {
     userSubjects,
     isLoading: userSubjectsLoading,
@@ -45,11 +44,9 @@ export default function MateriasPage() {
     fetchUserSubjects,
   } = useUserSubjectsStore()
 
-  const [allSubjects, setAllSubjects] = useState<Subject[]>([])
-  const [subjectsLoading, setSubjectsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const { subjects: allSubjects, isLoading: subjectsLoading, error } = usePlanSubjects(careerId)
 
-  const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null)
+  const [selectedSubject, setSelectedSubject] = useState<PlanSubject | null>(null)
   const [gradeInput, setGradeInput] = useState("")
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [updating, setUpdating] = useState<number | null>(null)
@@ -57,58 +54,26 @@ export default function MateriasPage() {
   const [filter, setFilter] = useState<SubjectFilter>(SubjectFilter.All)
 
   useEffect(() => {
-    const fetchAllSubjectsForCareer = async () => {
-      if (!selectedCareer) return;
-
-      setSubjectsLoading(true);
-      setError(null);
-      const supabase = getSupabaseBrowserClient();
-      
-      try {
-        // Fetch career-specific subjects
-        const { data: careerData, error: careerError } = await supabase
-          .from('complete_subjects_info')
-          .select('*')
-          .eq('career_code', selectedCareer.code);
-
-        if (careerError) throw careerError;
-
-        // Fetch basic subjects
-        const { data: basicData, error: basicError } = await supabase
-          .from('complete_subjects_info')
-          .select('*')
-          .eq('career_code', BASIC_SCIENCES_CAREER_CODE);
-        
-        if (basicError) throw basicError;
-
-        const combinedData = [...(careerData || []), ...(basicData || [])];
-        setAllSubjects(combinedData);
-        
-      } catch (e) {
-        setError(getErrorMessage(e));
-        setAllSubjects([]);
-      } finally {
-        setSubjectsLoading(false);
-      }
-    };
-
-    fetchAllSubjectsForCareer();
-  }, [selectedCareer]);
+    if (careers.length > 0) return
+    const load = async () => {
+      const myCareer = await getMyCareerIdAction()
+      await fetchCareers(myCareer.ok ? myCareer.data : null)
+    }
+    void load()
+  }, [careers.length, fetchCareers])
 
   useEffect(() => {
-    if (user && selectedCareer) {
-      fetchUserSubjects(user, selectedCareer.code);
-    }
-  }, [user, selectedCareer, fetchUserSubjects]);
+    if (careerId !== null) void fetchUserSubjects(careerId)
+  }, [careerId, fetchUserSubjects])
 
   const subjectsWithStatus = allSubjects.map(subject => ({
     ...subject,
-    status: userSubjects[subject.subject_number]?.status ?? SubjectStatus.NoCursada,
-    grade: userSubjects[subject.subject_number]?.grade || null,
+    status: userSubjects[subject.id]?.status ?? SubjectStatus.NoCursada,
+    grade: userSubjects[subject.id]?.grade ?? null,
   }))
 
-  const cienciasBasicasSubjects = subjectsWithStatus.filter(s => s.career_code === BASIC_SCIENCES_CAREER_CODE);
-  const careerSubjects = subjectsWithStatus.filter(s => s.career_code !== BASIC_SCIENCES_CAREER_CODE);
+  const cienciasBasicasSubjects = subjectsWithStatus.filter(s => s.isBasicScience);
+  const careerSubjects = subjectsWithStatus.filter(s => !s.isBasicScience);
   const careerGroupName = selectedCareer?.name || 'Materias de Carrera';
 
   const renderSubjectGroup = (title: string, subjects: typeof subjectsWithStatus) => {
@@ -131,14 +96,14 @@ export default function MateriasPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {subjects.map(subject => (
             <Card
-              key={subject.subject_number}
+              key={subject.id}
               className="bg-white/5 border-purple-500/20 hover:bg-white/10 transition-colors"
             >
               <CardContent className="p-4">
                 <div className="space-y-3">
                   <div className="flex items-start justify-between">
                     <h3 className="text-white font-medium text-sm leading-tight">
-                      {subject.subject_name}
+                      {subject.name}
                     </h3>
                     {subject.status === SubjectStatus.Promocionada && (
                       <Button
@@ -146,7 +111,7 @@ export default function MateriasPage() {
                         size="sm"
                         onClick={() => openGradeModal(subject)}
                         className="h-8 w-8 p-0 text-purple-300 hover:text-white hover:bg-purple-700/30"
-                        disabled={updating === subject.subject_number}
+                        disabled={updating === subject.id}
                       >
                         <NotebookPen className="h-4 w-4" />
                       </Button>
@@ -157,10 +122,10 @@ export default function MateriasPage() {
                       value={subject.status}
                       onValueChange={value => {
                         if (isSubjectStatus(value)) {
-                          handleStatusChange(subject.subject_number, value)
+                          handleStatusChange(subject.id, value)
                         }
                       }}
-                      disabled={updating === subject.subject_number}
+                      disabled={updating === subject.id}
                     >
                       <SelectTrigger className="h-8 text-xs bg-transparent border-purple-500/30 text-white">
                         <SelectValue />
@@ -183,7 +148,7 @@ export default function MateriasPage() {
                         Nota: {subject.grade}/10
                       </div>
                     )}
-                    {updating === subject.subject_number && (
+                    {updating === subject.id && (
                       <div className="flex items-center gap-1 text-xs text-purple-300">
                         <Loader2 className="h-3 w-3 animate-spin" />
                         Actualizando...
@@ -200,32 +165,26 @@ export default function MateriasPage() {
   }
 
   const handleStatusChange = async (
-    subjectNumber: number,
+    subjectId: number,
     status: SubjectStatus
   ) => {
-    if (!user || !selectedCareer) return
-    setUpdating(subjectNumber)
+    if (careerId === null) return
+    setUpdating(subjectId)
     setUpdateError(null)
-    try {
-      await updateUserSubjectState(
-        user,
-        selectedCareer.code,
-        subjectNumber,
-        status,
-        status === SubjectStatus.Promocionada
-          ? userSubjects[subjectNumber]?.grade
-          : null
-      )
-    } catch (err) {
-      console.error("Error inesperado:", err)
-      setUpdateError("Error inesperado al actualizar la materia")
-    } finally {
-      setUpdating(null)
-    }
+    const saved = await updateUserSubjectState(
+      careerId,
+      subjectId,
+      status,
+      status === SubjectStatus.Promocionada
+        ? userSubjects[subjectId]?.grade ?? null
+        : null
+    )
+    if (!saved) setUpdateError("Error al actualizar la materia")
+    setUpdating(null)
   }
 
   const handleGradeSubmit = async () => {
-    if (!selectedSubject || !user || !selectedCareer) return
+    if (!selectedSubject || careerId === null) return
 
     const grade = parseFloat(gradeInput)
     if (!isValidArgentineGrade(grade)) {
@@ -233,30 +192,27 @@ export default function MateriasPage() {
       return
     }
 
-    setUpdating(selectedSubject.subject_number)
+    setUpdating(selectedSubject.id)
     setUpdateError(null)
-    try {
-      await updateUserSubjectState(
-        user,
-        selectedCareer.code,
-        selectedSubject.subject_number,
-        SubjectStatus.Promocionada,
-        grade
-      )
+    const saved = await updateUserSubjectState(
+      careerId,
+      selectedSubject.id,
+      SubjectStatus.Promocionada,
+      grade
+    )
+    if (saved) {
       setIsModalOpen(false)
       setGradeInput("")
       setSelectedSubject(null)
-    } catch (err) {
-      console.error("Error inesperado:", err)
-      setUpdateError("Error inesperado al guardar la nota")
-    } finally {
-      setUpdating(null)
+    } else {
+      setUpdateError("Error al guardar la nota")
     }
+    setUpdating(null)
   }
 
-  const openGradeModal = (subject: Subject) => {
+  const openGradeModal = (subject: PlanSubject) => {
     setSelectedSubject(subject)
-    setGradeInput(userSubjects[subject.subject_number]?.grade?.toString() || "")
+    setGradeInput(userSubjects[subject.id]?.grade?.toString() ?? "")
     setIsModalOpen(true)
   }
 
@@ -375,7 +331,7 @@ export default function MateriasPage() {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>
-                Ingresar nota para {selectedSubject?.subject_name}
+                Ingresar nota para {selectedSubject?.name}
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
