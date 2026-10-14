@@ -3,7 +3,7 @@ import { NextResponse } from "next/server"
 import { createBaseAuthConfig } from "@/auth.config"
 import { AccessDecision, decideAccess, isUserRole } from "@/lib/auth/roles"
 
-const FORBIDDEN_REDIRECT = "/dashboard"
+const FORBIDDEN_REDIRECT = "/acceso-denegado"
 
 const { auth } = NextAuth(() => {
   const base = createBaseAuthConfig()

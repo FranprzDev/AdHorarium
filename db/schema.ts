@@ -15,10 +15,10 @@ import {
   unique,
   varchar,
 } from "drizzle-orm/pg-core"
+import { MAX_SUBJECT_LEVEL, MIN_SUBJECT_LEVEL } from "@/lib/subject-levels"
 import { CorrelativePurpose, CorrelativeType, ExamTable, SubjectStatus, UserRole } from "@/types/enums"
 
-export const MIN_SUBJECT_LEVEL = 1
-export const MAX_SUBJECT_LEVEL = 6
+export { MAX_SUBJECT_LEVEL, MIN_SUBJECT_LEVEL }
 
 export const userRoleEnum = pgEnum("user_role", UserRole)
 export const subjectStatusEnum = pgEnum("subject_status", SubjectStatus)
