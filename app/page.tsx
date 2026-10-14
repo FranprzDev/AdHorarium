@@ -389,6 +389,9 @@ export default function LandingPage() {
                 </div>
               </div>
               <div className="flex items-center gap-6">
+                <Link href="/privacidad" className="text-purple-200 hover:text-white transition-colors text-sm">
+                  Política de privacidad
+                </Link>
                 <div className="text-purple-200 text-sm">Código abierto:</div>
                 <div className="flex gap-4">
                   <a
