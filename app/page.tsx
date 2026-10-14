@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/stores/useAuthStore"
+import { AuthProvider } from "@/types/enums"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -43,7 +44,7 @@ export default function LandingPage() {
   const handleSignIn = async () => {
     try {
       setIsSigningIn(true)
-      await signIn("google")
+      await signIn(AuthProvider.Google)
     } catch (error) {
       console.error("Error signing in:", error)
     } finally {

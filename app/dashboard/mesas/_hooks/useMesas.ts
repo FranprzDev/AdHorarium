@@ -1,27 +1,30 @@
 "use client"
 
 import { useState, useMemo, useEffect, useCallback } from "react"
-import { createClient } from "@/utils/supabase/client"
+import { getSupabaseBrowserClient } from "@/lib/supabase"
 import { useCareerStore } from "@/stores/useCareerStore"
+import { BASIC_SCIENCES_CAREER_NAME } from "@/lib/careers"
+import { EXAM_TABLES, SubjectsByExamTable, createEmptyExamTableMap, examTableFromId } from "@/lib/exam-tables"
 
 type Career = { id: number; name: string }
-type ExamTable = "Mesa I" | "Mesa II" | "Mesa III"
 
-type TransformedData = {
-  [key: string]: {
-    "Mesa I": string[]
-    "Mesa II": string[]
-    "Mesa III": string[]
-  }
+type SubjectExamTableRow = {
+  name: string
+  career_id: number
+  exam_table_id: number | null
+  careers: { name: string } | null
 }
+
+/** Subjects grouped by career name and then by exam table. */
+type TransformedData = Record<string, SubjectsByExamTable>
 
 export function useMesas() {
   const [allSubjectsData, setAllSubjectsData] = useState<TransformedData>({})
   const [careers, setCareers] = useState<Career[]>([])
   const [selectedCareer, setSelectedCareer] = useState<string>("")
   const [loading, setLoading] = useState(true)
-  const supabase = createClient()
-  const { careerId } = useCareerStore()
+  const supabase = getSupabaseBrowserClient()
+  const careerId = useCareerStore((state) => state.selectedCareer?.id ?? null)
 
   const fetchSubjects = useCallback(
     async (targetCareerId: number | null) => {
@@ -41,6 +44,7 @@ export function useMesas() {
         .from("subjects")
         .select("name, career_id, exam_table_id, careers(name)")
         .in("career_id", careersToQuery)
+        .overrideTypes<SubjectExamTableRow[], { merge: false }>()
 
       if (subjectsError) {
         console.error("Error cargando materias:", subjectsError)
@@ -50,18 +54,15 @@ export function useMesas() {
       }
 
       const transformedData: TransformedData = {}
-      if (subjectsData) {
-        subjectsData.forEach((subject: any) => {
-          const careerName = subject.careers.name
-          if (!transformedData[careerName]) {
-            transformedData[careerName] = { "Mesa I": [], "Mesa II": [], "Mesa III": [] }
-          }
-          if (subject.exam_table_id) {
-            const examTableName: ExamTable =
-              subject.exam_table_id === 1 ? "Mesa I" : subject.exam_table_id === 2 ? "Mesa II" : "Mesa III"
-            transformedData[careerName][examTableName].push(subject.name)
-          }
-        })
+      for (const subject of subjectsData ?? []) {
+        if (!subject.careers) continue
+        const careerName = subject.careers.name
+        if (!transformedData[careerName]) {
+          transformedData[careerName] = createEmptyExamTableMap()
+        }
+        if (subject.exam_table_id) {
+          transformedData[careerName][examTableFromId(subject.exam_table_id)].push(subject.name)
+        }
       }
       setAllSubjectsData(transformedData)
       setLoading(false)
@@ -103,14 +104,14 @@ export function useMesas() {
   const careerSubjects = useMemo(() => {
     if (!selectedCareer || Object.keys(allSubjectsData).length === 0) return null
 
-    const userCareerSubjects = allSubjectsData[selectedCareer] || { "Mesa I": [], "Mesa II": [], "Mesa III": [] }
-    const basicSubjects = allSubjectsData["Ciencias Básicas"] || { "Mesa I": [], "Mesa II": [], "Mesa III": [] }
+    const userCareerSubjects = allSubjectsData[selectedCareer] ?? createEmptyExamTableMap()
+    const basicSubjects = allSubjectsData[BASIC_SCIENCES_CAREER_NAME] ?? createEmptyExamTableMap()
 
-    return {
-      "Mesa I": [...new Set([...userCareerSubjects["Mesa I"], ...basicSubjects["Mesa I"]])],
-      "Mesa II": [...new Set([...userCareerSubjects["Mesa II"], ...basicSubjects["Mesa II"]])],
-      "Mesa III": [...new Set([...userCareerSubjects["Mesa III"], ...basicSubjects["Mesa III"]])],
+    const merged = createEmptyExamTableMap()
+    for (const table of EXAM_TABLES) {
+      merged[table] = [...new Set([...userCareerSubjects[table], ...basicSubjects[table]])]
     }
+    return merged
   }, [selectedCareer, allSubjectsData])
 
   return {

@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useUserSubjectsStore, SubjectStatus } from "@/stores/useUserSubjectsStore"
+import { useUserSubjectsStore } from "@/stores/useUserSubjectsStore"
 import { useAuthStore } from "@/stores/useAuthStore"
 import { useCareerStore } from "@/stores/useCareerStore"
 import { useCorrelativesData } from "@/app/dashboard/_hooks/useCorrelativesData"
@@ -30,20 +30,10 @@ import DeniedAccess from "./_components/DeniedAccess"
 import LoadingSubjects from "./_components/LoadingSubjects"
 import { Subject } from "@/types/types"
 import { getSupabaseBrowserClient } from "@/lib/supabase"
-
-export const statusLabels: Record<SubjectStatus, string> = {
-  no_cursada: "No Cursando",
-  cursando: "Cursando",
-  regular: "Regular",
-  promocionada: "Promocionado",
-}
-
-export const statusColors: Record<SubjectStatus, string> = {
-  no_cursada: "bg-gray-600",
-  cursando: "bg-blue-600",
-  regular: "bg-yellow-600",
-  promocionada: "bg-green-600",
-}
+import { getErrorMessage } from "@/lib/errors"
+import { SUBJECT_STATUS_COLORS, SUBJECT_STATUS_LABELS, isSubjectStatus } from "@/lib/subject-status"
+import { BASIC_SCIENCES_CAREER_CODE, BASIC_SCIENCES_CAREER_NAME } from "@/lib/careers"
+import { SubjectFilter, SubjectStatus } from "@/types/enums"
 
 export default function MateriasPage() {
   const { user } = useAuthStore()
@@ -64,7 +54,7 @@ export default function MateriasPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [updating, setUpdating] = useState<number | null>(null)
   const [updateError, setUpdateError] = useState<string | null>(null)
-  const [filter, setFilter] = useState<'all' | 'basic' | 'career'>('all')
+  const [filter, setFilter] = useState<SubjectFilter>(SubjectFilter.All)
 
   useEffect(() => {
     const fetchAllSubjectsForCareer = async () => {
@@ -87,15 +77,15 @@ export default function MateriasPage() {
         const { data: basicData, error: basicError } = await supabase
           .from('complete_subjects_info')
           .select('*')
-          .eq('career_code', 'CB');
+          .eq('career_code', BASIC_SCIENCES_CAREER_CODE);
         
         if (basicError) throw basicError;
 
         const combinedData = [...(careerData || []), ...(basicData || [])];
         setAllSubjects(combinedData);
         
-      } catch (e: any) {
-        setError(e.message);
+      } catch (e) {
+        setError(getErrorMessage(e));
         setAllSubjects([]);
       } finally {
         setSubjectsLoading(false);
@@ -113,12 +103,12 @@ export default function MateriasPage() {
 
   const subjectsWithStatus = allSubjects.map(subject => ({
     ...subject,
-    status: userSubjects[subject.subject_number]?.status || "no_cursada",
+    status: userSubjects[subject.subject_number]?.status ?? SubjectStatus.NoCursada,
     grade: userSubjects[subject.subject_number]?.grade || null,
   }))
 
-  const cienciasBasicasSubjects = subjectsWithStatus.filter(s => s.career_code === 'CB');
-  const careerSubjects = subjectsWithStatus.filter(s => s.career_code !== 'CB');
+  const cienciasBasicasSubjects = subjectsWithStatus.filter(s => s.career_code === BASIC_SCIENCES_CAREER_CODE);
+  const careerSubjects = subjectsWithStatus.filter(s => s.career_code !== BASIC_SCIENCES_CAREER_CODE);
   const careerGroupName = selectedCareer?.name || 'Materias de Carrera';
 
   const renderSubjectGroup = (title: string, subjects: typeof subjectsWithStatus) => {
@@ -150,7 +140,7 @@ export default function MateriasPage() {
                     <h3 className="text-white font-medium text-sm leading-tight">
                       {subject.subject_name}
                     </h3>
-                    {subject.status === "promocionada" && (
+                    {subject.status === SubjectStatus.Promocionada && (
                       <Button
                         variant="ghost"
                         size="sm"
@@ -165,35 +155,30 @@ export default function MateriasPage() {
                   <div className="space-y-2">
                     <Select
                       value={subject.status}
-                      onValueChange={value =>
-                        handleStatusChange(
-                          subject.subject_number,
-                          value as SubjectStatus
-                        )
-                      }
+                      onValueChange={value => {
+                        if (isSubjectStatus(value)) {
+                          handleStatusChange(subject.subject_number, value)
+                        }
+                      }}
                       disabled={updating === subject.subject_number}
                     >
                       <SelectTrigger className="h-8 text-xs bg-transparent border-purple-500/30 text-white">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {Object.entries(statusLabels).map(
-                          ([status, label]) => (
-                            <SelectItem key={status} value={status}>
-                              <div className="flex items-center gap-2">
-                                <div
-                                  className={`w-2 h-2 rounded-full ${
-                                    statusColors[status as SubjectStatus]
-                                  }`}
-                                />
-                                {label}
-                              </div>
-                            </SelectItem>
-                          )
-                        )}
+                        {Object.values(SubjectStatus).map(status => (
+                          <SelectItem key={status} value={status}>
+                            <div className="flex items-center gap-2">
+                              <div
+                                className={`w-2 h-2 rounded-full ${SUBJECT_STATUS_COLORS[status]}`}
+                              />
+                              {SUBJECT_STATUS_LABELS[status]}
+                            </div>
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
-                    {subject.status === "promocionada" && subject.grade && (
+                    {subject.status === SubjectStatus.Promocionada && subject.grade && (
                       <div className="text-xs text-green-300 font-medium">
                         Nota: {subject.grade}/10
                       </div>
@@ -227,7 +212,7 @@ export default function MateriasPage() {
         selectedCareer.code,
         subjectNumber,
         status,
-        status === "promocionada"
+        status === SubjectStatus.Promocionada
           ? userSubjects[subjectNumber]?.grade
           : null
       )
@@ -255,7 +240,7 @@ export default function MateriasPage() {
         user,
         selectedCareer.code,
         selectedSubject.subject_number,
-        "promocionada",
+        SubjectStatus.Promocionada,
         grade
       )
       setIsModalOpen(false)
@@ -322,9 +307,9 @@ export default function MateriasPage() {
           <p className="text-sm font-medium text-purple-200">Filtrar por:</p>
           <Button
             size="sm"
-            onClick={() => setFilter('all')}
-            variant={filter === 'all' ? 'default' : 'outline'}
-            className={filter === 'all' 
+            onClick={() => setFilter(SubjectFilter.All)}
+            variant={filter === SubjectFilter.All ? 'default' : 'outline'}
+            className={filter === SubjectFilter.All 
               ? 'bg-purple-600 border-purple-600 hover:bg-purple-700 text-white' 
               : 'bg-transparent border-purple-500/30 text-white hover:bg-white/10'}
           >
@@ -332,9 +317,9 @@ export default function MateriasPage() {
           </Button>
           <Button
             size="sm"
-            onClick={() => setFilter('basic')}
-            variant={filter === 'basic' ? 'default' : 'outline'}
-            className={filter === 'basic' 
+            onClick={() => setFilter(SubjectFilter.Basic)}
+            variant={filter === SubjectFilter.Basic ? 'default' : 'outline'}
+            className={filter === SubjectFilter.Basic 
               ? 'bg-purple-600 border-purple-600 hover:bg-purple-700 text-white' 
               : 'bg-transparent border-purple-500/30 text-white hover:bg-white/10'}
             disabled={cienciasBasicasSubjects.length === 0}
@@ -343,9 +328,9 @@ export default function MateriasPage() {
           </Button>
           <Button
             size="sm"
-            onClick={() => setFilter('career')}
-            variant={filter === 'career' ? 'default' : 'outline'}
-            className={filter === 'career' 
+            onClick={() => setFilter(SubjectFilter.Career)}
+            variant={filter === SubjectFilter.Career ? 'default' : 'outline'}
+            className={filter === SubjectFilter.Career 
               ? 'bg-purple-600 border-purple-600 hover:bg-purple-700 text-white' 
               : 'bg-transparent border-purple-500/30 text-white hover:bg-white/10'}
             disabled={careerSubjects.length === 0}
@@ -382,8 +367,8 @@ export default function MateriasPage() {
           animate="visible"
           className="space-y-8"
         >
-          { (filter === 'all' || filter === 'basic') && renderSubjectGroup('Ciencias Básicas', cienciasBasicasSubjects) }
-          { (filter === 'all' || filter === 'career') && renderSubjectGroup(careerGroupName, careerSubjects) }
+          { (filter === SubjectFilter.All || filter === SubjectFilter.Basic) && renderSubjectGroup(BASIC_SCIENCES_CAREER_NAME, cienciasBasicasSubjects) }
+          { (filter === SubjectFilter.All || filter === SubjectFilter.Career) && renderSubjectGroup(careerGroupName, careerSubjects) }
         </motion.div>
 
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>

@@ -1,20 +1,26 @@
 import { create } from 'zustand';
+import type { User } from '@supabase/supabase-js';
 import { getSupabaseBrowserClient } from '@/lib/supabase';
-import { User } from '@supabase/supabase-js';
+import { isSubjectStatus } from '@/lib/subject-status';
+import { SubjectStatus } from '@/types/enums';
 
-export type SubjectStatus = "promocionada" | "regular" | "cursando" | "no_cursada";
-
-type UserSubjectState = {
+export type UserSubjectState = {
     status: SubjectStatus;
+    grade: number | null;
+};
+
+type UserSubjectStateRow = {
+    subject_number: number;
+    status: string;
     grade: number | null;
 };
 
 type UserSubjectsState = {
     userSubjects: Record<number, UserSubjectState>;
     isLoading: boolean;
-    fetchUserSubjects: (user: any, career_code: string) => Promise<void>;
+    fetchUserSubjects: (user: User | null, career_code: string) => Promise<void>;
     updateUserSubjectState: (
-        user: any,
+        user: User | null,
         career_code: string,
         subject_number: number,
         status: SubjectStatus,
@@ -34,19 +40,20 @@ export const useUserSubjectsStore = create<UserSubjectsState>((set, get) => ({
                 .from('user_subject_states')
                 .select('subject_number, status, grade')
                 .eq('user_id', user.id)
-                .eq('career_code', career_code);
+                .eq('career_code', career_code)
+                .overrideTypes<UserSubjectStateRow[], { merge: false }>();
 
             if (error) {
                 throw error;
             }
 
-            const userSubjectsMap = data.reduce((acc: Record<number, UserSubjectState>, subject: { subject_number: number, status: any, grade: any }) => {
-                acc[subject.subject_number] = {
-                    status: subject.status,
-                    grade: subject.grade,
+            const userSubjectsMap: Record<number, UserSubjectState> = {};
+            for (const row of data ?? []) {
+                userSubjectsMap[row.subject_number] = {
+                    status: isSubjectStatus(row.status) ? row.status : SubjectStatus.NoCursada,
+                    grade: row.grade,
                 };
-                return acc;
-            }, {} as Record<number, UserSubjectState>);
+            }
 
             set({ userSubjects: userSubjectsMap });
         } catch (error) {
@@ -81,10 +88,10 @@ export const useUserSubjectsStore = create<UserSubjectsState>((set, get) => ({
 
             // After a successful update, refetch all subjects for the user and career
             // to ensure the state is consistent across the app.
-            get().fetchUserSubjects(user, career_code);
+            await get().fetchUserSubjects(user, career_code);
 
         } catch (error) {
             console.error('Error updating user subject state:', error);
         }
     }
-})); 
+}));

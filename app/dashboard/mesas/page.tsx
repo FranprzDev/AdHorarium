@@ -11,14 +11,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Search, List, TableIcon, BookOpen } from "lucide-react"
+import { EXAM_TABLES, createEmptyExamTableMap } from "@/lib/exam-tables"
+import { BadgeVariant, ExamTable, ExamViewMode } from "@/types/enums"
 
-type ViewMode = "list" | "table"
-type ExamTable = "Mesa I" | "Mesa II" | "Mesa III"
+const EXAM_TABLE_VALUES = new Set<string>(EXAM_TABLES)
+
+function isExamTable(value: string): value is ExamTable {
+  return EXAM_TABLE_VALUES.has(value)
+}
 
 export default function MesasPage() {
   const [searchQuery, setSearchQuery] = useState("")
-  const [viewMode, setViewMode] = useState<ViewMode>("list")
-  const [activeTab, setActiveTab] = useState<ExamTable>("Mesa I")
+  const [viewMode, setViewMode] = useState<ExamViewMode>(ExamViewMode.List)
+  const [activeTab, setActiveTab] = useState<ExamTable>(ExamTable.MesaI)
   const { loading, careers, selectedCareer, setSelectedCareer, careerSubjects } = useMesas()
 
   const filteredSubjects = useMemo(() => {
@@ -29,20 +34,18 @@ export default function MesasPage() {
     }
 
     const query = searchQuery.toLowerCase().trim()
-    const result: typeof careerSubjects = { "Mesa I": [], "Mesa II": [], "Mesa III": [] }
+    const result = createEmptyExamTableMap()
 
-    Object.entries(careerSubjects).forEach(([table, subjects]) => {
-      result[table as ExamTable] = subjects.filter((subject) => subject.toLowerCase().includes(query))
-    })
+    for (const table of EXAM_TABLES) {
+      result[table] = careerSubjects[table].filter((subject) => subject.toLowerCase().includes(query))
+    }
 
     return result
   }, [careerSubjects, searchQuery])
 
   const allSubjects = useMemo(() => {
     if (!filteredSubjects) return []
-    return Object.entries(filteredSubjects).flatMap(([table, subjects]) =>
-      subjects.map((subject) => ({ subject, table })),
-    )
+    return EXAM_TABLES.flatMap((table) => filteredSubjects[table].map((subject) => ({ subject, table })))
   }, [filteredSubjects])
 
   const containerVariants = {
@@ -116,10 +119,10 @@ export default function MesasPage() {
 
           <div className="flex gap-2 mt-6">
             <Button
-              variant={viewMode === "list" ? "default" : "outline"}
-              onClick={() => setViewMode("list")}
+              variant={viewMode === ExamViewMode.List ? "default" : "outline"}
+              onClick={() => setViewMode(ExamViewMode.List)}
               className={
-                viewMode === "list"
+                viewMode === ExamViewMode.List
                   ? "bg-purple-600 hover:bg-purple-700"
                   : "bg-transparent border-purple-500/30 text-white hover:bg-purple-800/30"
               }
@@ -128,10 +131,10 @@ export default function MesasPage() {
               Vista de Cuadrícula
             </Button>
             <Button
-              variant={viewMode === "table" ? "default" : "outline"}
-              onClick={() => setViewMode("table")}
+              variant={viewMode === ExamViewMode.Table ? "default" : "outline"}
+              onClick={() => setViewMode(ExamViewMode.Table)}
               className={
-                viewMode === "table"
+                viewMode === ExamViewMode.Table
                   ? "bg-purple-600 hover:bg-purple-700"
                   : "bg-transparent border-purple-500/30 text-white hover:bg-purple-800/30"
               }
@@ -157,7 +160,7 @@ export default function MesasPage() {
 
         {selectedCareer && filteredSubjects && (
           <>
-            {viewMode === "list" ? (
+            {viewMode === ExamViewMode.List ? (
               <motion.div
                 variants={containerVariants}
                 initial="hidden"
@@ -172,7 +175,7 @@ export default function MesasPage() {
                           <CardContent className="p-4 flex flex-col justify-between h-full">
                             <div>
                               <Badge
-                                variant="secondary"
+                                variant={BadgeVariant.Secondary}
                                 className="mb-2 bg-purple-500/20 text-purple-300 border-purple-500/30"
                               >
                                 {table}
@@ -202,16 +205,20 @@ export default function MesasPage() {
             ) : (
               <Tabs
                 value={activeTab}
-                onValueChange={(value) => setActiveTab(value as ExamTable)}
+                onValueChange={(value) => {
+                  if (isExamTable(value)) setActiveTab(value)
+                }}
                 className="glass-card p-4"
               >
                 <TabsList className="grid w-full grid-cols-3 mb-4">
-                  <TabsTrigger value="Mesa I">Mesa I</TabsTrigger>
-                  <TabsTrigger value="Mesa II">Mesa II</TabsTrigger>
-                  <TabsTrigger value="Mesa III">Mesa III</TabsTrigger>
+                  {EXAM_TABLES.map((table) => (
+                    <TabsTrigger key={table} value={table}>
+                      {table}
+                    </TabsTrigger>
+                  ))}
                 </TabsList>
                 <AnimatePresence mode="wait">
-                  {(["Mesa I", "Mesa II", "Mesa III"] as const).map((table) => (
+                  {EXAM_TABLES.map((table) => (
                     <motion.div
                       key={table}
                       initial={{ opacity: 0, y: 10 }}
