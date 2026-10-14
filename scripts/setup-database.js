@@ -1,9 +1,11 @@
 import { createClient } from "@supabase/supabase-js"
 
-// Use the environment variables
-const supabaseUrl = "https://zskivnhqfpwlbmdmvuty.supabase.co"
-const supabaseKey =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpza2l2bmhxZnB3bGJtZG12dXR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIwMDA1NzQsImV4cCI6MjA1NzU3NjU3NH0.IU_9UEQku5R89Wuqbp9VtBbu1dqIlUXS4ghrly-VOv4"
+const supabaseUrl = process.env.SUPABASE_URL
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY")
+}
 
 const supabase = createClient(supabaseUrl, supabaseKey)
 

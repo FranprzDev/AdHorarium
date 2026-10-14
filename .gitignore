@@ -25,3 +25,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# local MCP config (contains access tokens)
+.cursor/mcp.json
