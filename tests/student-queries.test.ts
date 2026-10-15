@@ -5,7 +5,7 @@ import { migrate } from "drizzle-orm/pglite/migrator"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 import * as schema from "@/db/schema"
 import { listPlanSubjects, listSubjectsByExamTable } from "@/db/queries/catalog"
-import { getStudentProfile, listUserSubjectStates, setUserCareer, upsertUserSubjectState } from "@/db/queries/student"
+import { getStudentProfile, getUserCareer, listUserSubjectStates, setUserCareer, upsertUserSubjectState } from "@/db/queries/student"
 import { seedDatabase } from "@/db/seed/seed-database"
 import { CareerCode, ExamTable, SubjectStatus } from "@/types/enums"
 
@@ -48,6 +48,10 @@ describe("catalog queries", () => {
 })
 
 describe("student queries", () => {
+  it("returns no career until the student selects one", async () => {
+    expect(await getUserCareer(db, USER_ID)).toBeNull()
+  })
+
   it("stores the career and subject states and computes the average from user_subject_states", async () => {
     await setUserCareer(db, USER_ID, careerId)
     await upsertUserSubjectState(db, USER_ID, { subjectId: subjectIds[0], status: SubjectStatus.Promocionada, grade: 8 })
@@ -59,6 +63,7 @@ describe("student queries", () => {
     expect(profile.careerId).toBe(careerId)
     expect(profile.averageGrade).toBe(8.5)
     expect(profile.gradedSubjectsCount).toBe(2)
+    expect(await getUserCareer(db, USER_ID)).toMatchObject({ id: careerId, code: CareerCode.Sistemas })
   })
 
   it("updates an existing state instead of duplicating it", async () => {
