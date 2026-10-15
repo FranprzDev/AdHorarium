@@ -29,16 +29,24 @@ export default function SubjectCard({ subject, onSelect, showBadge = true }: Sub
 
   return (
     <Card 
-        className="mb-2 bg-black/30 border-white/10 hover:bg-black/40 transition-colors duration-300 flex flex-col justify-between min-h-[100px] cursor-pointer"
+        className={`mb-2 flex min-h-[100px] flex-col justify-between bg-card transition-all duration-200 ${onSelect ? "cursor-pointer hover:-translate-y-px hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" : ""}`}
+        role={onSelect ? "button" : undefined}
+        tabIndex={onSelect ? 0 : undefined}
+        onKeyDown={(event) => {
+          if (onSelect && (event.key === "Enter" || event.key === " ")) {
+            event.preventDefault();
+            onSelect(subject);
+          }
+        }}
         onClick={handleCardClick}
     >
       <div>
         <CardHeader className="p-3">
           <div className="flex justify-between items-start gap-2">
-            <CardTitle className="text-sm font-medium text-slate-200 leading-tight">
+            <CardTitle className="text-sm font-medium leading-snug text-foreground">
               {subject.name}
             </CardTitle>
-            <Badge variant={BadgeVariant.Outline} className="text-xs border-neutral-600 text-neutral-400 whitespace-nowrap">
+            <Badge variant={BadgeVariant.Outline} className="whitespace-nowrap border-border text-[0.65rem] font-medium text-muted-foreground">
               Nivel {subject.level}
             </Badge>
           </div>

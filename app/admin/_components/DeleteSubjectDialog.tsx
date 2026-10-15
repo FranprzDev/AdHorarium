@@ -39,19 +39,19 @@ export function DeleteSubjectDialog({ subject, onClose, onDeleted }: DeleteSubje
 
   return (
     <AlertDialog open onOpenChange={(open) => !open && onClose()}>
-      <AlertDialogContent className="glass-card border-purple-500/30 text-white">
+      <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>¿Eliminar {subject.name}?</AlertDialogTitle>
-          <AlertDialogDescription className="text-purple-200">
+          <AlertDialogDescription className="text-muted-foreground">
             También se eliminarán sus correlativas, las correlativas que la exigen y los estados que los estudiantes cargaron
             para esta materia. Esta acción no se puede deshacer.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        {error && <p className="text-sm text-red-300">{error}</p>}
+        {error && <p className="text-sm text-destructive">{error}</p>}
         <AlertDialogFooter>
-          <AlertDialogCancel className="bg-transparent text-white border-purple-500/30 hover:bg-purple-800/30">Cancelar</AlertDialogCancel>
-          <Button onClick={() => void handleDelete()} disabled={isDeleting} className="bg-red-600 hover:bg-red-700 text-white">
-            {isDeleting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <Button onClick={() => void handleDelete()} disabled={isDeleting} variant="destructive">
+            {isDeleting && <Loader2 className="h-4 w-4 animate-spin" />}
             Eliminar
           </Button>
         </AlertDialogFooter>

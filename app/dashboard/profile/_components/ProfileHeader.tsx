@@ -21,38 +21,38 @@ export function ProfileHeader({ profile, onCareerChangeClick }: ProfileHeaderPro
   }
 
   return (
-    <Card className="glass-card h-full">
+    <Card className="h-full">
       <CardHeader className="text-center pb-2">
         <div className="flex justify-center mb-4">
           <div className="relative">
-            <Avatar className="h-32 w-32 border-4 border-purple-400/30 transition-all duration-300 hover:border-purple-400/60 hover:shadow-lg hover:shadow-purple-500/25">
+            <Avatar className="h-28 w-28 border-4 border-secondary">
               <AvatarImage src={profile?.image ?? undefined} />
-              <AvatarFallback className="bg-gradient-to-br from-purple-600 to-pink-600 text-3xl font-bold text-white">
+              <AvatarFallback className="bg-primary font-serif text-3xl font-semibold text-primary-foreground">
                 {getUserInitials()}
               </AvatarFallback>
             </Avatar>
           </div>
         </div>
-        <CardTitle className="text-2xl text-white mb-2">
+        <CardTitle className="mb-1 font-serif text-2xl">
           {profile?.name ?? "Usuario"}
         </CardTitle>
-        <p className="text-purple-200 mb-4">{profile?.email}</p>
-        <div className="flex items-center justify-center text-purple-300 text-sm">
+        <p className="mb-3 break-all text-sm text-muted-foreground">{profile?.email}</p>
+        <div className="flex items-center justify-center text-xs text-muted-foreground">
           <User className="h-4 w-4 mr-2" />
           <span>Cuenta Google</span>
         </div>
       </CardHeader>
       
-      <Separator className="bg-purple-400/20" />
+      <Separator />
       
       <CardContent className="pt-6">
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center text-purple-200">
+            <div className="flex items-center text-muted-foreground">
               <GraduationCap className="h-5 w-5 mr-3" />
               <span>Carrera</span>
             </div>
-            <Badge variant={BadgeVariant.Secondary} className="bg-purple-600/30 text-purple-100 border-purple-400/30">
+            <Badge variant={BadgeVariant.Secondary} className="max-w-[60%] text-right">
               {selectedCareerName}
             </Badge>
           </div>
@@ -60,9 +60,10 @@ export function ProfileHeader({ profile, onCareerChangeClick }: ProfileHeaderPro
           <Button 
             onClick={onCareerChangeClick} 
             disabled={true} 
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 transition-all duration-300"
+            variant="outline"
+            className="w-full"
           >
-            <Settings className="h-4 w-4 mr-2" />
+            <Settings className="h-4 w-4" />
             Cambiar Carrera
           </Button>
         </div>

@@ -3,10 +3,9 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { coursesData2008 } from "@/data/courses-2008"
-import { AuroraBackground } from "@/components/ui/aurora-background"
+import { PageHeader } from "@/components/brand/page-header"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import type { Course } from "@/types/types"
 
@@ -82,39 +81,41 @@ export default function HorariosPage() {
   }
 
   return (
-    <AuroraBackground className="min-h-screen">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="container mx-auto px-4 py-8"
+        transition={{ duration: 0.4 }}
+        className="space-y-6"
       >
-        <h1 className="text-3xl md:text-4xl font-bold gradient-text mb-6">Gestor de Horarios</h1>
-        <p className="text-purple-200 mb-8">Selecciona las materias que deseas incluir en tu horario de cursado.</p>
+        <PageHeader
+          eyebrow="Prototipo en desarrollo"
+          title="Gestor de Horarios"
+          description="Selecciona las materias que deseas incluir en tu horario de cursado."
+        />
 
-        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-8">
+        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
           {levels.map((level) => {
             const regularCourses = coursesByLevel[level].filter((course) => !course.isElective)
             const electiveCourses = coursesByLevel[level].filter((course) => course.isElective)
 
             return (
-              <motion.div key={level} variants={itemVariants} className="glass-card p-6">
-                <div className="flex flex-wrap justify-between items-center mb-6">
+              <motion.div key={level} variants={itemVariants} className="surface-card p-4 md:p-6">
+                <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
                   <div className="flex items-center gap-3">
-                    <Badge className="bg-purple-700 text-white px-3 py-1">Nivel {level}</Badge>
+                    <h2 className="font-serif text-xl font-semibold text-foreground">Nivel {level}</h2>
                     {getSelectedCoursesCount(level) > 0 && (
-                      <span className="text-sm text-purple-200">
+                      <span className="text-sm text-muted-foreground">
                         ({getSelectedCoursesCount(level)} de {coursesByLevel[level].length} seleccionadas)
                       </span>
                     )}
                   </div>
 
-                  <div className="flex gap-2 mt-2 sm:mt-0">
+                  <div className="flex gap-2">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => selectAllCoursesInLevel(level)}
-                      className="text-xs bg-transparent border-purple-500/30 text-white hover:bg-purple-800/30"
+                      className="bg-card text-xs"
                     >
                       Seleccionar todas
                     </Button>
@@ -122,7 +123,7 @@ export default function HorariosPage() {
                       variant="outline"
                       size="sm"
                       onClick={() => deselectAllCoursesInLevel(level)}
-                      className="text-xs bg-transparent border-purple-500/30 text-white hover:bg-purple-800/30"
+                      className="bg-card text-xs"
                     >
                       Deseleccionar todas
                     </Button>
@@ -132,12 +133,12 @@ export default function HorariosPage() {
                 <div className="space-y-6">
                   {regularCourses.length > 0 && (
                     <div>
-                      <h3 className="text-lg font-medium text-white mb-4">Materias Obligatorias</h3>
+                      <h3 className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Materias Obligatorias</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         {regularCourses.map((course) => (
                           <Card
                             key={course.code}
-                            className="bg-white/5 border-purple-500/20 hover:bg-white/10 transition-colors"
+                            className="bg-background shadow-none transition-colors hover:border-primary/40"
                           >
                             <CardContent className="p-4">
                               <div className="flex items-start gap-3">
@@ -145,16 +146,16 @@ export default function HorariosPage() {
                                   id={`course-${course.code}`}
                                   checked={(selectedCourses[level] || []).includes(course.code)}
                                   onCheckedChange={() => toggleCourseSelection(level, course.code)}
-                                  className="mt-1 data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
+                                  className="mt-1"
                                 />
                                 <div>
                                   <label
                                     htmlFor={`course-${course.code}`}
-                                    className="text-white font-medium cursor-pointer"
+                                    className="cursor-pointer text-sm font-medium leading-snug text-foreground"
                                   >
                                     {course.name}
                                   </label>
-                                  <p className="text-xs text-purple-200 mt-1">{course.hours} horas semanales</p>
+                                  <p className="mt-1 text-xs text-muted-foreground">{course.hours} horas semanales</p>
                                 </div>
                               </div>
                             </CardContent>
@@ -166,12 +167,12 @@ export default function HorariosPage() {
 
                   {electiveCourses.length > 0 && (
                     <div>
-                      <h3 className="text-lg font-medium text-white mb-4">Materias Electivas</h3>
+                      <h3 className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Materias Electivas</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         {electiveCourses.map((course) => (
                           <Card
                             key={course.code}
-                            className="bg-purple-900/20 border-purple-500/20 hover:bg-purple-900/30 transition-colors"
+                            className="border-dashed bg-background shadow-none transition-colors hover:border-primary/40"
                           >
                             <CardContent className="p-4">
                               <div className="flex items-start gap-3">
@@ -179,16 +180,16 @@ export default function HorariosPage() {
                                   id={`course-${course.code}`}
                                   checked={(selectedCourses[level] || []).includes(course.code)}
                                   onCheckedChange={() => toggleCourseSelection(level, course.code)}
-                                  className="mt-1 data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
+                                  className="mt-1"
                                 />
                                 <div>
                                   <label
                                     htmlFor={`course-${course.code}`}
-                                    className="text-white font-medium cursor-pointer"
+                                    className="cursor-pointer text-sm font-medium leading-snug text-foreground"
                                   >
                                     {course.name}
                                   </label>
-                                  <p className="text-xs text-purple-200 mt-1">{course.hours} horas semanales</p>
+                                  <p className="mt-1 text-xs text-muted-foreground">{course.hours} horas semanales</p>
                                 </div>
                               </div>
                             </CardContent>
@@ -203,10 +204,9 @@ export default function HorariosPage() {
           })}
         </motion.div>
 
-        <div className="mt-8 flex justify-end">
-          <Button className="bg-purple-600 hover:bg-purple-700 text-white">Generar Horario</Button>
+        <div className="flex justify-end">
+          <Button disabled title="Esta versión todavía no arma horarios">Generar Horario</Button>
         </div>
       </motion.div>
-    </AuroraBackground>
   )
 }

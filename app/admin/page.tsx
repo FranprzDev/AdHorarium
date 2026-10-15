@@ -1,7 +1,7 @@
 import { AdminSubjectsPanel } from "./_components/AdminSubjectsPanel"
 
 export const metadata = {
-  title: "Administración - UTN FRT",
+  title: "Administración",
 }
 
 export default function AdminPage() {

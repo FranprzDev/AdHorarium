@@ -29,10 +29,10 @@ export default function CareerSelector() {
             defaultValue={selectedCareer?.code}
             value={selectedCareer?.code}
         >
-            <SelectTrigger className="w-64 bg-black/30 border-white/20 text-white">
+            <SelectTrigger className="w-64 max-w-[calc(100vw-5.5rem)] bg-card" aria-label="Carrera">
                 <SelectValue placeholder="Selecciona una carrera..." />
             </SelectTrigger>
-            <SelectContent className='bg-black/80 text-white border-white/20'>
+            <SelectContent>
                 {careers.map(career => (
                     <SelectItem key={career.code} value={career.code}>
                         {career.name}

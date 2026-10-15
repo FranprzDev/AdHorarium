@@ -15,11 +15,15 @@ const badgeVariants = cva(
         [BadgeVariant.Outline]: "text-foreground",
 
         // --- Unified Status Variants ---
-        [BadgeVariant.Promocionado]: "border-transparent bg-green-600 text-white hover:bg-green-600/90",
-        [BadgeVariant.Aprobado]: "border-transparent bg-sky-600 text-white hover:bg-sky-600/90",
-        [BadgeVariant.Regular]: "border-transparent bg-yellow-600 text-white hover:bg-yellow-600/90",
-        [BadgeVariant.Cursando]: "border-transparent bg-blue-600 text-white hover:bg-blue-600/90",
-        [BadgeVariant.NoCursando]: "border-transparent bg-gray-600 text-white hover:bg-gray-600/90",
+        [BadgeVariant.Promocionado]:
+          "border-emerald-600/30 bg-emerald-50 text-emerald-800 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-300",
+        [BadgeVariant.Aprobado]:
+          "border-sky-600/30 bg-sky-50 text-sky-800 dark:border-sky-400/30 dark:bg-sky-400/10 dark:text-sky-300",
+        [BadgeVariant.Regular]:
+          "border-amber-600/30 bg-amber-50 text-amber-800 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-300",
+        [BadgeVariant.Cursando]:
+          "border-sky-600/30 bg-sky-50 text-sky-800 dark:border-sky-400/30 dark:bg-sky-400/10 dark:text-sky-300",
+        [BadgeVariant.NoCursando]: "border-border bg-muted text-muted-foreground",
       },
     },
     defaultVariants: {

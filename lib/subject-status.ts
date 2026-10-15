@@ -10,10 +10,10 @@ export const SUBJECT_STATUS_LABELS: Record<SubjectStatus, string> = {
 
 /** Tailwind background class used as the status dot color. */
 export const SUBJECT_STATUS_COLORS: Record<SubjectStatus, string> = {
-  [SubjectStatus.NoCursada]: "bg-gray-600",
-  [SubjectStatus.Cursando]: "bg-blue-600",
-  [SubjectStatus.Regular]: "bg-yellow-600",
-  [SubjectStatus.Promocionada]: "bg-green-600",
+  [SubjectStatus.NoCursada]: "bg-slate-400",
+  [SubjectStatus.Cursando]: "bg-sky-600",
+  [SubjectStatus.Regular]: "bg-amber-500",
+  [SubjectStatus.Promocionada]: "bg-emerald-600",
 }
 
 /** Badge label and variant shown on subject cards for each status. */

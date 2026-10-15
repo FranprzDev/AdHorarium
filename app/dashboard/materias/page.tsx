@@ -2,9 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { AuroraBackground } from "@/components/ui/aurora-background"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import {
   Select,
@@ -23,6 +21,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useUserSubjectsStore } from "@/stores/useUserSubjectsStore"
 import { useCareerStore } from "@/stores/useCareerStore"
+import { PageHeader } from "@/components/brand/page-header"
 import { NotebookPen, Loader2, AlertCircle, X } from "lucide-react"
 import DeniedAccess from "./_components/DeniedAccess"
 import LoadingSubjects from "./_components/LoadingSubjects"
@@ -83,13 +82,11 @@ export default function MateriasPage() {
       <motion.div
         key={title}
         variants={itemVariants}
-        className="glass-card p-6"
+        className="surface-card p-4 md:p-6"
       >
-        <div className="flex items-center gap-3 mb-6">
-          <Badge className="bg-purple-700 text-white px-3 py-1">
-            {title}
-          </Badge>
-          <span className="text-sm text-purple-200">
+        <div className="mb-5 flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-border pb-4">
+          <h2 className="font-serif text-xl font-semibold text-foreground">{title}</h2>
+          <span className="text-sm text-muted-foreground">
             ({subjects.length} materias)
           </span>
         </div>
@@ -97,12 +94,12 @@ export default function MateriasPage() {
           {subjects.map(subject => (
             <Card
               key={subject.id}
-              className="bg-white/5 border-purple-500/20 hover:bg-white/10 transition-colors"
+              className="bg-background shadow-none transition-colors hover:border-primary/40"
             >
               <CardContent className="p-4">
                 <div className="space-y-3">
                   <div className="flex items-start justify-between">
-                    <h3 className="text-white font-medium text-sm leading-tight">
+                    <h3 className="text-sm font-medium leading-snug text-foreground">
                       {subject.name}
                     </h3>
                     {subject.status === SubjectStatus.Promocionada && (
@@ -110,7 +107,8 @@ export default function MateriasPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => openGradeModal(subject)}
-                        className="h-8 w-8 p-0 text-purple-300 hover:text-white hover:bg-purple-700/30"
+                        className="h-8 w-8 shrink-0 p-0 text-muted-foreground hover:text-foreground"
+                        aria-label={`Cargar nota de ${subject.name}`}
                         disabled={updating === subject.id}
                       >
                         <NotebookPen className="h-4 w-4" />
@@ -127,7 +125,7 @@ export default function MateriasPage() {
                       }}
                       disabled={updating === subject.id}
                     >
-                      <SelectTrigger className="h-8 text-xs bg-transparent border-purple-500/30 text-white">
+                      <SelectTrigger className="h-8 bg-card text-xs" aria-label={`Estado de ${subject.name}`}>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -144,12 +142,12 @@ export default function MateriasPage() {
                       </SelectContent>
                     </Select>
                     {subject.status === SubjectStatus.Promocionada && subject.grade && (
-                      <div className="text-xs text-green-300 font-medium">
+                      <div className="text-xs font-medium text-emerald-700 dark:text-emerald-400">
                         Nota: {subject.grade}/10
                       </div>
                     )}
                     {updating === subject.id && (
-                      <div className="flex items-center gap-1 text-xs text-purple-300">
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Loader2 className="h-3 w-3 animate-spin" />
                         Actualizando...
                       </div>
@@ -244,40 +242,33 @@ export default function MateriasPage() {
   }
 
   return (
-    <AuroraBackground className="min-h-screen">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="container mx-auto px-4 py-8"
-      >
-        <h1 className="text-3xl md:text-4xl font-bold gradient-text mb-6">
-          Gestor de Materias
-        </h1>
-        <p className="text-purple-200 mb-8">
-          Gestiona el estado de tus materias y lleva un registro de tu progreso
-          académico.
-        </p>
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="space-y-6"
+    >
+        <PageHeader
+          eyebrow="Seguimiento académico"
+          title="Gestor de Materias"
+          description="Gestiona el estado de tus materias y lleva un registro de tu progreso académico."
+        />
 
-        <div className="flex flex-wrap items-center gap-3 mb-8">
-          <p className="text-sm font-medium text-purple-200">Filtrar por:</p>
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="mr-1 text-sm font-medium text-muted-foreground">Filtrar por:</p>
           <Button
             size="sm"
             onClick={() => setFilter(SubjectFilter.All)}
-            variant={filter === SubjectFilter.All ? 'default' : 'outline'}
-            className={filter === SubjectFilter.All 
-              ? 'bg-purple-600 border-purple-600 hover:bg-purple-700 text-white' 
-              : 'bg-transparent border-purple-500/30 text-white hover:bg-white/10'}
+            variant={filter === SubjectFilter.All ? "default" : "outline"}
+            className={filter === SubjectFilter.All ? "" : "bg-card"}
           >
             Todas
           </Button>
           <Button
             size="sm"
             onClick={() => setFilter(SubjectFilter.Basic)}
-            variant={filter === SubjectFilter.Basic ? 'default' : 'outline'}
-            className={filter === SubjectFilter.Basic 
-              ? 'bg-purple-600 border-purple-600 hover:bg-purple-700 text-white' 
-              : 'bg-transparent border-purple-500/30 text-white hover:bg-white/10'}
+            variant={filter === SubjectFilter.Basic ? "default" : "outline"}
+            className={filter === SubjectFilter.Basic ? "" : "bg-card"}
             disabled={cienciasBasicasSubjects.length === 0}
           >
             Ciencias Básicas
@@ -285,10 +276,8 @@ export default function MateriasPage() {
           <Button
             size="sm"
             onClick={() => setFilter(SubjectFilter.Career)}
-            variant={filter === SubjectFilter.Career ? 'default' : 'outline'}
-            className={filter === SubjectFilter.Career 
-              ? 'bg-purple-600 border-purple-600 hover:bg-purple-700 text-white' 
-              : 'bg-transparent border-purple-500/30 text-white hover:bg-white/10'}
+            variant={filter === SubjectFilter.Career ? "default" : "outline"}
+            className={filter === SubjectFilter.Career ? "" : "bg-card"}
             disabled={careerSubjects.length === 0}
           >
             {careerGroupName}
@@ -300,17 +289,18 @@ export default function MateriasPage() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="mb-6 p-4 bg-red-900/20 border border-red-500/30 rounded-lg flex items-center gap-3"
+            className="flex items-center gap-3 rounded-lg border border-destructive/40 bg-destructive/10 p-4"
           >
-            <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0" />
+            <AlertCircle className="h-5 w-5 flex-shrink-0 text-destructive" />
             <div className="flex-1">
-              <p className="text-red-300 text-sm">{updateError}</p>
+              <p className="text-sm text-destructive">{updateError}</p>
             </div>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setUpdateError(null)}
-              className="text-red-300 hover:text-red-200 hover:bg-red-800/30 h-6 w-6 p-0"
+              className="h-6 w-6 p-0 text-destructive hover:bg-destructive/10 hover:text-destructive"
+              aria-label="Cerrar mensaje de error"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -321,7 +311,7 @@ export default function MateriasPage() {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="space-y-8"
+          className="space-y-6"
         >
           { (filter === SubjectFilter.All || filter === SubjectFilter.Basic) && renderSubjectGroup(BASIC_SCIENCES_CAREER_NAME, cienciasBasicasSubjects) }
           { (filter === SubjectFilter.All || filter === SubjectFilter.Career) && renderSubjectGroup(careerGroupName, careerSubjects) }
@@ -350,7 +340,6 @@ export default function MateriasPage() {
             </div>
           </DialogContent>
         </Dialog>
-      </motion.div>
-    </AuroraBackground>
+    </motion.div>
   )
 }

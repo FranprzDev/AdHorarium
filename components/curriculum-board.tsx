@@ -134,23 +134,21 @@ export default function CurriculumBoard({
   )
 
   return (
-    <div className="relative w-full overflow-x-hidden" ref={boardRef}>
-      {/* Clear selection button */}
+    <div className="relative w-full" ref={boardRef}>
       {selectedCourse && (
         <div className="fixed bottom-4 right-4 z-50">
-          <Button onClick={clearSelection} className="flex items-center gap-2 bg-violet-600 hover:bg-violet-700 px-4">
+          <Button onClick={clearSelection} className="flex items-center gap-2 px-4 py-2 shadow-lg">
             <Eye size={16} />
             <span>Ver todo el plan</span>
           </Button>
         </div>
       )}
 
-      {/* Kanban board */}
-      <div className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 p-8">
+      <div className="relative grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {levels.map((level) => (
           <div key={level} className="flex flex-col gap-6">
-            <div className="sticky top-0 z-10 flex items-center justify-center bg-white/10 dark:bg-black/20 backdrop-blur-sm p-3 rounded-lg shadow-sm">
-              <Badge color="primary" className="text-lg px-6 py-2">
+            <div className="flex items-center justify-center rounded-lg border border-border bg-muted/60 p-2">
+              <Badge color="primary" className="px-4 py-1 text-xs uppercase tracking-[0.14em]">
                 Nivel {level}
               </Badge>
             </div>

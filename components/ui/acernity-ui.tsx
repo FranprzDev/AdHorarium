@@ -47,18 +47,18 @@ export const Switch = ({
         <div
           className={cn(
             "block w-10 h-6 rounded-full",
-            checked ? "bg-primary" : "bg-gray-300 dark:bg-gray-600",
+            checked ? "bg-primary" : "bg-input",
             "transition-colors",
           )}
         ></div>
         <div
           className={cn(
-            "absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform",
+            "absolute left-1 top-1 bg-background shadow w-4 h-4 rounded-full transition-transform",
             checked ? "transform translate-x-4" : "",
           )}
         ></div>
       </div>
-      {label && <span className="ml-3 text-sm text-white">{label}</span>}
+      {label && <span className="ml-3 text-sm text-foreground">{label}</span>}
     </label>
   )
 }
@@ -75,14 +75,14 @@ export const Tabs = ({
   className?: string
 }) => {
   return (
-    <div className={cn("inline-flex rounded-md bg-white/5 p-1", className)}>
+    <div className={cn("inline-flex rounded-md bg-muted p-1", className)}>
       {tabs.map((tab) => (
         <button
           key={tab.value}
           onClick={() => onChange(tab.value)}
           className={cn(
             "px-3 py-1.5 text-sm font-medium rounded-sm transition-colors",
-            value === tab.value ? "bg-violet-600 text-white shadow-sm" : "text-slate-300 hover:text-white",
+            value === tab.value ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
           )}
         >
           {tab.label}
@@ -103,7 +103,7 @@ export const Badge = ({
 }) => {
   const colorClasses = {
     default: "bg-primary/10 text-primary hover:bg-primary/20",
-    primary: "bg-violet-600 text-white hover:bg-violet-700",
+    primary: "bg-primary text-primary-foreground",
     secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
     destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
     outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
