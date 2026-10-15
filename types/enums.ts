@@ -79,6 +79,8 @@ export enum EnvVar {
   AdminEmails = "ADMIN_EMAILS",
   AuthGoogleId = "AUTH_GOOGLE_ID",
   AuthGoogleSecret = "AUTH_GOOGLE_SECRET",
+  /** Vercel AI Gateway model id used by the schedule assistant, e.g. "openai/gpt-4.1-mini". */
+  ScheduleAssistantModel = "SCHEDULE_ASSISTANT_MODEL",
 }
 
 /** OAuth providers enabled for sign in. */
@@ -98,4 +100,19 @@ export enum LogoTone {
 export enum ThemeMode {
   Light = "light",
   Dark = "dark",
+}
+
+/** Roles of the chat messages the schedule assistant accepts from the client. */
+export enum AssistantMessageRole {
+  User = "user",
+  Assistant = "assistant",
+}
+
+/** Error codes returned by the schedule assistant API, shown to the student as Spanish messages. */
+export enum AssistantErrorCode {
+  Unauthorized = "unauthorized",
+  CareerRequired = "career_required",
+  InvalidRequest = "invalid_request",
+  RateLimited = "rate_limited",
+  Unavailable = "unavailable",
 }

@@ -4,7 +4,7 @@ import { careers, subjects, users, userSubjectStates } from "@/db/schema"
 import { averageGrade } from "@/lib/gpa"
 import type { UpdateSubjectStateInput } from "@/lib/validation/student"
 import { SubjectStatus } from "@/types/enums"
-import type { UserSubjectStates } from "@/types/types"
+import type { Career, UserSubjectStates } from "@/types/types"
 
 export type StudentProfile = {
   name: string | null
@@ -77,4 +77,15 @@ export async function getStudentProfile(db: AppDatabase, userId: string): Promis
     }
   }
   return { ...user, averageGrade: averageGrade(grades), gradedSubjectsCount: grades.length }
+}
+
+/** Career selected by the user, or null when they have not chosen one yet. */
+export async function getUserCareer(db: AppDatabase, userId: string): Promise<Career | null> {
+  const [row] = await db
+    .select({ id: careers.id, code: careers.code, name: careers.name, plan: careers.plan })
+    .from(users)
+    .innerJoin(careers, eq(users.careerId, careers.id))
+    .where(eq(users.id, userId))
+    .limit(1)
+  return row ?? null
 }
