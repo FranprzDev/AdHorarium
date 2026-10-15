@@ -37,12 +37,12 @@ export function CareerSelectionModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="glass-card p-6 sm:max-w-md">
+      <DialogContent className="p-6 sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="gradient-text text-xl font-bold">
+          <DialogTitle className="font-serif text-xl font-semibold">
             Selecciona tu carrera
           </DialogTitle>
-          <DialogDescription className="text-purple-200">
+          <DialogDescription>
             Por favor, selecciona la carrera que estás cursando para personalizar
             tu experiencia.
           </DialogDescription>
@@ -53,16 +53,12 @@ export function CareerSelectionModal({
             value={selectedCareer}
             onValueChange={setSelectedCareer}
           >
-            <SelectTrigger className="select">
+            <SelectTrigger aria-label="Carrera">
               <SelectValue placeholder="Selecciona una carrera" />
             </SelectTrigger>
-            <SelectContent className="bg-purple-900 border-purple-500/30">
+            <SelectContent>
               {careers.map((career) => (
-                <SelectItem
-                  key={career.id}
-                  value={career.id.toString()}
-                  className="text-white hover:bg-purple-800"
-                >
+                <SelectItem key={career.id} value={career.id.toString()}>
                   {career.name}
                 </SelectItem>
               ))}
@@ -78,7 +74,6 @@ export function CareerSelectionModal({
             <Button
               onClick={handleSave}
               disabled={!selectedCareer}
-              className="primary-button"
             >
               Guardar
             </Button>

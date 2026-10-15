@@ -84,14 +84,14 @@ export function SubjectFormDialog({ careers, defaultCareerId, subject, onClose, 
     await onSaved()
   }
 
-  const inputClassName = "bg-transparent border-purple-500/30 text-white"
+  const inputClassName = "bg-background"
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="glass-card border-purple-500/30 text-white max-w-lg">
+      <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>{isEditing ? "Editar materia" : "Nueva materia"}</DialogTitle>
-          <DialogDescription className="text-purple-200">
+          <DialogDescription className="text-muted-foreground">
             {isEditing ? "Modificá los datos de la materia." : "Completá los datos de la materia que querés agregar al plan."}
           </DialogDescription>
         </DialogHeader>
@@ -258,12 +258,12 @@ export function SubjectFormDialog({ careers, defaultCareerId, subject, onClose, 
                 )}
               />
             </div>
-            {submitError && <p className="text-sm text-red-300">{submitError}</p>}
+            {submitError && <p className="text-sm text-destructive">{submitError}</p>}
             <DialogFooter>
-              <Button type="button" variant="ghost" onClick={onClose} className="text-white hover:bg-purple-800/30">
+              <Button type="button" variant="ghost" onClick={onClose}>
                 Cancelar
               </Button>
-              <Button type="submit" disabled={form.formState.isSubmitting} className="bg-purple-600 hover:bg-purple-700 text-white">
+              <Button type="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 {isEditing ? "Guardar cambios" : "Crear materia"}
               </Button>

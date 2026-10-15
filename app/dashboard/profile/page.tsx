@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { AuroraBackground } from "@/components/ui/aurora-background"
+import { PageHeader } from "@/components/brand/page-header"
 import { CareerSelectionModal } from "@/components/career-selection-modal"
 import { useProfile } from "./_hooks/useProfile"
 import { convertToGPA } from "@/lib/gpa"
@@ -37,38 +37,30 @@ export default function ProfilePage() {
 
   if (isLoading) {
     return (
-      <AuroraBackground className="min-h-screen">
-        <div className="container mx-auto px-4 py-8 flex items-center justify-center">
-          <div className="text-white text-xl">Cargando perfil...</div>
-        </div>
-      </AuroraBackground>
+      <div className="flex min-h-[60vh] items-center justify-center text-muted-foreground" role="status" aria-live="polite">
+        Cargando perfil...
+      </div>
     )
   }
 
   if (error) {
     return (
-      <AuroraBackground className="min-h-screen">
-        <div className="container mx-auto px-4 py-8 flex items-center justify-center">
-          <div className="text-red-400 text-xl">Error: {error}</div>
-        </div>
-      </AuroraBackground>
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="surface-card border-destructive/40 p-6 text-destructive">Error: {error}</div>
+      </div>
     )
   }
 
   return (
-    <AuroraBackground className="min-h-screen">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="container mx-auto px-4 py-8"
+        transition={{ duration: 0.4 }}
+        className="space-y-6"
       >
-        <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4">Mi Perfil</h1>
-          <p className="text-purple-200 text-lg">Gestiona tu información académica y personal</p>
-        </div>
+        <PageHeader eyebrow="Tu cuenta" title="Mi Perfil" description="Gestiona tu información académica y personal" />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -119,6 +111,5 @@ export default function ProfilePage() {
           />
         )}
       </motion.div>
-    </AuroraBackground>
   )
 }

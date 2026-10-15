@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { BookOpen } from "lucide-react"
 
 interface SubjectsCountCardProps {
@@ -8,30 +7,19 @@ interface SubjectsCountCardProps {
 
 export function SubjectsCountCard({ approvedSubjectsCount }: SubjectsCountCardProps) {
   return (
-    <Card className="glass-card">
+    <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="text-white flex items-center">
-          <BookOpen className="h-5 w-5 mr-2 text-green-400" />
+        <CardTitle className="flex items-center text-base font-semibold">
+          <BookOpen className="mr-2 h-4 w-4 text-emerald-600 dark:text-emerald-400" />
           Materias Promocionadas
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="text-center">
-          <div className="text-4xl font-bold text-green-400 mb-2">
-            {approvedSubjectsCount}
-          </div>
-          <p className="text-purple-200 text-sm">
-            Materias promocionadas con éxito
-          </p>
-          {approvedSubjectsCount > 0 && (
-            <div className="mt-3">
-              <Badge className="bg-green-600/20 text-green-400 border-green-400/30">
-                ¡Progreso académico!
-              </Badge>
-            </div>
-          )}
+          <div className="mb-2 font-serif text-5xl font-semibold text-foreground">{approvedSubjectsCount}</div>
+          <p className="text-sm text-muted-foreground">Materias promocionadas con éxito</p>
         </div>
       </CardContent>
     </Card>
   )
-} 
+}

@@ -91,37 +91,37 @@ export function CorrelativesDialog({ subject, onClose }: CorrelativesDialogProps
     setRemovingId(null)
   }
 
-  const triggerClassName = "bg-transparent border-purple-500/30 text-white"
+  const triggerClassName = "bg-background"
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="glass-card border-purple-500/30 text-white max-w-2xl">
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Correlativas de {subject.name}</DialogTitle>
-          <DialogDescription className="text-purple-200">
+          <DialogDescription className="text-muted-foreground">
             Nivel {subject.level} · {subject.careerName}. Solo se pueden exigir materias de la misma carrera y de un nivel igual o
             inferior.
           </DialogDescription>
         </DialogHeader>
 
         {isLoading ? (
-          <div className="flex items-center gap-2 text-purple-200">
+          <div className="flex items-center gap-2 text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
             Cargando correlativas...
           </div>
         ) : (
           <div className="space-y-2 max-h-64 overflow-y-auto">
-            {correlatives.length === 0 && <p className="text-purple-200">Esta materia no tiene correlativas.</p>}
+            {correlatives.length === 0 && <p className="text-muted-foreground">Esta materia no tiene correlativas.</p>}
             {correlatives.map((correlative) => (
-              <div key={correlative.id} className="flex items-center justify-between gap-3 rounded-lg bg-white/5 px-3 py-2">
+              <div key={correlative.id} className="flex items-center justify-between gap-3 rounded-lg border border-border bg-muted/40 px-3 py-2">
                 <div className="flex flex-wrap items-center gap-2">
                   <span>
                     {correlative.requiredNumber}. {correlative.requiredName}
                   </span>
-                  <Badge variant={BadgeVariant.Outline} className="text-purple-200">
+                  <Badge variant={BadgeVariant.Outline} className="text-muted-foreground">
                     {CORRELATIVE_PURPOSE_LABELS[correlative.purpose]}
                   </Badge>
-                  <Badge variant={BadgeVariant.Outline} className="text-purple-200">
+                  <Badge variant={BadgeVariant.Outline} className="text-muted-foreground">
                     {CORRELATIVE_TYPE_LABELS[correlative.requirementType]}
                   </Badge>
                 </div>
@@ -131,7 +131,7 @@ export function CorrelativesDialog({ subject, onClose }: CorrelativesDialogProps
                   aria-label={`Quitar ${correlative.requiredName}`}
                   disabled={removingId === correlative.id}
                   onClick={() => void handleRemove(correlative.id)}
-                  className="text-red-300 hover:text-white hover:bg-red-700/30"
+                  className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                 >
                   {removingId === correlative.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                 </Button>
@@ -141,7 +141,7 @@ export function CorrelativesDialog({ subject, onClose }: CorrelativesDialogProps
         )}
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 gap-3 border-t border-purple-500/30 pt-4 md:grid-cols-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 gap-3 border-t border-border pt-4 md:grid-cols-4">
             <FormField
               control={form.control}
               name="requiredSubjectId"
@@ -221,9 +221,9 @@ export function CorrelativesDialog({ subject, onClose }: CorrelativesDialogProps
                 </FormItem>
               )}
             />
-            {error && <p className="text-sm text-red-300 md:col-span-4">{error}</p>}
+            {error && <p className="text-sm text-destructive md:col-span-4">{error}</p>}
             <div className="md:col-span-4 flex justify-end">
-              <Button type="submit" disabled={form.formState.isSubmitting || isLoading} className="bg-purple-600 hover:bg-purple-700 text-white">
+              <Button type="submit" disabled={form.formState.isSubmitting || isLoading}>
                 {form.formState.isSubmitting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Plus className="h-4 w-4 mr-2" />}
                 Agregar correlativa
               </Button>

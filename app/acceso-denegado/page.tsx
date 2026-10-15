@@ -1,28 +1,31 @@
 import Link from "next/link"
 import { ShieldAlert } from "lucide-react"
-import { AuroraBackground } from "@/components/ui/aurora-background"
+import { PublicHeader } from "@/components/layout/public-header"
 import { Button } from "@/components/ui/button"
 
 export const metadata = {
-  title: "Acceso denegado - UTN FRT",
+  title: "Acceso denegado",
 }
 
 export default function AccessDeniedPage() {
   return (
-    <AuroraBackground className="min-h-screen">
-      <div className="container mx-auto px-4 py-8 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4 text-center">
-          <ShieldAlert className="h-12 w-12 text-red-400" />
-          <h1 className="text-2xl font-bold text-white">Acceso denegado</h1>
-          <p className="text-purple-200 max-w-md">
+    <div className="min-h-screen bg-background">
+      <PublicHeader />
+      <main className="flex items-center justify-center px-4 py-16 md:py-24">
+        <div className="surface-card flex max-w-lg flex-col items-center gap-4 p-8 text-center md:p-10">
+          <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-destructive/10">
+            <ShieldAlert className="h-7 w-7 text-destructive" />
+          </span>
+          <h1 className="font-serif text-3xl font-semibold text-foreground">Acceso denegado</h1>
+          <p className="text-muted-foreground">
             Esta sección es solo para administradores. Si creés que deberías tener acceso, cerrá sesión y volvé a ingresar
             con una cuenta habilitada.
           </p>
-          <Button asChild className="mt-4 bg-purple-600 hover:bg-purple-700 text-white">
+          <Button asChild className="mt-2">
             <Link href="/dashboard">Volver al panel</Link>
           </Button>
         </div>
-      </div>
-    </AuroraBackground>
+      </main>
+    </div>
   )
 }

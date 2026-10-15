@@ -1,9 +1,10 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
+import { PublicHeader } from "@/components/layout/public-header"
 
 export const metadata: Metadata = {
-  title: "Política de privacidad - AdHorarium",
+  title: "Política de privacidad",
   description: "Qué datos guarda AdHorarium, para qué los usa y cómo pedir su eliminación.",
 }
 
@@ -62,25 +63,27 @@ const SECTIONS: PolicySection[] = [
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="min-h-screen gradient-bg">
-      <main className="max-w-3xl mx-auto px-4 py-12">
-        <Link href="/" className="inline-flex items-center gap-2 text-purple-200 hover:text-white transition-colors mb-8">
+    <div className="min-h-screen bg-background">
+      <PublicHeader />
+      <main className="mx-auto max-w-3xl px-4 py-10 md:py-14">
+        <Link href="/" className="mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground">
           <ArrowLeft className="h-4 w-4" />
           Volver al inicio
         </Link>
-        <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4">Política de privacidad</h1>
-        <p className="text-purple-300 mb-10">Última actualización: {LAST_UPDATED}</p>
-        <div className="glass-card p-8 space-y-10">
+        <p className="eyebrow mb-3">AdHorarium</p>
+        <h1 className="mb-3 font-serif text-4xl font-semibold tracking-tight text-foreground md:text-5xl">Política de privacidad</h1>
+        <p className="mb-10 text-sm text-muted-foreground">Última actualización: {LAST_UPDATED}</p>
+        <div className="surface-card space-y-10 p-6 md:p-10">
           {SECTIONS.map((section) => (
             <section key={section.title} className="space-y-3">
-              <h2 className="text-2xl font-bold text-white">{section.title}</h2>
+              <h2 className="font-serif text-2xl font-semibold text-foreground">{section.title}</h2>
               {section.paragraphs.map((paragraph) => (
-                <p key={paragraph} className="text-purple-200 leading-relaxed">
+                <p key={paragraph} className="text-muted-foreground leading-relaxed">
                   {paragraph}
                 </p>
               ))}
               {section.items && (
-                <ul className="list-disc pl-6 space-y-2 text-purple-200">
+                <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
                   {section.items.map((item) => (
                     <li key={item}>{item}</li>
                   ))}
@@ -89,15 +92,15 @@ export default function PrivacyPolicyPage() {
             </section>
           ))}
           <section className="space-y-3">
-            <h2 className="text-2xl font-bold text-white">Contacto</h2>
-            <p className="text-purple-200 leading-relaxed">
+            <h2 className="font-serif text-2xl font-semibold text-foreground">Contacto</h2>
+            <p className="text-muted-foreground leading-relaxed">
               Correo:{" "}
-              <a href={`mailto:${CONTACT_EMAIL}`} className="underline hover:text-white">
+              <a href={`mailto:${CONTACT_EMAIL}`} className="font-medium text-primary underline underline-offset-4 hover:text-foreground">
                 {CONTACT_EMAIL}
               </a>
               <br />
               Issues del repositorio:{" "}
-              <a href={REPOSITORY_ISSUES_URL} target="_blank" rel="noopener noreferrer" className="underline hover:text-white">
+              <a href={REPOSITORY_ISSUES_URL} target="_blank" rel="noopener noreferrer" className="font-medium text-primary underline underline-offset-4 hover:text-foreground">
                 github.com/FranprzDev/AdHorarium/issues
               </a>
             </p>

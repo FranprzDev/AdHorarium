@@ -7,46 +7,38 @@ interface AcademicProgressCardProps {
   selectedCareerName: string
 }
 
-export function AcademicProgressCard({ 
-  approvedSubjectsCount, 
-  averageGrade, 
-  gpaEquivalent, 
-  selectedCareerName 
+export function AcademicProgressCard({
+  approvedSubjectsCount,
+  averageGrade,
+  gpaEquivalent,
+  selectedCareerName,
 }: AcademicProgressCardProps) {
+  const stats = [
+    { label: "Promocionadas", value: String(approvedSubjectsCount) },
+    { label: "Promedio Arg", value: averageGrade ? String(averageGrade) : "--" },
+    { label: "Promedio GPA", value: gpaEquivalent ? gpaEquivalent.toFixed(2) : "--" },
+  ]
+
   return (
-    <Card className="glass-card mb-6">
+    <Card className="mb-6">
       <CardHeader>
-        <CardTitle className="text-white">Progreso Académico</CardTitle>
+        <CardTitle className="font-serif text-xl">Progreso Académico</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-            <div className="p-4 rounded-lg bg-purple-600/10 border border-purple-400/20">
-              <div className="text-2xl font-bold text-purple-300 mb-1">
-                {approvedSubjectsCount}
+          <div className="grid grid-cols-1 gap-3 text-center sm:grid-cols-3">
+            {stats.map((stat) => (
+              <div key={stat.label} className="rounded-lg border border-border bg-muted/50 p-4">
+                <p className="mb-1 font-serif text-3xl font-semibold text-foreground">{stat.value}</p>
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{stat.label}</p>
               </div>
-              <div className="text-sm text-purple-200">Promocionadas</div>
-            </div>
-            
-            <div className="p-4 rounded-lg bg-blue-600/10 border border-blue-400/20">
-              <div className="text-2xl font-bold text-blue-300 mb-1">
-                {averageGrade || '--'}
-              </div>
-              <div className="text-sm text-blue-200">Promedio Arg</div>
-            </div>
-            
-            <div className="p-4 rounded-lg bg-yellow-600/10 border border-yellow-400/20">
-              <div className="text-2xl font-bold text-yellow-300 mb-1">
-                {gpaEquivalent ? gpaEquivalent.toFixed(2) : '--'}
-              </div>
-              <div className="text-sm text-yellow-200">Promedio GPA</div>
-            </div>
+            ))}
           </div>
-          
+
           {selectedCareerName === "No asignada" && (
-            <div className="mt-4 p-4 bg-amber-600/10 border border-amber-400/20 rounded-lg">
-              <p className="text-amber-200 text-sm text-center">
-                💡 Selecciona tu carrera para obtener mejor seguimiento de tu progreso académico
+            <div className="rounded-lg border border-brand/40 bg-brand/10 p-4">
+              <p className="text-center text-sm text-foreground">
+                Selecciona tu carrera para obtener mejor seguimiento de tu progreso académico
               </p>
             </div>
           )}
@@ -54,4 +46,4 @@ export function AcademicProgressCard({
       </CardContent>
     </Card>
   )
-} 
+}
