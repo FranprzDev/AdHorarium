@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { MainLayout } from "@/components/layout/main-layout"
 import { BrandLoader } from "@/components/brand/brand-loader"
+import { ScheduleAssistant } from "@/components/assistant/schedule-assistant"
 
 export default function DashboardLayout({
   children,
@@ -30,5 +31,10 @@ export default function DashboardLayout({
     return null
   }
 
-  return <MainLayout>{children}</MainLayout>
+  return (
+    <MainLayout>
+      {children}
+      <ScheduleAssistant />
+    </MainLayout>
+  )
 }

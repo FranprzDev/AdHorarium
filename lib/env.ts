@@ -31,3 +31,8 @@ export function getDatabaseUrl(source: EnvSource = process.env): string {
 export function getAdminEmails(source: EnvSource = process.env): string[] {
   return parseEmailList(readRequiredEnv(EnvVar.AdminEmails, source))
 }
+
+/** Vercel AI Gateway model id for the schedule assistant. Required: there is no default model. */
+export function getScheduleAssistantModelId(source: EnvSource = process.env): string {
+  return readRequiredEnv(EnvVar.ScheduleAssistantModel, source)
+}

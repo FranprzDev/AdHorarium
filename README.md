@@ -16,6 +16,7 @@ UTN students juggle correlatives, final-exam tables and their own progress acros
 - **Exam table finder** (`/dashboard/mesas`): which exam table (Mesa I, II or III) each subject of the career belongs to.
 - **Average and GPA conversion** (`/dashboard/profile`): average of promoted subjects and an approximate US GPA (0–4) equivalence, documented in `docs/INFORME_CONVERSION_GPA_ARGENTINA.md`.
 - **Schedules** (`/dashboard/horarios`): early work in progress (subject selection per level only; the sidebar link is disabled).
+- **Schedule assistant** (floating "Asistente" button on every dashboard page): a read-only chat that answers questions about the student's own plan (which subjects they can take now, which finals they can sit, what is missing for the next level) and guides them to build their schedule. It runs through Vercel AI Gateway with the student's career, subject states and correlatives in the system prompt; it has no tools, never writes data and says explicitly that class timetables are not loaded.
 - **Admin panel** (`/admin`): admins create, edit and delete subjects and manage correlatives, with validation that rejects self-references, other-career subjects, higher-level requirements, duplicates, cycles and level changes that would break existing correlatives.
 - **Demo board** (`/demo`): interactive curriculum board with the 2008 Sistemas plan, no sign-in.
 - **Privacy policy** (`/privacidad`).
@@ -30,6 +31,7 @@ UTN students juggle correlatives, final-exam tables and their own progress acros
 | Auth | Auth.js v5 (`next-auth`) with Google, Drizzle adapter, JWT sessions |
 | Roles | `users.role` is `student` or `admin`. Emails listed in `ADMIN_EMAILS` are promoted to admin on sign-in. `middleware.ts` guards `/dashboard` (signed in) and `/admin` (admin); server actions and the admin layout re-check the role stored in the database (`requireUserId` / `requireAdminUserId`) |
 | UI | Tailwind CSS, shadcn/ui (Radix), Framer Motion, react-hook-form |
+| AI | Vercel AI SDK (`ai`, `@ai-sdk/react`) through Vercel AI Gateway; `POST /api/assistant` (`lib/assistant/*`) checks the session, validates input size, rate limits per user and streams the answer |
 | Tests | Vitest; database tests run the real migrations and seed against in-memory PGlite |
 
 Main tables: `careers`, `exam_tables`, `subjects` (career, number, name, level 1–6, hours, elective, basic science, exam table), `subject_correlatives` (subject, required subject, purpose `cursar|rendir`, requirement `regulares|aprobadas`), `users`, Auth.js tables (`accounts`, `sessions`, `verification_tokens`) and `user_subject_states`.
@@ -67,6 +69,8 @@ For Google sign-in, create an OAuth client in Google Cloud and add `http://local
 | `AUTH_GOOGLE_ID` | Google OAuth client ID |
 | `AUTH_GOOGLE_SECRET` | Google OAuth client secret |
 | `ADMIN_EMAILS` | Comma-separated emails promoted to `admin` on sign-in |
+| `SCHEDULE_ASSISTANT_MODEL` | AI Gateway model id used by the schedule assistant (for example `openai/gpt-4.1-mini`). Required by `/api/assistant`; there is no default |
+| `AI_GATEWAY_API_KEY` | Only for local development of the assistant. Vercel deployments authenticate to AI Gateway with the project's OIDC token (`VERCEL_OIDC_TOKEN`) automatically |
 
 ## Scripts
 
