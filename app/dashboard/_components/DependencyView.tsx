@@ -17,48 +17,43 @@ export default function DependencyView({ selectedSubject, allSubjects, onClose }
   const dependencies = getEnabledSubjects(selectedSubject, allSubjects);
 
   return (
-    <div className="p-4 md:p-8 animate-fade-in">
-        <Button onClick={onClose} variant="ghost" className="mb-6 text-slate-300 hover:text-white hover:bg-white/10">
+    <div>
+        <Button onClick={onClose} variant="ghost" className="mb-4 -ml-2 text-muted-foreground hover:text-foreground">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Volver al Plan de Estudios
         </Button>
 
-        <div className="border border-neutral-700 rounded-2xl p-4">
+        <div className="surface-card p-4 md:p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Columna de Prerrequisitos */}
                 <div className="flex flex-col">
-                    <h3 className="text-lg font-bold text-center mb-6 text-yellow-400 tracking-wider">
+                    <h3 className="mb-4 text-center text-xs font-semibold uppercase tracking-[0.14em] text-amber-700 dark:text-amber-400">
                         NECESITAS PARA CURSAR
                     </h3>
                     <div className="space-y-2">
                         {prerequisites.length > 0 ? (
                             prerequisites.map(subject => <SubjectCard key={subject.id} subject={subject} />)
                         ) : (
-                            <p className="text-center text-sm text-slate-500 pt-4">No tiene requisitos previos.</p>
+                            <p className="pt-4 text-center text-sm text-muted-foreground">No tiene requisitos previos.</p>
                         )}
                     </div>
                 </div>
-
-                {/* Columna de Materia Seleccionada */}
-                <div className="flex flex-col border-x border-neutral-700 px-6">
-                    <h3 className="text-lg font-bold text-center mb-6 text-slate-300 tracking-wider">
+                <div className="flex flex-col rounded-xl bg-muted/50 p-3">
+                    <h3 className="mb-4 text-center text-xs font-semibold uppercase tracking-[0.14em] text-primary">
                         MATERIA SELECCIONADA
                     </h3>
                     <div className="space-y-2">
                         <SubjectCard subject={selectedSubject} />
                     </div>
                 </div>
-
-                {/* Columna de Dependencias */}
                 <div className="flex flex-col">
-                    <h3 className="text-lg font-bold text-center mb-6 text-green-400 tracking-wider">
+                    <h3 className="mb-4 text-center text-xs font-semibold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-400">
                         HABILITA PARA CURSAR
                     </h3>
                     <div className="space-y-2">
                         {dependencies.length > 0 ? (
                             dependencies.map(subject => <SubjectCard key={subject.id} subject={subject} />)
                         ) : (
-                             <p className="text-center text-sm text-slate-500 pt-4">No habilita materias futuras.</p>
+                             <p className="pt-4 text-center text-sm text-muted-foreground">No habilita materias futuras.</p>
                         )}
                     </div>
                 </div>

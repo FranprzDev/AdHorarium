@@ -1,31 +1,13 @@
 "use client"
 
-import { motion } from "framer-motion"
-import { AuroraBackground } from "@/components/ui/aurora-background"
 import CorrelativesGraph from "./_components/CorrelativesGraph"
 import DashboardHeader from "./_components/DashboardHeader"
 
 export default function Dashboard() {
   return (
-    <AuroraBackground className="min-h-screen">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }} 
-        animate={{ opacity: 1, y: 0 }} 
-        transition={{ duration: 0.5 }}
-      >
-        <div className="sticky top-0 z-20 bg-white/10 dark:bg-black/20 backdrop-blur-md border-b border-white/10">
-          <div className="max-w-[1800px] mx-auto px-4 md:px-8 py-6">
-            <div className="flex flex-col gap-6">
-              <DashboardHeader />
-            </div>
-          </div>
-        </div>
-
-        <div className="max-w-[1800px] mx-auto">
-          <CorrelativesGraph />
-        </div>
-      </motion.div>
-    </AuroraBackground>
+    <div className="space-y-6">
+      <DashboardHeader />
+      <CorrelativesGraph />
+    </div>
   )
 }
-

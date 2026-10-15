@@ -70,7 +70,7 @@ export default function CorrelativesGraph({ showBadges = true }: CorrelativesGra
 
   if (isLoading && subjects.length === 0) {
     return (
-      <div className="p-4">
+      <div>
         {isMobile ? (
           <div className="space-y-4">
             <Skeleton className="h-10 w-full" />
@@ -88,12 +88,12 @@ export default function CorrelativesGraph({ showBadges = true }: CorrelativesGra
   }
 
   if (error) {
-    return <div className="text-red-500 p-4">Error: {error}</div>;
+    return <div className="surface-card border-destructive/40 p-4 text-destructive">Error: {error}</div>;
   }
 
   if (!selectedCareer) {
     return (
-      <div className="text-center p-8 text-slate-400">
+      <div className="surface-card text-center p-8 text-muted-foreground">
         Por favor, selecciona una carrera para ver el plan de estudios.
       </div>
     );
@@ -111,11 +111,11 @@ export default function CorrelativesGraph({ showBadges = true }: CorrelativesGra
   
   if (isMobile) {
     return (
-      <div className="p-4 relative">
+      <div className="relative">
          {isLoading && (
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
-            <div className="flex items-center gap-2 text-white">
-              <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <div className="absolute inset-0 bg-background/70 backdrop-blur-sm flex items-center justify-center z-10 rounded-xl">
+            <div className="flex items-center gap-2 text-foreground">
+              <svg className="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
@@ -124,7 +124,7 @@ export default function CorrelativesGraph({ showBadges = true }: CorrelativesGra
           </div>
         )}
         <Tabs defaultValue={String(levels[0])} className="w-full">
-          <TabsList className="grid w-full bg-black/20" style={levelColumns}>
+          <TabsList className="grid w-full" style={levelColumns}>
             {levels.map(level => (
               <TabsTrigger key={level} value={String(level)}>{level}</TabsTrigger>
             ))}
@@ -149,11 +149,11 @@ export default function CorrelativesGraph({ showBadges = true }: CorrelativesGra
   }
 
   return (
-    <div className="p-4 md:p-6 relative">
+    <div className="relative overflow-x-auto">
        {isLoading && (
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
-          <div className="flex items-center gap-2 text-white">
-            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <div className="absolute inset-0 bg-background/70 backdrop-blur-sm flex items-center justify-center z-10 rounded-xl">
+          <div className="flex items-center gap-2 text-foreground">
+            <svg className="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
@@ -161,10 +161,10 @@ export default function CorrelativesGraph({ showBadges = true }: CorrelativesGra
           </div>
         </div>
       )}
-      <div className="grid gap-x-6" style={levelColumns}>
+      <div className="grid min-w-[900px] gap-x-4" style={levelColumns}>
         {levels.map(level => (
-          <div key={level} className="flex flex-col">
-            <h2 className="text-xl font-bold mb-4 text-center text-slate-300">Nivel {level}</h2>
+          <div key={level} className="flex flex-col rounded-xl border border-border bg-muted/40 p-2">
+            <h2 className="mb-2 px-1 pt-1 text-center text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Nivel {level}</h2>
             <div className="flex flex-col flex-grow">
               {groupedSubjects.get(level)?.map(subject => (
                 <SubjectCard 

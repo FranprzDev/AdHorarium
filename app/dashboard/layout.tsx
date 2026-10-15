@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 
 import { useSession } from "next-auth/react"
 import { MainLayout } from "@/components/layout/main-layout"
+import { BrandLoader } from "@/components/brand/brand-loader"
 
 export default function DashboardLayout({
   children,
@@ -17,16 +18,12 @@ export default function DashboardLayout({
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push('/')
+      router.push("/")
     }
   }, [status, router])
 
   if (status === "loading") {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div>
-      </div>
-    )
+    return <BrandLoader label="Cargando tu sesión..." />
   }
 
   if (status !== "authenticated") {
