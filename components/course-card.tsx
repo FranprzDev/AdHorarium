@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import type { Course } from "@/types/types"
 import { cn } from "@/lib/utils"
 
@@ -23,32 +22,26 @@ export default function CourseCard({
   isHigherDependency,
   isElective,
 }: CourseCardProps) {
-  const [isHovered, setIsHovered] = useState(false)
-
   return (
     <div
       className={cn(
-        "rounded-lg p-4 border border-transparent transition-all duration-200 cursor-pointer",
-        "bg-white dark:bg-black shadow-sm hover:shadow-md",
-        isHovered && "border-violet-400 dark:border-violet-600",
-        isSelected && "bg-violet-100 dark:bg-violet-900/40 shadow-lg",
-        isCorrelative && "border-orange-400 dark:border-orange-600 shadow-md bg-orange-50 dark:bg-orange-900/30",
-        isPrerequisite && "bg-green-50 dark:bg-green-900/30",
-        isHigherDependency && "bg-red-50 dark:bg-red-900/30",
-        isElective && "bg-purple-100 dark:bg-purple-900/30 border-purple-300 dark:border-purple-700",
+        "cursor-pointer rounded-lg border border-border bg-card p-4 shadow-sm transition-all duration-200 hover:border-primary/40 hover:shadow-md",
+        isElective && "border-dashed",
+        isCorrelative && "border-amber-500/60 bg-amber-50 dark:bg-amber-400/10",
+        isPrerequisite && "border-emerald-600/50 bg-emerald-50 dark:bg-emerald-400/10",
+        isHigherDependency && "border-rose-500/50 bg-rose-50 dark:bg-rose-400/10",
+        isSelected && "border-primary bg-secondary ring-2 ring-primary/20",
       )}
       onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       data-course-code={course.code}
     >
-      <h4 className="font-bold text-zinc-700 dark:text-zinc-300 mb-2">{course.name}</h4>
-      <div className="flex items-center justify-between text-sm text-zinc-600 dark:text-zinc-400">
+      <h4 className="mb-2 font-semibold leading-snug text-foreground">{course.name}</h4>
+      <div className="flex items-center justify-between gap-2 text-sm text-muted-foreground">
         <span>{course.hours} horas semanales</span>
         {(course.regularesParaCursar.length > 0 ||
           course.aprobadasParaCursar.length > 0 ||
           course.aprobadasParaRendir.length > 0) && (
-          <span className="inline-flex items-center rounded-full bg-orange-100 dark:bg-orange-900/50 px-2.5 py-0.5 text-xs font-medium text-orange-800 dark:text-orange-300">
+          <span className="inline-flex items-center rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs font-medium text-foreground/80">
             {course.regularesParaCursar.length + course.aprobadasParaCursar.length} correlativas
           </span>
         )}

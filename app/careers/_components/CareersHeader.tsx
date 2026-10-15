@@ -1,32 +1,30 @@
 "use client";
 
-import { useCareerStore } from '@/stores/useCareerStore';
-import { Skeleton } from '@/components/ui/skeleton';
-import CareerSelector from './CareerSelector';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Home } from 'lucide-react';
+import Link from "next/link";
+import { Home } from "lucide-react";
+import { useCareerStore } from "@/stores/useCareerStore";
+import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/brand/page-header";
+import CareerSelector from "./CareerSelector";
 
 export default function CareersHeader() {
-    const { selectedCareer, isLoading } = useCareerStore();
+  const { selectedCareer, isLoading } = useCareerStore();
 
-    return (
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            {isLoading || !selectedCareer ? (
-                <Skeleton className="h-10 w-3/4" />
-            ) : (
-                <h1 className="text-2xl md:text-3xl font-bold gradient-text text-center md:text-left">
-                    Plan de Estudios - {selectedCareer.name}
-                </h1>
-            )}
-            <div className='flex items-center gap-4'>
-                <CareerSelector />
-                <Link href="/">
-                    <Button variant="outline" className="bg-black/20 border-white/20 text-white">
-                        <Home className="h-5 w-5" />
-                    </Button>
-                </Link>
-            </div>
-        </div>
-    );
-} 
+  return (
+    <PageHeader
+      eyebrow="Planes de estudio públicos"
+      title={isLoading || !selectedCareer ? "Plan de Estudios" : `Plan de Estudios - ${selectedCareer.name}`}
+      description="Elegí una carrera y tocá una materia para ver sus correlativas. No hace falta iniciar sesión."
+      actions={
+        <>
+          <CareerSelector />
+          <Button variant="outline" size="icon" asChild className="bg-card">
+            <Link href="/" aria-label="Volver al inicio">
+              <Home className="h-4 w-4" />
+            </Link>
+          </Button>
+        </>
+      }
+    />
+  );
+}
