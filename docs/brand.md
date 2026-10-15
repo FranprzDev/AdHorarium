@@ -8,7 +8,7 @@ sober and institutional: ink navy as the main color, one brass accent, warm neut
 - **Mark** (`components/brand/logo.tsx` → `LogoMark`, static copy in `public/brand/adhorarium-mark.svg`): a capital "A"
   drawn over a 3×3 timetable grid. The crossbar is the brass accent, reading as a time slot on the schedule.
 - **Wordmark** (`Logo`): "Ad" in the foreground color and "Horarium" in brass, set in Source Serif 4 semibold.
-  `LogoTone.Inverted` is used on the ink navy sidebar; `showTagline` adds "UTN · Facultad Regional Tucumán".
+  `LogoTone.Inverted` is used on the ink navy sidebar; `showTagline` adds the short "UTN · FRT" tagline.
 - Keep at least the mark's corner radius as clear space around it and do not recolor the mark.
 
 ## Color tokens

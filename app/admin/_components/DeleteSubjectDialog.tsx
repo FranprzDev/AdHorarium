@@ -51,7 +51,7 @@ export function DeleteSubjectDialog({ subject, onClose, onDeleted }: DeleteSubje
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
           <Button onClick={() => void handleDelete()} disabled={isDeleting} variant="destructive">
-            {isDeleting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            {isDeleting && <Loader2 className="h-4 w-4 animate-spin" />}
             Eliminar
           </Button>
         </AlertDialogFooter>

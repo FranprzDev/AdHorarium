@@ -93,7 +93,7 @@ export function AdminSubjectsPanel() {
           description="Gestioná las materias y correlativas de cada plan de estudios."
         />
         <Button onClick={() => setDialog({ kind: DialogKind.Create })} disabled={careers.length === 0}>
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus className="h-4 w-4" />
           Nueva materia
         </Button>
       </div>
@@ -187,7 +187,7 @@ export function AdminSubjectsPanel() {
                   <TableCell className="text-muted-foreground">{subject.careerName}</TableCell>
                   <TableCell>{subject.level}</TableCell>
                   <TableCell>{subject.hours ?? "-"}</TableCell>
-                  <TableCell>{subject.examTable ?? "-"}</TableCell>
+                  <TableCell className="whitespace-nowrap">{subject.examTable ?? "-"}</TableCell>
                   <TableCell>
                     <div className="flex justify-end gap-1">
                       <Button

@@ -195,7 +195,7 @@ export default function LandingPage() {
                 </Button>
               </div>
             </div>
-            <PlanPreview />
+            <PlanPreview className="hidden sm:block" />
           </div>
         </section>
 

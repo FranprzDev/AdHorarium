@@ -19,7 +19,7 @@ export default function DependencyView({ selectedSubject, allSubjects, onClose }
   return (
     <div>
         <Button onClick={onClose} variant="ghost" className="mb-4 -ml-2 text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeft className="h-4 w-4" />
             Volver al Plan de Estudios
         </Button>
 

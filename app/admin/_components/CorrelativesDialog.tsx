@@ -224,7 +224,7 @@ export function CorrelativesDialog({ subject, onClose }: CorrelativesDialogProps
             {error && <p className="text-sm text-destructive md:col-span-4">{error}</p>}
             <div className="md:col-span-4 flex justify-end">
               <Button type="submit" disabled={form.formState.isSubmitting || isLoading}>
-                {form.formState.isSubmitting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Plus className="h-4 w-4 mr-2" />}
+                {form.formState.isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
                 Agregar correlativa
               </Button>
             </div>

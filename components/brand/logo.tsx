@@ -37,7 +37,7 @@ interface LogoProps {
   markClassName?: string
 }
 
-/** Full lockup: mark + "AdHorarium" wordmark, optionally with the "UTN · FRT" tagline. */
+/** Full lockup: mark + "AdHorarium" wordmark, optionally with the short "UTN · FRT" tagline. */
 export function Logo({ tone = LogoTone.Default, showTagline = false, className, markClassName }: LogoProps) {
   const isInverted = tone === LogoTone.Inverted
   return (
@@ -59,7 +59,7 @@ export function Logo({ tone = LogoTone.Default, showTagline = false, className, 
               isInverted ? "text-sidebar-muted" : "text-muted-foreground",
             )}
           >
-            UTN · Facultad Regional Tucumán
+            UTN · FRT
           </span>
         )}
       </span>

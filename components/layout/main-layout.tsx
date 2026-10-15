@@ -132,6 +132,7 @@ export function MainLayout({ children }: MainLayoutProps) {
                   href={item.isDisabled ? "#" : item.path}
                   aria-current={isActive ? "page" : undefined}
                   aria-disabled={item.isDisabled ? true : undefined}
+                  title={item.isDisabled ? "En desarrollo" : undefined}
                   className={cn(
                     "relative flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
                     isActive
@@ -143,11 +144,6 @@ export function MainLayout({ children }: MainLayoutProps) {
                   {isActive && <span className="absolute inset-y-1.5 left-0 w-0.5 rounded-full bg-brand" />}
                   {item.icon}
                   <span className="flex-1">{item.name}</span>
-                  {item.isDisabled && (
-                    <span className="rounded border border-white/15 px-1.5 py-0.5 text-[0.55rem] uppercase tracking-wider">
-                      En desarrollo
-                    </span>
-                  )}
                 </Link>
               )
             })}

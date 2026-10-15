@@ -264,7 +264,7 @@ export function SubjectFormDialog({ careers, defaultCareerId, subject, onClose, 
                 Cancelar
               </Button>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                {form.formState.isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
                 {isEditing ? "Guardar cambios" : "Crear materia"}
               </Button>
             </DialogFooter>
