@@ -116,3 +116,11 @@ export enum AssistantErrorCode {
   RateLimited = "rate_limited",
   Unavailable = "unavailable",
 }
+
+/** Request lifecycle of the chat panel (mirrors the AI SDK `ChatStatus` values). */
+export enum AssistantChatStatus {
+  Submitted = "submitted",
+  Streaming = "streaming",
+  Ready = "ready",
+  Error = "error",
+}
