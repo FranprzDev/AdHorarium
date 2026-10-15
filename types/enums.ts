@@ -85,3 +85,17 @@ export enum EnvVar {
 export enum AuthProvider {
   Google = "google",
 }
+
+/** Color treatment of the brand logo depending on the surface it sits on. */
+export enum LogoTone {
+  /** Ink wordmark for light surfaces (adapts to the dark theme). */
+  Default = "default",
+  /** Light wordmark for the ink navy sidebar. */
+  Inverted = "inverted",
+}
+
+/** Color scheme choices offered by the theme toggle (next-themes values). */
+export enum ThemeMode {
+  Light = "light",
+  Dark = "dark",
+}
