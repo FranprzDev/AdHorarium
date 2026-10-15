@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useMesas } from "./_hooks/useMesas"
-import { AuroraBackground } from "@/components/ui/aurora-background"
+import { PageHeader } from "@/components/brand/page-header"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -60,38 +60,38 @@ export default function MesasPage() {
 
   if (loading) {
     return (
-      <AuroraBackground className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-[60vh] items-center justify-center" role="status" aria-live="polite">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-purple-400 mx-auto"></div>
-          <h2 className="text-2xl font-semibold text-white mt-4">Cargando Datos...</h2>
-          <p className="text-purple-200">Obteniendo la información más reciente de las mesas.</p>
+          <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-border border-t-primary"></div>
+          <h2 className="mt-4 font-serif text-xl font-semibold text-foreground">Cargando Datos...</h2>
+          <p className="text-muted-foreground">Obteniendo la información más reciente de las mesas.</p>
         </div>
-      </AuroraBackground>
+      </div>
     )
   }
 
   return (
-    <AuroraBackground className="min-h-screen">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="container mx-auto px-4 py-8"
+        transition={{ duration: 0.4 }}
+        className="space-y-6"
       >
-        <h1 className="text-3xl md:text-4xl font-bold gradient-text mb-6">Buscador de Mesa</h1>
-        <p className="text-purple-200 mb-8">
-          Explora todas las materias y en qué mesa específica se rinde.
-        </p>
+        <PageHeader
+          eyebrow="Mesas de examen"
+          title="Buscador de Mesa"
+          description="Explora todas las materias y en qué mesa específica se rinde."
+        />
 
-        <div className="glass-card p-6 mb-8">
-          <div className="space-y-6">
+        <div className="surface-card p-4 md:p-6">
+          <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="text-sm font-medium text-purple-200 mb-2 block">Selecciona tu Carrera</label>
+              <label htmlFor="mesas-career" className="mb-2 block text-sm font-medium text-foreground">Selecciona tu Carrera</label>
               <Select onValueChange={setSelectedCareer} value={selectedCareer}>
-                <SelectTrigger className="w-full glass-input">
+                <SelectTrigger id="mesas-career" className="w-full bg-background">
                   <SelectValue placeholder="Elige tu carrera..." />
                 </SelectTrigger>
-                <SelectContent className="glass-select">
+                <SelectContent>
                   {careers.map((career) => (
                     <SelectItem key={career.id} value={career.name}>
                       {career.name}
@@ -103,55 +103,50 @@ export default function MesasPage() {
 
             {selectedCareer && (
               <div>
-                <label className="text-sm font-medium text-purple-200 mb-2 block">Buscar Materia</label>
+                <label htmlFor="mesas-search" className="mb-2 block text-sm font-medium text-foreground">Buscar Materia</label>
                 <div className="relative">
                   <Input
                     placeholder="Escribe para buscar..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full glass-input pl-10"
+                    id="mesas-search"
+                    className="w-full bg-background pl-10"
                   />
-                  <Search className="absolute left-3 top-2.5 h-5 w-5 text-purple-300" />
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 </div>
               </div>
             )}
           </div>
 
-          <div className="flex gap-2 mt-6">
+          <div className="mt-5 flex flex-wrap gap-2 border-t border-border pt-5">
             <Button
               variant={viewMode === ExamViewMode.List ? "default" : "outline"}
               onClick={() => setViewMode(ExamViewMode.List)}
-              className={
-                viewMode === ExamViewMode.List
-                  ? "bg-purple-600 hover:bg-purple-700"
-                  : "bg-transparent border-purple-500/30 text-white hover:bg-purple-800/30"
-              }
+              size="sm"
+              className={viewMode === ExamViewMode.List ? "" : "bg-card"}
             >
-              <List className="h-5 w-5 mr-2" />
+              <List className="h-4 w-4" />
               Vista de Cuadrícula
             </Button>
             <Button
               variant={viewMode === ExamViewMode.Table ? "default" : "outline"}
               onClick={() => setViewMode(ExamViewMode.Table)}
-              className={
-                viewMode === ExamViewMode.Table
-                  ? "bg-purple-600 hover:bg-purple-700"
-                  : "bg-transparent border-purple-500/30 text-white hover:bg-purple-800/30"
-              }
+              size="sm"
+              className={viewMode === ExamViewMode.Table ? "" : "bg-card"}
             >
-              <TableIcon className="h-5 w-5 mr-2" />
+              <TableIcon className="h-4 w-4" />
               Vista de Tabla
             </Button>
           </div>
         </div>
 
         {!selectedCareer && (
-          <div className="glass-card p-8 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 text-purple-300">
-              <BookOpen className="w-16 h-16" />
-            </div>
-            <h2 className="text-xl font-semibold text-white mb-2">Selecciona una Carrera</h2>
-            <p className="text-purple-200">
+          <div className="surface-card p-10 text-center">
+            <span className="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-secondary text-primary">
+              <BookOpen className="h-6 w-6" />
+            </span>
+            <h2 className="mb-2 font-serif text-xl font-semibold text-foreground">Selecciona una Carrera</h2>
+            <p className="mx-auto max-w-xl text-muted-foreground">
               Elige una carrera de ingeniería del menú desplegable para ver todas las materias y cursos específicos de
               ese programa.
             </p>
@@ -171,17 +166,17 @@ export default function MesasPage() {
                   {allSubjects.length > 0 ? (
                     allSubjects.map(({ subject, table }) => (
                       <motion.div key={`${subject}-${table}`} variants={itemVariants} layout>
-                        <Card className="glass-card h-full">
+                        <Card className="h-full">
                           <CardContent className="p-4 flex flex-col justify-between h-full">
                             <div>
                               <Badge
                                 variant={BadgeVariant.Secondary}
-                                className="mb-2 bg-purple-500/20 text-purple-300 border-purple-500/30"
+                                className="mb-2"
                               >
                                 {table}
                               </Badge>
                               <h3
-                                className="font-bold text-white truncate whitespace-nowrap overflow-hidden min-w-0"
+                                className="min-w-0 truncate font-medium text-foreground"
                                 title={subject}
                               >
                                 {subject}
@@ -195,7 +190,7 @@ export default function MesasPage() {
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="col-span-full text-center glass-card p-8"
+                      className="surface-card col-span-full p-8 text-center text-muted-foreground"
                     >
                       No se encontraron materias con ese criterio de búsqueda.
                     </motion.div>
@@ -208,7 +203,7 @@ export default function MesasPage() {
                 onValueChange={(value) => {
                   if (isExamTable(value)) setActiveTab(value)
                 }}
-                className="glass-card p-4"
+                className="surface-card p-4"
               >
                 <TabsList className="grid w-full grid-cols-3 mb-4">
                   {EXAM_TABLES.map((table) => (
@@ -237,10 +232,10 @@ export default function MesasPage() {
                             {filteredSubjects[table] && filteredSubjects[table].length > 0 ? (
                               filteredSubjects[table].map((subject, index) => (
                                 <motion.div key={`${subject}-${index}`} variants={itemVariants}>
-                                  <Card className="glass-card h-full">
+                                  <Card className="h-full bg-background shadow-none">
                                     <CardContent className="p-4 flex flex-col justify-between h-full">
                                       <h3
-                                        className="font-bold text-white truncate whitespace-nowrap overflow-hidden min-w-0"
+                                        className="min-w-0 truncate font-medium text-foreground"
                                         title={subject}
                                       >
                                         {subject}
@@ -253,7 +248,7 @@ export default function MesasPage() {
                               <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                className="col-span-full text-center p-8"
+                                className="col-span-full p-8 text-center text-muted-foreground"
                               >
                                 No hay materias disponibles para esta mesa.
                               </motion.div>
@@ -269,6 +264,5 @@ export default function MesasPage() {
           </>
         )}
       </motion.div>
-    </AuroraBackground>
   )
 }
