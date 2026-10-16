@@ -94,4 +94,15 @@
       linear-gradient(90deg, hsl(var(--border) / 0.6) 1px, transparent 1px);
     background-size: 32px 32px;
   }
+
+  /* Timetable blocks: the light palette (shared with the PDF/PNG export) is toned down on dark backgrounds. */
+  .schedule-block {
+    background-color: var(--entry-fill);
+    color: var(--entry-text);
+  }
+
+  .dark .schedule-block {
+    background-color: color-mix(in srgb, var(--entry-border) 32%, hsl(var(--card)));
+    color: hsl(var(--foreground));
+  }
 }
