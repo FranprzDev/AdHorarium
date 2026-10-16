@@ -214,7 +214,6 @@ export function AdminSubjectsPanel() {
           <Input
             value={searchInput}
             onChange={(event) => setSearchInput(event.target.value)}
-            type="search"
             placeholder="Buscar por nombre o número"
             aria-label="Buscar materia por nombre o número"
             className="bg-background pl-9"
@@ -298,7 +297,7 @@ export function AdminSubjectsPanel() {
                 <p className="text-xs font-medium text-muted-foreground">
                   N° {subject.number} · Nivel {subject.level}
                   {subject.hours !== null && ` · ${subject.hours} h`}
-                  {subject.examTable !== null && ` · Mesa ${subject.examTable}`}
+                  {subject.examTable !== null && ` · ${subject.examTable}`}
                 </p>
                 <p className="font-semibold leading-snug text-foreground">{subject.name}</p>
                 <p className="text-sm text-muted-foreground">{subject.careerName}</p>

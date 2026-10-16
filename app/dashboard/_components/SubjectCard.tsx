@@ -29,7 +29,7 @@ export default function SubjectCard({ subject, onSelect, showBadge = true }: Sub
 
   return (
     <Card 
-        className={`mb-2 flex min-h-[100px] flex-col justify-between bg-card transition-all duration-200 ${onSelect ? "cursor-pointer hover:-translate-y-px hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" : ""}`}
+        className={`mb-2 flex ${showBadge ? "min-h-[100px]" : ""} flex-col justify-between bg-card transition-all duration-200 ${onSelect ? "cursor-pointer hover:-translate-y-px hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" : ""}`}
         role={onSelect ? "button" : undefined}
         tabIndex={onSelect ? 0 : undefined}
         onKeyDown={(event) => {
@@ -53,21 +53,18 @@ export default function SubjectCard({ subject, onSelect, showBadge = true }: Sub
         </CardHeader>
       </div>
       
-      <div className="p-2 pt-0 mt-auto">
-        <div className="flex-grow">
-            {showBadge && subjectState && subjectState.status !== SubjectStatus.NoCursada ? (
-                <Badge 
-                    variant={SUBJECT_STATUS_BADGES[subjectState.status].variant} 
-                    className="w-full justify-center"
-                >
-                    {SUBJECT_STATUS_BADGES[subjectState.status].label}
-                    {subjectState.status === SubjectStatus.Promocionada && subjectState.grade ? ` - ${subjectState.grade}` : ''}
-                </Badge>
-            ) : (
-              <div className="h-[22px]"></div>
-            )}
+      {showBadge && (
+        <div className="mt-auto p-2 pt-0">
+          {subjectState && subjectState.status !== SubjectStatus.NoCursada ? (
+            <Badge variant={SUBJECT_STATUS_BADGES[subjectState.status].variant} className="w-full justify-center">
+              {SUBJECT_STATUS_BADGES[subjectState.status].label}
+              {subjectState.status === SubjectStatus.Promocionada && subjectState.grade ? ` - ${subjectState.grade}` : ""}
+            </Badge>
+          ) : (
+            <div className="h-[22px]" />
+          )}
         </div>
-      </div>
+      )}
     </Card>
   );
 } 
