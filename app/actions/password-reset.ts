@@ -4,7 +4,7 @@ import { headers } from "next/headers"
 import { after } from "next/server"
 import { getDb } from "@/db/client"
 import { findCredentialUserByEmail } from "@/db/queries/auth"
-import { consumeUserToken, invalidateUserTokens, replaceUserToken, updateUserPasswordHash } from "@/db/queries/tokens"
+import { consumeUserToken, invalidateUserTokens, markEmailVerified, replaceUserToken, updateUserPasswordHash } from "@/db/queries/tokens"
 import { resolveAppOrigin } from "@/lib/app-origin"
 import { getClientKey } from "@/lib/auth/client-key"
 import {
@@ -61,6 +61,7 @@ export async function resetPasswordAction(input: PasswordResetInput): Promise<Pa
       consumeToken: (tokenHash) => consumeUserToken(db, UserTokenPurpose.PasswordReset, tokenHash),
       updatePasswordHash: (userId, passwordHash) => updateUserPasswordHash(db, userId, passwordHash),
       invalidateTokens: (userId) => invalidateUserTokens(db, userId, UserTokenPurpose.PasswordReset),
+      markEmailVerified: (userId) => markEmailVerified(db, userId),
     })
   } catch (error) {
     console.error("Password reset failed", error instanceof Error ? error.name : typeof error)

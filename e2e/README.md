@@ -29,6 +29,7 @@ agent steps, so no model or API key is needed to run the suite.
 | Schedule assistant | ASI-01 | student A |
 | Admin catalog | ADM-01 … ADM-12 | student A and admin, alternating |
 | Password recovery | PWR-01 … PWR-07 | anonymous (PWR-03 … 07 need the mail outbox, so they never run against production) |
+| Email verification | EMV-01 … EMV-04 | anonymous → a fresh account (EMV-02 … 04 need the mail outbox) |
 
 ## Personas and test data
 

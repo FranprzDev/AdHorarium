@@ -239,6 +239,7 @@ export enum MailProviderKind {
 export enum MailKind {
   PasswordReset = "password_reset",
   PasswordResetGoogleAccount = "password_reset_google_account",
+  EmailVerification = "email_verification",
 }
 
 /** Outcome of handing an email to the configured provider. */
@@ -251,6 +252,7 @@ export enum MailDeliveryStatus {
 /** Purpose of a single-use token emailed to a user, stored in `user_tokens.purpose`. */
 export enum UserTokenPurpose {
   PasswordReset = "password_reset",
+  EmailVerification = "email_verification",
 }
 
 /** Outcome of a password reset request or of setting a new password with a reset token. */
@@ -266,4 +268,12 @@ export enum PasswordResetDelivery {
   NoAccount = "no_account",
   GoogleAccount = "google_account",
   ResetLink = "reset_link",
+}
+
+/** Outcome of confirming an email address or asking for a new confirmation link. */
+export enum EmailVerificationErrorCode {
+  InvalidToken = "invalid_token",
+  AlreadyVerified = "already_verified",
+  RateLimited = "rate_limited",
+  Unavailable = "unavailable",
 }

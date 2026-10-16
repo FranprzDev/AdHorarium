@@ -90,6 +90,7 @@ export type PasswordResetDependencies = {
   consumeToken: (tokenHash: string) => Promise<string | null>
   updatePasswordHash: (userId: string, passwordHash: string) => Promise<boolean>
   invalidateTokens: (userId: string) => Promise<void>
+  markEmailVerified: (userId: string) => Promise<void>
   bcryptCost?: number
 }
 
@@ -105,5 +106,6 @@ export async function resetPassword(rawInput: unknown, clientKey: string, depend
   const updated = await dependencies.updatePasswordHash(userId, passwordHash)
   if (!updated) return failure(PasswordResetErrorCode.Unavailable, UNAVAILABLE_MESSAGE)
   await dependencies.invalidateTokens(userId)
+  await dependencies.markEmailVerified(userId)
   return { ok: true }
 }

@@ -51,6 +51,8 @@ export const registerInputSchema = z
 
 const MAX_TOKEN_LENGTH = 128
 
+export const emailTokenSchema = z.string().trim().min(1).max(MAX_TOKEN_LENGTH)
+
 export const passwordResetRequestSchema = z.object({ email: emailSchema })
 
 export const passwordResetInputSchema = z
