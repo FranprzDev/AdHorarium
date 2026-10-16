@@ -21,7 +21,7 @@ const SKIP_REASON = !adminAvailable && "admin flows need E2E_DATABASE_URL (to pr
 async function openAdmin(app: { open(path?: string): Promise<void> }, screen: Screen, search: string): Promise<void> {
   await app.open(AppRoute.Admin)
   await expect(screen.getByRole("heading", "Administración")).toBeVisible({ timeout: 20_000 })
-  await screen.getByRole("textbox", "Buscar materia por nombre").fill(search)
+  await screen.getByRole("textbox", "Buscar materia por nombre o número").fill(search)
 }
 
 function row(screen: Screen, subject: string) {
@@ -62,7 +62,8 @@ describe("admin catalog", { tags: ["admin"], serial: true, session: Persona.Admi
       await sql("delete from subjects where name like $1", [`${E2E_SUBJECT_PREFIX}% ${runId}%`])
     }
     await openAdmin(app, screen, runId)
-    await expect(screen.getByText("No hay materias", { exact: false })).toBeVisible()
+    // The empty state renders in both the desktop table and the (hidden) mobile list; assert the visible table row.
+    await expect(row(screen, "No hay materias que coincidan con los filtros.")).toBeVisible()
 
     await screen.getByRole("button", "Nueva materia").tap()
     const dialog = screen.getByRole("dialog", "Nueva materia")
@@ -89,7 +90,7 @@ describe("admin catalog", { tags: ["admin"], serial: true, session: Persona.Admi
   })
 
   test("ADM-03b a numeric search matches the subject number", async ({ screen }) => {
-    const search = screen.getByRole("textbox", "Buscar materia por nombre")
+    const search = screen.getByRole("textbox", "Buscar materia por nombre o número")
     await search.fill(String(runNumber + 1))
     await expect(row(screen, SUBJECT_Y)).toBeVisible({ timeout: 20_000 })
     await expect(row(screen, SUBJECT_X_EDITED)).toBeHidden()
@@ -237,7 +238,7 @@ describe("admin catalog pagination", { tags: ["admin"], serial: true, session: P
     await browser.setViewport({ width: 375, height: 812 })
     await app.open(AppRoute.Admin)
     await expect(screen.getByRole("heading", "Administración")).toBeVisible({ timeout: 20_000 })
-    await screen.getByRole("textbox", "Buscar materia por nombre").fill("Análisis Matemático I")
+    await screen.getByRole("textbox", "Buscar materia por nombre o número").fill("Análisis Matemático I")
     const card = screen.getByRole("list", "Materias").getByRole("listitem").filter({ hasText: "Análisis Matemático I" }).first()
     await expect(card).toBeVisible({ timeout: 20_000 })
     const remove = card.getByRole("button", /^Eliminar /)
