@@ -103,6 +103,8 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   emailVerified: timestamp("email_verified", { withTimezone: true, mode: "date" }),
   image: text("image"),
+  /** bcrypt hash for email + password sign in; null for accounts that only use Google. Never select it outside auth code. */
+  passwordHash: text("password_hash"),
   role: userRoleEnum("role").notNull().default(UserRole.Student),
   careerId: integer("career_id").references(() => careers.id, { onDelete: "set null" }),
   ...timestamps,
