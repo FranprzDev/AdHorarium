@@ -27,7 +27,7 @@ export default function DependencyView({ selectedSubject, allSubjects, onClose }
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="flex flex-col">
                     <h3 className="mb-4 text-center text-xs font-semibold uppercase tracking-[0.14em] text-amber-700 dark:text-amber-400">
-                        NECESITAS PARA CURSAR
+                        NECESITÁS PARA CURSAR
                     </h3>
                     <div className="space-y-2">
                         {prerequisites.length > 0 ? (

@@ -12,7 +12,7 @@ describe("student tools", { tags: ["student"], session: Persona.StudentA }, () =
     await app.open(AppRoute.Dashboard)
     await expect(screen.getByRole("heading", `Plan de Estudios - ${SYSTEMS_CAREER}`)).toBeVisible({ timeout: 20_000 })
     await screen.getByRole("button", /^Análisis Matemático II/).tap()
-    await expect(screen.getByText("NECESITAS PARA CURSAR")).toBeVisible()
+    await expect(screen.getByText("NECESITÁS PARA CURSAR")).toBeVisible()
     await expect(screen.getByText(BASIC_SUBJECT, { exact: true }).first()).toBeVisible()
     await screen.getByRole("button", "Volver al Plan de Estudios").tap()
     await expect(screen.getByRole("heading", "Nivel 1")).toBeVisible()
@@ -62,7 +62,7 @@ describe("student tools", { tags: ["student"], session: Persona.StudentA }, () =
   test("STU-05 exam table finder: grid, table, search and empty states", async ({ app, screen }) => {
     await app.open(AppRoute.ExamTables)
     await expect(screen.getByRole("heading", "Buscador de Mesa")).toBeVisible({ timeout: 20_000 })
-    await chooseOption(screen, /Carrera/, SYSTEMS_CAREER)
+    await chooseOption(screen, /carrera/i, SYSTEMS_CAREER)
     const search = screen.getByRole("textbox", /Buscar Materia/)
     await search.fill("Paradigmas")
     await expect(screen.getByRole("heading", "Paradigmas de Programación")).toBeVisible()
@@ -83,7 +83,7 @@ describe("student tools", { tags: ["student"], session: Persona.StudentA }, () =
 
     for (const career of [ELECTRONICS_CAREER, SYSTEMS_CAREER]) {
       await screen.getByRole("button", "Cambiar Carrera").tap()
-      const dialog = screen.getByRole("dialog", "Selecciona tu carrera")
+      const dialog = screen.getByRole("dialog", "Seleccioná tu carrera")
       await chooseOption(dialog, "Carrera", career, screen)
       await dialog.getByRole("button", "Guardar").tap()
       await expectToast(browser, "Carrera actualizada")

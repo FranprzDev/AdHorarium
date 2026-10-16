@@ -67,7 +67,7 @@ export default function ProfilePage() {
         transition={{ duration: 0.4 }}
         className="space-y-6"
       >
-        <PageHeader eyebrow="Tu cuenta" title="Mi Perfil" description="Gestiona tu información académica y personal" />
+        <PageHeader eyebrow="Tu cuenta" title="Mi Perfil" description="Gestioná tu información académica y personal" />
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           <motion.div

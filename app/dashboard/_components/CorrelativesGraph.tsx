@@ -94,7 +94,7 @@ export default function CorrelativesGraph({ showBadges = true }: CorrelativesGra
   if (!selectedCareer) {
     return (
       <div className="surface-card text-center p-8 text-muted-foreground">
-        Por favor, selecciona una carrera para ver el plan de estudios.
+        Por favor, seleccioná una carrera para ver el plan de estudios.
       </div>
     );
   }

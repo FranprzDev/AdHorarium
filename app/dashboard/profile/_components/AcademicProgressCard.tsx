@@ -38,7 +38,7 @@ export function AcademicProgressCard({
           {selectedCareerName === "No asignada" && (
             <div className="rounded-lg border border-brand/40 bg-brand/10 p-4">
               <p className="text-center text-sm text-foreground">
-                Selecciona tu carrera para obtener mejor seguimiento de tu progreso académico
+                Seleccioná tu carrera para obtener mejor seguimiento de tu progreso académico
               </p>
             </div>
           )}

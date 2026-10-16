@@ -40,10 +40,10 @@ export function CareerSelectionModal({
       <DialogContent className="p-6 sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-serif text-xl font-semibold">
-            Selecciona tu carrera
+            Seleccioná tu carrera
           </DialogTitle>
           <DialogDescription>
-            Por favor, selecciona la carrera que estás cursando para personalizar
+            Por favor, seleccioná la carrera que estás cursando para personalizar
             tu experiencia.
           </DialogDescription>
         </DialogHeader>
@@ -54,7 +54,7 @@ export function CareerSelectionModal({
             onValueChange={setSelectedCareer}
           >
             <SelectTrigger aria-label="Carrera">
-              <SelectValue placeholder="Selecciona una carrera" />
+              <SelectValue placeholder="Seleccioná una carrera" />
             </SelectTrigger>
             <SelectContent>
               {careers.map((career) => (

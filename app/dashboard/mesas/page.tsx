@@ -80,16 +80,16 @@ export default function MesasPage() {
         <PageHeader
           eyebrow="Mesas de examen"
           title="Buscador de Mesa"
-          description="Explora todas las materias y en qué mesa específica se rinde."
+          description="Explorá todas las materias y en qué mesa específica se rinde."
         />
 
         <div className="surface-card p-4 md:p-6">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label htmlFor="mesas-career" className="mb-2 block text-sm font-medium text-foreground">Selecciona tu Carrera</label>
+              <label htmlFor="mesas-career" className="mb-2 block text-sm font-medium text-foreground">Seleccioná tu carrera</label>
               <Select onValueChange={setSelectedCareer} value={selectedCareer}>
                 <SelectTrigger id="mesas-career" className="w-full bg-background">
-                  <SelectValue placeholder="Elige tu carrera..." />
+                  <SelectValue placeholder="Elegí tu carrera..." />
                 </SelectTrigger>
                 <SelectContent>
                   {careers.map((career) => (
@@ -106,7 +106,7 @@ export default function MesasPage() {
                 <label htmlFor="mesas-search" className="mb-2 block text-sm font-medium text-foreground">Buscar Materia</label>
                 <div className="relative">
                   <Input
-                    placeholder="Escribe para buscar..."
+                    placeholder="Escribí para buscar..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     id="mesas-search"
@@ -145,9 +145,9 @@ export default function MesasPage() {
             <span className="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-secondary text-primary">
               <BookOpen className="h-6 w-6" />
             </span>
-            <h2 className="mb-2 font-serif text-xl font-semibold text-foreground">Selecciona una Carrera</h2>
+            <h2 className="mb-2 font-serif text-xl font-semibold text-foreground">Seleccioná una carrera</h2>
             <p className="mx-auto max-w-xl text-muted-foreground">
-              Elige una carrera de ingeniería del menú desplegable para ver todas las materias y cursos específicos de
+              Elegí una carrera de ingeniería del menú desplegable para ver todas las materias y cursos específicos de
               ese programa.
             </p>
           </div>
