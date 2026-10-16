@@ -3,6 +3,7 @@ import "./globals.css"
 import type { Metadata, Viewport } from "next"
 import { Inter, Source_Serif_4 } from "next/font/google"
 import { Providers } from "./providers"
+import { VercelObservability } from "@/components/observability/vercel-observability"
 import { SITE_URL } from "@/lib/site"
 
 const sans = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" })
@@ -47,6 +48,7 @@ export default function RootLayout({
     <html lang="es" suppressHydrationWarning>
       <body className={`${sans.variable} ${serif.variable} font-sans`}>
         <Providers>{children}</Providers>
+        <VercelObservability />
       </body>
     </html>
   )
