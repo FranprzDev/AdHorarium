@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import { AlertCircle, Link2, Loader2, Pencil, Plus, Search, Trash2 } from "lucide-react"
+import { AlertCircle, CalendarClock, Link2, Loader2, Pencil, Plus, Search, Trash2 } from "lucide-react"
 import { getCareersAction } from "@/app/actions/catalog"
 import { listAdminSubjectsAction } from "@/app/actions/admin"
 import type { AdminSubject } from "@/db/queries/admin"
@@ -14,6 +14,7 @@ import { SUBJECT_LEVELS } from "@/lib/subject-levels"
 import type { AdminSubjectFilters } from "@/lib/validation/admin"
 import { BadgeVariant } from "@/types/enums"
 import type { Career } from "@/types/types"
+import { CommissionsDialog } from "./CommissionsDialog"
 import { CorrelativesDialog } from "./CorrelativesDialog"
 import { DeleteSubjectDialog } from "./DeleteSubjectDialog"
 import { SubjectFormDialog } from "./SubjectFormDialog"
@@ -27,6 +28,7 @@ enum DialogKind {
   Edit = "edit",
   Delete = "delete",
   Correlatives = "correlatives",
+  Commissions = "commissions",
 }
 
 type OpenDialog = { kind: DialogKind.Create } | { kind: Exclude<DialogKind, DialogKind.Create>; subject: AdminSubject } | null
@@ -90,7 +92,7 @@ export function AdminSubjectsPanel() {
         <PageHeader
           eyebrow="Panel de administración"
           title="Administración"
-          description="Gestioná las materias y correlativas de cada plan de estudios."
+          description="Gestioná las materias, correlativas y comisiones con horarios de cada plan de estudios."
         />
         <Button onClick={() => setDialog({ kind: DialogKind.Create })} disabled={careers.length === 0}>
           <Plus className="h-4 w-4" />
@@ -193,6 +195,16 @@ export function AdminSubjectsPanel() {
                       <Button
                         variant="ghost"
                         size="icon"
+                        aria-label={`Comisiones y horarios de ${subject.name}`}
+                        title="Comisiones y horarios"
+                        className="text-muted-foreground hover:text-foreground"
+                        onClick={() => setDialog({ kind: DialogKind.Commissions, subject })}
+                      >
+                        <CalendarClock className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         aria-label={`Correlativas de ${subject.name}`}
                         title="Correlativas"
                         className="text-muted-foreground hover:text-foreground"
@@ -236,6 +248,7 @@ export function AdminSubjectsPanel() {
       )}
       {dialog?.kind === DialogKind.Delete && <DeleteSubjectDialog subject={dialog.subject} onClose={closeDialog} onDeleted={handleSaved} />}
       {dialog?.kind === DialogKind.Correlatives && <CorrelativesDialog subject={dialog.subject} onClose={closeDialog} />}
+      {dialog?.kind === DialogKind.Commissions && <CommissionsDialog subject={dialog.subject} onClose={closeDialog} />}
     </div>
   )
 }

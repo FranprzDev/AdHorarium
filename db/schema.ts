@@ -4,6 +4,7 @@ import {
   check,
   index,
   integer,
+  jsonb,
   numeric,
   pgEnum,
   pgTable,
@@ -16,7 +17,17 @@ import {
   varchar,
 } from "drizzle-orm/pg-core"
 import { MAX_SUBJECT_LEVEL, MIN_SUBJECT_LEVEL } from "@/lib/subject-levels"
-import { CorrelativePurpose, CorrelativeType, ExamTable, SubjectStatus, UserRole } from "@/types/enums"
+import type { ClassSlot, SharedEntry } from "@/lib/schedule/types"
+import {
+  CommissionPeriod,
+  CommissionShift,
+  CorrelativePurpose,
+  CorrelativeType,
+  ExamTable,
+  ScheduleEntryKind,
+  SubjectStatus,
+  UserRole,
+} from "@/types/enums"
 
 export { MAX_SUBJECT_LEVEL, MIN_SUBJECT_LEVEL }
 
@@ -25,6 +36,9 @@ export const subjectStatusEnum = pgEnum("subject_status", SubjectStatus)
 export const examTableNameEnum = pgEnum("exam_table_name", ExamTable)
 export const correlativePurposeEnum = pgEnum("correlative_purpose", CorrelativePurpose)
 export const correlativeRequirementEnum = pgEnum("correlative_requirement", CorrelativeType)
+export const commissionShiftEnum = pgEnum("commission_shift", CommissionShift)
+export const commissionPeriodEnum = pgEnum("commission_period", CommissionPeriod)
+export const scheduleEntryKindEnum = pgEnum("schedule_entry_kind", ScheduleEntryKind)
 
 const timestamps = {
   createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
@@ -171,6 +185,69 @@ export const userSubjectStates = pgTable(
   ],
 )
 
+/** Commissions ("comisiones") of a subject with their weekly slots, managed by admins. */
+export const commissions = pgTable(
+  "commissions",
+  {
+    id: serial("id").primaryKey(),
+    subjectId: integer("subject_id")
+      .notNull()
+      .references(() => subjects.id, { onDelete: "cascade" }),
+    name: varchar("name", { length: 40 }).notNull(),
+    shift: commissionShiftEnum("shift").notNull(),
+    period: commissionPeriodEnum("period").notNull(),
+    /** Validated with `classSlotsSchema`; stored as JSON so slots change atomically with the commission. */
+    slots: jsonb("slots").$type<ClassSlot[]>().notNull(),
+    ...timestamps,
+  },
+  (table) => [unique("commissions_subject_name_unique").on(table.subjectId, table.name), index("commissions_subject_idx").on(table.subjectId)],
+)
+
+/** One subject of a student's timetable: a catalog commission (by reference) or custom slots. */
+export const scheduleEntries = pgTable(
+  "schedule_entries",
+  {
+    id: serial("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    subjectId: integer("subject_id")
+      .notNull()
+      .references(() => subjects.id, { onDelete: "cascade" }),
+    kind: scheduleEntryKindEnum("kind").notNull(),
+    commissionId: integer("commission_id").references(() => commissions.id, { onDelete: "cascade" }),
+    label: varchar("label", { length: 40 }),
+    slots: jsonb("slots").$type<ClassSlot[]>(),
+    ...timestamps,
+  },
+  (table) => [
+    unique("schedule_entries_user_subject_unique").on(table.userId, table.subjectId),
+    index("schedule_entries_commission_idx").on(table.commissionId),
+    check(
+      "schedule_entries_kind_shape",
+      sql`(${table.kind} = ${sql.raw(`'${ScheduleEntryKind.Commission}'`)} and ${table.commissionId} is not null and ${table.label} is null and ${table.slots} is null) or (${table.kind} = ${sql.raw(`'${ScheduleEntryKind.Custom}'`)} and ${table.commissionId} is null and ${table.label} is not null and ${table.slots} is not null)`,
+    ),
+  ],
+)
+
+/** Read-only snapshot of a timetable shared by link. The id is the unguessable token in the URL. */
+export const scheduleShares = pgTable(
+  "schedule_shares",
+  {
+    id: varchar("id", { length: 32 }).primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    careerId: integer("career_id")
+      .notNull()
+      .references(() => careers.id, { onDelete: "cascade" }),
+    displayName: varchar("display_name", { length: 60 }),
+    entries: jsonb("entries").$type<SharedEntry[]>().notNull(),
+    createdAt: timestamps.createdAt,
+  },
+  (table) => [index("schedule_shares_user_idx").on(table.userId)],
+)
+
 export const careersRelations = relations(careers, ({ many }) => ({
   subjects: many(subjects),
   users: many(users),
@@ -214,3 +291,5 @@ export type NewSubjectRow = typeof subjects.$inferInsert
 export type SubjectCorrelativeRow = typeof subjectCorrelatives.$inferSelect
 export type UserRow = typeof users.$inferSelect
 export type UserSubjectStateRow = typeof userSubjectStates.$inferSelect
+export type CommissionRow = typeof commissions.$inferSelect
+export type ScheduleEntryRow = typeof scheduleEntries.$inferSelect

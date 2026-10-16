@@ -141,3 +141,49 @@ export enum AssistantChatStatus {
   Ready = "ready",
   Error = "error",
 }
+
+/** Weekday a class slot happens on, stored inside commission and timetable slots. */
+export enum ClassDay {
+  Lunes = "lunes",
+  Martes = "martes",
+  Miercoles = "miercoles",
+  Jueves = "jueves",
+  Viernes = "viernes",
+  Sabado = "sabado",
+}
+
+/** Shift ("turno") of a commission, stored in `commissions.shift`. */
+export enum CommissionShift {
+  Manana = "manana",
+  Tarde = "tarde",
+  Noche = "noche",
+}
+
+/** Teaching period of a commission, stored in `commissions.period`. */
+export enum CommissionPeriod {
+  Anual = "anual",
+  PrimerCuatrimestre = "primer_cuatrimestre",
+  SegundoCuatrimestre = "segundo_cuatrimestre",
+}
+
+/** Origin of a timetable entry, stored in `schedule_entries.kind`. */
+export enum ScheduleEntryKind {
+  /** References a commission of the admin catalog: its slots are always read live. */
+  Commission = "commission",
+  /** Slots typed by the student for a subject that has no commission loaded. */
+  Custom = "custom",
+}
+
+/** How a shared timetable is imported into the student's own timetable. */
+export enum ScheduleImportMode {
+  /** Adds only the subjects the student does not have yet. */
+  Merge = "merge",
+  /** Deletes the current timetable and copies the shared one. */
+  Replace = "replace",
+}
+
+/** File formats the timetable can be exported to. */
+export enum ScheduleExportFormat {
+  Pdf = "pdf",
+  Png = "png",
+}

@@ -43,8 +43,8 @@ export function DeleteSubjectDialog({ subject, onClose, onDeleted }: DeleteSubje
         <AlertDialogHeader>
           <AlertDialogTitle>¿Eliminar {subject.name}?</AlertDialogTitle>
           <AlertDialogDescription className="text-muted-foreground">
-            También se eliminarán sus correlativas, las correlativas que la exigen y los estados que los estudiantes cargaron
-            para esta materia. Esta acción no se puede deshacer.
+            También se eliminarán sus correlativas, las correlativas que la exigen, sus comisiones y los estados y horarios que
+            los estudiantes cargaron para esta materia. Esta acción no se puede deshacer.
           </AlertDialogDescription>
         </AlertDialogHeader>
         {error && <p className="text-sm text-destructive">{error}</p>}
