@@ -34,7 +34,7 @@ export function ScheduleGrid({ entries, highlightedEntryId = null }: ScheduleGri
             </div>
           ))}
         </div>
-        <div className="relative flex">
+        <div className="relative flex pb-4 pt-2">
           <div className="relative w-14 shrink-0" style={{ height: bodyHeight }}>
             {hours.map((minutes) => (
               <span

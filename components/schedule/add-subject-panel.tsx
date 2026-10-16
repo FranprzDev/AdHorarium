@@ -19,6 +19,8 @@ type AddSubjectPanelProps = {
   entries: ReadonlyArray<ScheduleEntry>
   onPick: (commission: Commission) => Promise<void>
   onCustom: (subject: PlanSubject) => void
+  subjectId: number | null
+  onSubjectChange: (subjectId: number) => void
 }
 
 type SubjectGroup = { label: string; subjects: PlanSubject[] }
@@ -41,8 +43,7 @@ function groupSubjects(subjects: ReadonlyArray<PlanSubject>, states: UserSubject
 }
 
 /** Picks a subject, then one of its catalog commissions (or manual slots when it has none). */
-export function AddSubjectPanel({ subjects, states, commissions, entries, onPick, onCustom }: AddSubjectPanelProps) {
-  const [subjectId, setSubjectId] = useState<number | null>(null)
+export function AddSubjectPanel({ subjects, states, commissions, entries, onPick, onCustom, subjectId, onSubjectChange }: AddSubjectPanelProps) {
   const [pickingId, setPickingId] = useState<number | null>(null)
   const groups = useMemo(() => groupSubjects(subjects, states), [subjects, states])
   const subject = subjects.find((candidate) => candidate.id === subjectId) ?? null
@@ -61,15 +62,15 @@ export function AddSubjectPanel({ subjects, states, commissions, entries, onPick
   }
 
   return (
-    <section className="surface-card space-y-4 p-4 md:p-5" aria-labelledby="add-subject-title">
+    <section id="add-subject-panel" className="surface-card scroll-mt-6 space-y-4 p-4 md:p-5" aria-labelledby="add-subject-title">
       <div>
         <h2 id="add-subject-title" className="font-serif text-lg font-semibold text-foreground">
-          Agregar materia
+          Agregar o cambiar materia
         </h2>
         <p className="text-sm text-muted-foreground">Elegí una materia y una de sus comisiones. El horario se arma solo.</p>
       </div>
 
-      <Select value={subjectId === null ? "" : String(subjectId)} onValueChange={(value) => setSubjectId(Number(value))}>
+      <Select value={subjectId === null ? "" : String(subjectId)} onValueChange={(value) => onSubjectChange(Number(value))}>
         <SelectTrigger aria-label="Materia" className="bg-background">
           <SelectValue placeholder="Elegí una materia" />
         </SelectTrigger>

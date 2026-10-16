@@ -38,6 +38,7 @@ export default function HorariosPage() {
   const [loadError, setLoadError] = useState<string | null>(null)
   const [highlightedEntryId, setHighlightedEntryId] = useState<number | null>(null)
   const [customDialog, setCustomDialog] = useState<CustomDialogState>(null)
+  const [pickerSubjectId, setPickerSubjectId] = useState<number | null>(null)
   const careerId = schedule?.careerId ?? null
   const { subjects } = usePlanSubjects(careerId)
 
@@ -186,6 +187,8 @@ export default function HorariosPage() {
             entries={entries}
             onPick={handlePick}
             onCustom={openCustom}
+            subjectId={pickerSubjectId}
+            onSubjectChange={setPickerSubjectId}
           />
           {entries.length > 0 && (
             <section className="surface-card space-y-3 p-4 md:p-5" aria-labelledby="my-subjects-title">
@@ -197,6 +200,10 @@ export default function HorariosPage() {
                 overlappingEntryIds={overlappingEntryIds}
                 onHighlight={setHighlightedEntryId}
                 onEdit={(entry) => openCustom({ id: entry.subjectId, name: entry.subjectName })}
+                onChangeCommission={(entry) => {
+                  setPickerSubjectId(entry.subjectId)
+                  document.getElementById("add-subject-panel")?.scrollIntoView({ behavior: "smooth", block: "start" })
+                }}
                 onDelete={(entry) => void handleDelete(entry)}
               />
             </section>
