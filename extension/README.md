@@ -8,8 +8,11 @@ Manifest V3, one build for Chrome/Edge and one for Firefox (115+).
 
 ## Install (load unpacked)
 
-Download the zip for your browser from the
-[`extension-v0.1.0` release](https://github.com/FranprzDev/AdHorarium/releases/tag/extension-v0.1.0) and unzip it.
+Download the zip for your browser from AdHorarium
+([Chrome / Edge](https://adhorarium.vercel.app/extension/adhorarium-sysacad-chrome.zip),
+[Firefox](https://adhorarium.vercel.app/extension/adhorarium-sysacad-firefox.zip), also linked from
+`/importar/sysacad`) and unzip it. Release notes and SHA-256 checksums:
+[`extension-v0.1.0`](https://github.com/FranprzDev/AdHorarium/releases/tag/extension-v0.1.0).
 
 - **Chrome / Edge**: open `chrome://extensions` (or `edge://extensions`), turn on *Developer mode*, click
   *Load unpacked* and pick the unzipped folder (the one with `manifest.json`).
@@ -41,7 +44,8 @@ Without the extension, the same page accepts the table copied from SysAcad (Ctrl
 ## Develop
 
 ```bash
-pnpm extension:build   # bundles src/content.ts with esbuild into extension/dist/{chrome,firefox} and zips both
+pnpm extension:build              # bundles src/content.ts with esbuild into extension/dist/{chrome,firefox} and zips both
+pnpm extension:build -- --public  # same, and copies the zips to public/extension/ (served by the site)
 ```
 
 - `src/content.ts` reuses the app's parser in `lib/sysacad/` (`dom.ts`, `table.ts`, `status.ts`, `payload.ts`), so
@@ -50,3 +54,5 @@ pnpm extension:build   # bundles src/content.ts with esbuild into extension/dist
   regularYear?, term?, commission?, raw? }] }`, base64url JSON in `#data=`, or deflate-raw + base64url in `#dataz=`
   when it is longer than 2 KB (a full career is about 1.1 KB compressed).
 - The app origin is the `APP_ORIGIN` constant in `src/content.ts`.
+- Zips are deterministic (fixed timestamps): rebuild with `--public` and commit `public/extension/*.zip` whenever
+  `extension/` or `lib/sysacad/` changes, and bump `version` in both manifests.

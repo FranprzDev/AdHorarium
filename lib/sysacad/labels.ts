@@ -2,11 +2,12 @@ import { SysacadMatchMethod } from "./match"
 import { SysacadChangeKind } from "./plan"
 import { SysacadRowStatus, type SysacadRow } from "./types"
 
-/** GitHub release that ships the browser extension. */
+/** GitHub release page of the browser extension (notes and checksums). */
 export const EXTENSION_RELEASE_TAG = "extension-v0.1.0"
 export const EXTENSION_RELEASE_URL = `https://github.com/FranprzDev/AdHorarium/releases/tag/${EXTENSION_RELEASE_TAG}`
-export const EXTENSION_CHROME_ZIP_URL = `https://github.com/FranprzDev/AdHorarium/releases/download/${EXTENSION_RELEASE_TAG}/adhorarium-sysacad-chrome.zip`
-export const EXTENSION_FIREFOX_ZIP_URL = `https://github.com/FranprzDev/AdHorarium/releases/download/${EXTENSION_RELEASE_TAG}/adhorarium-sysacad-firefox.zip`
+/** Zips served by the site from public/extension (built with `pnpm extension:build -- --public`). */
+export const EXTENSION_CHROME_ZIP_URL = "/extension/adhorarium-sysacad-chrome.zip"
+export const EXTENSION_FIREFOX_ZIP_URL = "/extension/adhorarium-sysacad-firefox.zip"
 export const SYSACAD_ACADEMIC_STATE_URL = "https://sysacad.frt.utn.edu.ar/"
 
 /** Short label of what the import does to a subject. */

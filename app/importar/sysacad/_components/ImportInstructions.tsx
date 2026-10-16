@@ -30,13 +30,13 @@ export function ImportInstructions() {
       </ol>
       <div className="flex flex-wrap gap-2">
         <Button asChild>
-          <a href={EXTENSION_CHROME_ZIP_URL}>
+          <a href={EXTENSION_CHROME_ZIP_URL} download>
             <Download className="h-4 w-4" />
             Chrome / Edge
           </a>
         </Button>
         <Button asChild variant="outline">
-          <a href={EXTENSION_FIREFOX_ZIP_URL}>
+          <a href={EXTENSION_FIREFOX_ZIP_URL} download>
             <Download className="h-4 w-4" />
             Firefox
           </a>
@@ -44,7 +44,7 @@ export function ImportInstructions() {
         <Button asChild variant="ghost">
           <a href={EXTENSION_RELEASE_URL} target="_blank" rel="noreferrer">
             <ExternalLink className="h-4 w-4" />
-            Ver en GitHub
+            Notas de la versión
           </a>
         </Button>
       </div>
