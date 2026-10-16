@@ -23,6 +23,7 @@ import { useUserSubjectsStore } from "@/stores/useUserSubjectsStore"
 import { useCareerStore } from "@/stores/useCareerStore"
 import { PageHeader } from "@/components/brand/page-header"
 import { NotebookPen, Loader2, AlertCircle, X } from "lucide-react"
+import { toast } from "sonner"
 import DeniedAccess from "./_components/DeniedAccess"
 import LoadingSubjects from "./_components/LoadingSubjects"
 import type { PlanSubject } from "@/types/types"
@@ -162,27 +163,22 @@ export default function MateriasPage() {
     )
   }
 
-  const handleStatusChange = async (
-    subjectId: number,
-    status: SubjectStatus
-  ) => {
-    if (careerId === null) return
+  const handleStatusChange = async (subjectId: number, status: SubjectStatus) => {
+    const subjectName = allSubjects.find((subject) => subject.id === subjectId)?.name ?? "la materia"
     setUpdating(subjectId)
     setUpdateError(null)
-    const saved = await updateUserSubjectState(
-      careerId,
-      subjectId,
-      status,
-      status === SubjectStatus.Promocionada
-        ? userSubjects[subjectId]?.grade ?? null
-        : null
-    )
-    if (!saved) setUpdateError("Error al actualizar la materia")
+    const grade = status === SubjectStatus.Promocionada ? userSubjects[subjectId]?.grade ?? null : null
+    const result = await updateUserSubjectState(subjectId, status, grade)
     setUpdating(null)
+    if (result.ok) {
+      toast.success(`${subjectName}: ${SUBJECT_STATUS_LABELS[status]}`)
+      return
+    }
+    toast.error(`No se pudo actualizar ${subjectName}. Volvimos al estado anterior.`, { description: result.error })
   }
 
   const handleGradeSubmit = async () => {
-    if (!selectedSubject || careerId === null) return
+    if (!selectedSubject) return
 
     const grade = parseFloat(gradeInput)
     if (!isValidArgentineGrade(grade)) {
@@ -192,20 +188,17 @@ export default function MateriasPage() {
 
     setUpdating(selectedSubject.id)
     setUpdateError(null)
-    const saved = await updateUserSubjectState(
-      careerId,
-      selectedSubject.id,
-      SubjectStatus.Promocionada,
-      grade
-    )
-    if (saved) {
-      setIsModalOpen(false)
-      setGradeInput("")
-      setSelectedSubject(null)
-    } else {
-      setUpdateError("Error al guardar la nota")
-    }
+    const result = await updateUserSubjectState(selectedSubject.id, SubjectStatus.Promocionada, grade)
     setUpdating(null)
+    if (!result.ok) {
+      setUpdateError("Error al guardar la nota")
+      toast.error(`No se pudo guardar la nota de ${selectedSubject.name}.`, { description: result.error })
+      return
+    }
+    toast.success(`Nota de ${selectedSubject.name} guardada: ${grade}/10`)
+    setIsModalOpen(false)
+    setGradeInput("")
+    setSelectedSubject(null)
   }
 
   const openGradeModal = (subject: PlanSubject) => {
