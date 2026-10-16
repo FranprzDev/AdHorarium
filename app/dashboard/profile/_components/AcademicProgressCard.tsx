@@ -28,9 +28,9 @@ export function AcademicProgressCard({
         <div className="space-y-4">
           <div className="grid grid-cols-1 gap-3 text-center sm:grid-cols-3">
             {stats.map((stat) => (
-              <div key={stat.label} className="rounded-lg border border-border bg-muted/50 p-4">
+              <div key={stat.label} className="rounded-lg border border-border bg-muted/50 px-2 py-4 lg:p-4">
                 <p className="mb-1 font-serif text-3xl font-semibold text-foreground">{stat.value}</p>
-                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{stat.label}</p>
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground [overflow-wrap:anywhere]">{stat.label}</p>
               </div>
             ))}
           </div>

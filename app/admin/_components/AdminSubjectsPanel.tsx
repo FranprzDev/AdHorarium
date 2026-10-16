@@ -164,7 +164,7 @@ export function AdminSubjectsPanel() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <PageHeader
           eyebrow="Panel de administración"
           title="Administración"
@@ -182,7 +182,7 @@ export function AdminSubjectsPanel() {
         </div>
       </div>
 
-      <div className="surface-card grid grid-cols-1 gap-3 p-4 md:grid-cols-3">
+      <div className="surface-card grid grid-cols-1 gap-3 p-4 lg:grid-cols-3">
         <Select value={careerId === null ? ALL_OPTION : String(careerId)} onValueChange={changeCareer}>
           <SelectTrigger className="bg-background" aria-label="Filtrar por carrera">
             <SelectValue placeholder="Carrera" />
@@ -228,7 +228,7 @@ export function AdminSubjectsPanel() {
         </div>
       )}
 
-      <div className="surface-card hidden overflow-x-auto md:block">
+      <div className="surface-card hidden overflow-x-auto lg:block">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50 hover:bg-muted/50">
@@ -280,7 +280,7 @@ export function AdminSubjectsPanel() {
         </Table>
       </div>
 
-      <ul className="space-y-3 md:hidden" aria-label="Materias">
+      <ul className="space-y-3 lg:hidden" aria-label="Materias">
         {isLoading && (
           <li className="surface-card flex items-center justify-center p-4 text-sm text-muted-foreground">
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
