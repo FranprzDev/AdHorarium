@@ -35,6 +35,7 @@ const SECTIONS: PolicySection[] = [
       "La carrera que elegís dentro de la aplicación.",
       "El estado de cada materia que cargás (no cursada, cursando, regular o promocionada) y las notas que ingresás.",
       "Tu rol en la aplicación (estudiante o administrador).",
+      "Si confirmaste tu email, la fecha de confirmación, y los enlaces de un solo uso que te enviamos por email (confirmación o recuperación de contraseña), guardados como hash hasta que se usan o vencen.",
     ],
   },
   {
@@ -56,13 +57,16 @@ const SECTIONS: PolicySection[] = [
   {
     title: "Con quién los compartimos",
     paragraphs: [
-      "No vendemos ni compartimos tus datos con terceros. Los datos se alojan en los proveedores de infraestructura que hacen funcionar el sitio: Vercel (alojamiento de la aplicación) y Neon (base de datos PostgreSQL). Google interviene solo si elegís ingresar con tu cuenta de Google.",
+      "No vendemos ni compartimos tus datos con terceros. Los datos se alojan en los proveedores de infraestructura que hacen funcionar el sitio: Vercel (alojamiento de la aplicación) y Neon (base de datos PostgreSQL). Google interviene solo si elegís ingresar con tu cuenta de Google. Los emails de la cuenta (confirmación de email y recuperación de contraseña) se envían a través de Brevo, que recibe solo tu dirección de correo y el contenido de ese email.",
     ],
   },
   {
-    title: "Cómo pedir la eliminación",
+    title: "Tus derechos y cómo eliminar tu cuenta",
     paragraphs: [
-      `Podés pedir que eliminemos tu cuenta y todos tus datos (incluidos los estados y notas de tus materias) abriendo un issue en el repositorio del proyecto o escribiendo a ${CONTACT_EMAIL}. También podés pedir una copia de tus datos o su corrección por los mismos medios.`,
+      "La Ley 25.326 de Protección de los Datos Personales te reconoce los derechos de acceso, rectificación, actualización y supresión de tus datos.",
+      "Derecho de supresión: podés eliminar tu cuenta vos mismo en cualquier momento desde Mi Perfil › Eliminar mi cuenta. Te pedimos tu contraseña (o tu email, si ingresás con Google) para confirmar. La eliminación es inmediata y definitiva: borra tu cuenta, tu nombre y email, el hash de tu contraseña, la vinculación con Google, la carrera elegida, los estados y notas de tus materias, tu horario, los enlaces de horario que compartiste (dejan de funcionar) y los enlaces de verificación o recuperación pendientes, y cierra tu sesión. Las copias de seguridad técnicas del proveedor de base de datos pueden conservar esos datos por un período limitado, hasta que se renuevan.",
+      `Si no podés ingresar a tu cuenta, también podés pedir la eliminación, una copia de tus datos o su corrección escribiendo a ${CONTACT_EMAIL} o abriendo un issue en el repositorio del proyecto. Respondemos los pedidos de rectificación o supresión dentro de los cinco días hábiles que fija el artículo 16 de la ley, y el acceso a tus datos es gratuito a intervalos no inferiores a seis meses, salvo interés legítimo (artículo 14).`,
+      "La Agencia de Acceso a la Información Pública (AAIP), órgano de control de la Ley 25.326, atiende las denuncias y reclamos de quienes consideren afectados sus derechos sobre sus datos personales.",
     ],
   },
   {

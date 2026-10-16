@@ -277,3 +277,24 @@ export enum EmailVerificationErrorCode {
   RateLimited = "rate_limited",
   Unavailable = "unavailable",
 }
+
+/** What a user must type to confirm deleting their account: the password, or the email for accounts without one. */
+export enum AccountDeletionConfirmation {
+  Password = "password",
+  Email = "email",
+}
+
+/** Result of the account deletion statement. */
+export enum AccountDeletionOutcome {
+  Deleted = "deleted",
+  LastAdmin = "last_admin",
+  NotFound = "not_found",
+}
+
+/** Why a self-service account deletion was refused. */
+export enum AccountDeletionErrorCode {
+  InvalidConfirmation = "invalid_confirmation",
+  LastAdmin = "last_admin",
+  RateLimited = "rate_limited",
+  Unavailable = "unavailable",
+}
