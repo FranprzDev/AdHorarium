@@ -6,7 +6,9 @@ import {
   getSubjectStatus,
 } from "@/lib/assistant/eligibility"
 import { compareByLevelAndNumber } from "@/lib/plan-subjects"
-import { SubjectStatus, type ExamTable } from "@/types/enums"
+import { CLASS_DAY_LABELS, COMMISSION_PERIOD_LABELS, COMMISSION_SHIFT_LABELS } from "@/lib/schedule/labels"
+import type { ClassSlot, Commission, ScheduleEntry } from "@/lib/schedule/types"
+import { ScheduleEntryKind, SubjectStatus, type ExamTable } from "@/types/enums"
 import type { Career, PlanSubject, UserSubjectStates } from "@/types/types"
 
 /** Wording of each status inside the assistant prompt (more explicit than the UI badges). */
@@ -40,13 +42,24 @@ export type AssistantContext = {
   careerName: string
   careerPlan: string
   subjects: AssistantSubject[]
+  /** One line per commission: subject, name, shift, period and slots. */
+  commissionLines: string[]
+  /** One line per subject in the student's saved timetable. */
+  timetableLines: string[]
 }
 
 export type AssistantContextInput = {
   career: Pick<Career, "name" | "plan">
   subjects: ReadonlyArray<PlanSubject>
   states: UserSubjectStates
+  /** Commission catalog of the career (admin managed). */
+  commissions: ReadonlyArray<Commission>
+  /** The student's saved timetable. */
+  timetable: ReadonlyArray<ScheduleEntry>
 }
+
+/** Upper bound of commissions embedded in the prompt, to keep its size predictable. */
+export const MAX_ASSISTANT_COMMISSIONS = 150
 
 function toNumbers(ids: ReadonlyArray<number>, numberById: ReadonlyMap<number, number>): number[] {
   const numbers: number[] = []
@@ -57,7 +70,25 @@ function toNumbers(ids: ReadonlyArray<number>, numberById: ReadonlyMap<number, n
   return numbers.sort((a, b) => a - b)
 }
 
-export function buildAssistantContext({ career, subjects, states }: AssistantContextInput): AssistantContext {
+function formatSlots(slots: ReadonlyArray<ClassSlot>): string {
+  return slots.map((slot) => `${CLASS_DAY_LABELS[slot.day]} ${slot.start}-${slot.end}`).join(", ")
+}
+
+export function buildAssistantContext({ career, subjects, states, commissions, timetable }: AssistantContextInput): AssistantContext {
+  const subjectNames = new Map<number, string>()
+  for (const subject of subjects) subjectNames.set(subject.id, subject.name)
+  const commissionLines: string[] = []
+  for (const commission of commissions.slice(0, MAX_ASSISTANT_COMMISSIONS)) {
+    const subjectName = subjectNames.get(commission.subjectId)
+    if (!subjectName) continue
+    commissionLines.push(
+      `- ${subjectName}: comisión ${commission.name} (${COMMISSION_SHIFT_LABELS[commission.shift]}, ${COMMISSION_PERIOD_LABELS[commission.period]}): ${formatSlots(commission.slots)}`,
+    )
+  }
+  const timetableLines = timetable.map(
+    (entry) => `- ${entry.subjectName}: ${entry.kind === ScheduleEntryKind.Commission ? "comisión" : "horario manual"} ${entry.label}: ${formatSlots(entry.slots)}`,
+  )
+
   const numberById = new Map<number, number>()
   for (const subject of subjects) numberById.set(subject.id, subject.number)
 
@@ -81,7 +112,7 @@ export function buildAssistantContext({ career, subjects, states }: AssistantCon
       canSitFinal: canSitSubjectFinal(subject, states),
     })
   }
-  return { careerName: career.name, careerPlan: career.plan, subjects: assistantSubjects }
+  return { careerName: career.name, careerPlan: career.plan, subjects: assistantSubjects, commissionLines, timetableLines }
 }
 
 function formatCodes(numbers: ReadonlyArray<number>): string {
@@ -142,6 +173,12 @@ export function renderAssistantContext(context: AssistantContext): string {
   const blocked = context.subjects.filter((subject) => subject.status === SubjectStatus.NoCursada && !subject.canTake)
   lines.push("", "MATERIAS NO CURSADAS QUE TODAVÍA NO PUEDE CURSAR (y qué le falta):")
   lines.push(...(blocked.length > 0 ? blocked.map((subject) => formatBlocked(subject, nameByNumber)) : ["- ninguna"]))
+
+  lines.push("", "COMISIONES CARGADAS EN EL CATÁLOGO (únicos horarios de cursado que conocés):")
+  lines.push(...(context.commissionLines.length > 0 ? context.commissionLines : ["- ninguna"]))
+
+  lines.push("", "HORARIO GUARDADO DEL ESTUDIANTE:")
+  lines.push(...(context.timetableLines.length > 0 ? context.timetableLines : ["- vacío"]))
 
   return lines.join("\n")
 }
