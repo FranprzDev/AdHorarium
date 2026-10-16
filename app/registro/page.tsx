@@ -7,6 +7,7 @@ import { DEFAULT_AFTER_SIGN_IN_PATH } from "@/lib/auth/callback"
 
 export const metadata = {
   title: "Crear cuenta",
+  description: "Creá tu cuenta de estudiante en AdHorarium para guardar el estado y las notas de tus materias y armar tu horario.",
 }
 
 export default async function RegisterPage() {

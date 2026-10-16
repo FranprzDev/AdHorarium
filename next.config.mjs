@@ -12,6 +12,12 @@ const securityHeaders = [
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  /**
+   * Every route uses a static `metadata` object (no `generateMetadata`), so resolving it before the first byte costs
+   * nothing. Matching all user agents keeps <title>/<meta> in <head> on dynamic pages (/ingresar, /registro) instead of
+   * streaming them into <body>, which crawlers and Lighthouse do not read as document metadata.
+   */
+  htmlLimitedBots: /.*/,
   images: {
     unoptimized: true,
   },
