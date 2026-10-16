@@ -57,15 +57,14 @@ export function ProfileHeader({ profile, onCareerChangeClick }: ProfileHeaderPro
             </Badge>
           </div>
           
-          <Button 
-            onClick={onCareerChangeClick} 
-            disabled={true} 
-            variant="outline"
-            className="w-full"
-          >
+          <Button onClick={onCareerChangeClick} variant="outline" className="w-full">
             <Settings className="h-4 w-4" />
             Cambiar Carrera
           </Button>
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            El estado de tus materias se guarda por carrera: si cambiás, vas a ver el plan de la nueva carrera y podés volver
+            cuando quieras sin perder lo que cargaste.
+          </p>
         </div>
       </CardContent>
     </Card>

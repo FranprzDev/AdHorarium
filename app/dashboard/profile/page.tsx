@@ -4,6 +4,8 @@ import { useState } from "react"
 import { motion } from "framer-motion"
 import { PageHeader } from "@/components/brand/page-header"
 import { CareerSelectionModal } from "@/components/career-selection-modal"
+import { toast } from "sonner"
+import { useCareerStore } from "@/stores/useCareerStore"
 import { useProfile } from "./_hooks/useProfile"
 import { convertToGPA } from "@/lib/gpa"
 import {
@@ -16,6 +18,7 @@ import {
 
 export default function ProfilePage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const selectCareerById = useCareerStore((state) => state.selectCareerById)
   const {
     profile,
     careers,
@@ -31,8 +34,14 @@ export default function ProfilePage() {
   const gpaEquivalent = averageGrade !== null ? convertToGPA(averageGrade) : null
 
   const onCareerChange = async (careerId: number) => {
-    await handleCareerChange(careerId)
+    const result = await handleCareerChange(careerId)
+    if (!result.ok) {
+      toast.error("No se pudo cambiar la carrera.", { description: result.error })
+      return
+    }
+    selectCareerById(result.data)
     setIsModalOpen(false)
+    toast.success("Carrera actualizada")
   }
 
   if (isLoading) {

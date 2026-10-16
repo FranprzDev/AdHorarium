@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react"
 import { getCareersAction } from "@/app/actions/catalog"
 import { getMyProfileAction, selectMyCareerAction } from "@/app/actions/student"
 import type { StudentProfile } from "@/db/queries/student"
+import type { ActionResult } from "@/lib/action-result"
 import type { Career } from "@/types/types"
 
 interface UseProfileReturn {
@@ -13,7 +14,7 @@ interface UseProfileReturn {
   approvedSubjectsCount: number
   isLoading: boolean
   error: string | null
-  handleCareerChange: (careerId: number) => Promise<void>
+  handleCareerChange: (careerId: number) => Promise<ActionResult<number>>
 }
 
 export function useProfile(): UseProfileReturn {
@@ -37,11 +38,8 @@ export function useProfile(): UseProfileReturn {
 
   const handleCareerChange = async (careerId: number) => {
     const result = await selectMyCareerAction(careerId)
-    if (!result.ok) {
-      setError(result.error)
-      return
-    }
-    await fetchProfileData()
+    if (result.ok) await fetchProfileData()
+    return result
   }
 
   useEffect(() => {
