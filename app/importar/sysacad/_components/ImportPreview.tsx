@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { AlertTriangle, Loader2, RefreshCw } from "lucide-react"
@@ -71,8 +71,8 @@ type ImportPreviewProps = {
 export function ImportPreview({ rows, onDiscard, onImported }: ImportPreviewProps) {
   const router = useRouter()
   const storeCareerId = useCareerStore((state) => state.selectedCareer?.id ?? null)
-  const fetchCareers = useCareerStore((state) => state.fetchCareers)
   const selectCareerById = useCareerStore((state) => state.selectCareerById)
+  const loadedCareerId = useRef<number | null>(null)
   const fetchUserSubjects = useUserSubjectsStore((state) => state.fetchUserSubjects)
 
   const [phase, setPhase] = useState<LoadPhase>(LoadPhase.Loading)
@@ -92,6 +92,10 @@ export function ImportPreview({ rows, onDiscard, onImported }: ImportPreviewProp
       return
     }
     const career = careersResult.data.find((item) => item.id === careerResult.data)
+    // Share the student's real career with the rest of the dashboard (Materias reads it from the store), so the
+    // first-visit dialog and the plan switch below can select by id and reload this page.
+    useCareerStore.setState({ careers: careersResult.data, selectedCareer: career ?? null, isLoading: false, error: null })
+    loadedCareerId.current = career?.id ?? null
     if (!career) {
       setPhase(LoadPhase.NoCareer)
       return
@@ -108,12 +112,12 @@ export function ImportPreview({ rows, onDiscard, onImported }: ImportPreviewProp
   }, [])
 
   useEffect(() => {
-    void fetchCareers(null)
-  }, [fetchCareers])
-
-  // Reloads when the career changes from the first-visit dialog or the plan switch below.
-  useEffect(() => {
     void load()
+  }, [load])
+
+  // Reloads when the career changes elsewhere (the first-visit dialog), not when `load` itself stored it.
+  useEffect(() => {
+    if (storeCareerId !== null && storeCareerId !== loadedCareerId.current) void load()
   }, [load, storeCareerId])
 
   const matches = useMemo<SysacadRowMatch[]>(() => {
@@ -185,9 +189,9 @@ export function ImportPreview({ rows, onDiscard, onImported }: ImportPreviewProp
       toast.error("No pudimos cambiar tu carrera", { description: result.error })
       return
     }
+    // The store change reloads the preview against the new plan.
     selectCareerById(career.id)
     toast.success(`Ahora estás en ${career.name} (Plan ${career.plan})`)
-    await load()
   }
 
   const runImport = async () => {
