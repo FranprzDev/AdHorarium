@@ -12,7 +12,17 @@ import {
   type AdminCorrelative,
   type AdminSubject,
 } from "@/db/queries/admin"
+import { createCommission, deleteCommission, listSubjectCommissions, updateCommission } from "@/db/queries/schedule"
 import { runAction, type ActionResult } from "@/lib/action-result"
+import type { AdminCommission } from "@/lib/schedule/types"
+import {
+  createCommissionInputSchema,
+  deleteCommissionInputSchema,
+  updateCommissionInputSchema,
+  type CreateCommissionInput,
+  type DeleteCommissionInput,
+  type UpdateCommissionInput,
+} from "@/lib/schedule/validation"
 import { requireAdminUserId } from "@/lib/auth/session"
 import {
   adminSubjectFiltersSchema,
@@ -76,5 +86,37 @@ export async function removeCorrelativeAction(correlativeId: number): Promise<Ac
     await requireAdminUserId()
     await removeCorrelative(getDb(), correlativeIdInputSchema.parse({ correlativeId }).correlativeId)
     return null
+  })
+}
+
+export async function listSubjectCommissionsAction(subjectId: number): Promise<ActionResult<AdminCommission[]>> {
+  return runAction(async () => {
+    await requireAdminUserId()
+    return listSubjectCommissions(getDb(), subjectIdInputSchema.parse({ subjectId }).subjectId)
+  })
+}
+
+export async function createCommissionAction(input: CreateCommissionInput): Promise<ActionResult<number>> {
+  return runAction(async () => {
+    await requireAdminUserId()
+    const { subjectId, ...fields } = createCommissionInputSchema.parse(input)
+    return createCommission(getDb(), subjectId, fields)
+  })
+}
+
+export async function updateCommissionAction(input: UpdateCommissionInput): Promise<ActionResult<null>> {
+  return runAction(async () => {
+    await requireAdminUserId()
+    const { id, ...fields } = updateCommissionInputSchema.parse(input)
+    await updateCommission(getDb(), id, fields)
+    return null
+  })
+}
+
+/** Returns how many student entries were turned into custom entries. */
+export async function deleteCommissionAction(input: DeleteCommissionInput): Promise<ActionResult<number>> {
+  return runAction(async () => {
+    await requireAdminUserId()
+    return deleteCommission(getDb(), deleteCommissionInputSchema.parse(input))
   })
 }
