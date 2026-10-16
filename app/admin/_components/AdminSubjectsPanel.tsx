@@ -298,7 +298,7 @@ export function AdminSubjectsPanel() {
                 <p className="text-xs font-medium text-muted-foreground">
                   N° {subject.number} · Nivel {subject.level}
                   {subject.hours !== null && ` · ${subject.hours} h`}
-                  {subject.examTable !== null && ` · Mesa ${subject.examTable}`}
+                  {subject.examTable !== null && ` · ${subject.examTable}`}
                 </p>
                 <p className="font-semibold leading-snug text-foreground">{subject.name}</p>
                 <p className="text-sm text-muted-foreground">{subject.careerName}</p>
