@@ -197,3 +197,22 @@ export enum LogLevel {
 export enum LogEvent {
   RequestError = "request_error",
 }
+
+/** Text formats accepted by the admin commission import. */
+export enum CommissionImportFormat {
+  Csv = "csv",
+  Json = "json",
+}
+
+/** What an import does with one commission of the file, compared with the catalog. */
+export enum CommissionImportStatus {
+  Create = "create",
+  Update = "update",
+  Unchanged = "unchanged",
+}
+
+/** Errors block the import; warnings are shown in the preview but do not. */
+export enum ImportIssueLevel {
+  Error = "error",
+  Warning = "warning",
+}

@@ -10,8 +10,13 @@ import { AppRoute, chooseOption, expectToast, toasts } from "../support/ui"
 const ANALISIS_II = "Análisis Matemático II"
 const PARADIGMAS = "Paradigmas de Programación"
 const FISICA_I = "Física I"
-const COMMISSION_A = "Comisión de ejemplo A"
-const COMMISSION_B = "Comisión de ejemplo B"
+/*
+ * Official 2026 commissions (Departamento de Sistemas UTN-FRT): Análisis Matemático II 2K01 meets Monday 08:00–09:30,
+ * Paradigmas 2K02 Monday 08:45–10:15 (a clash) and Paradigmas 2K01 Monday 12:30–14:00 and Tuesday 08:45–10:15 (no clash).
+ */
+const ANALISIS_II_COMMISSION = "2K01"
+const PARADIGMAS_CLASHING = "2K02"
+const PARADIGMAS_FREE = "2K01"
 const SHARE_NAME = "E2E"
 const SHARE_LINK_PATTERN = /\/horarios\/compartido\/[A-Za-z0-9_-]{22}$/
 
@@ -56,16 +61,16 @@ describe("schedule builder", { tags: ["schedule"], serial: true, session: Person
 
   test("SCH-02 picking a catalog commission adds it to the grid", async ({ screen, browser }) => {
     await selectSubject(screen, ANALISIS_II)
-    await pickCommission(screen, browser, ANALISIS_II, COMMISSION_A)
+    await pickCommission(screen, browser, ANALISIS_II, ANALISIS_II_COMMISSION)
     await expect(screen.getByRole("heading", "Tus materias (1)")).toBeVisible()
     await expect(addPanel(screen).getByRole("button", "En tu horario")).toBeDisabled()
   })
 
   test("SCH-03 a clashing commission is flagged before and after picking it", async ({ app, screen, browser }) => {
     await selectSubject(screen, PARADIGMAS)
-    const clashing = addPanel(screen).getByRole("listitem").filter({ hasText: COMMISSION_A })
+    const clashing = addPanel(screen).getByRole("listitem").filter({ hasText: PARADIGMAS_CLASHING })
     await expect(clashing.getByText(`Se superpone con ${ANALISIS_II}`)).toBeVisible()
-    await pickCommission(screen, browser, PARADIGMAS, COMMISSION_A)
+    await pickCommission(screen, browser, PARADIGMAS, PARADIGMAS_CLASHING)
     await expect(screen.getByText("Tu horario tiene 1 superposición", { exact: false })).toBeVisible()
     await expect(screen.getByText("Se superpone", { exact: true }).first()).toBeVisible()
     await app.screenshot("superposicion")
@@ -74,7 +79,7 @@ describe("schedule builder", { tags: ["schedule"], serial: true, session: Person
   test("SCH-04 changing the commission from the list resolves the overlap", async ({ screen, browser }) => {
     await screen.getByRole("button", `Cambiar la comisión de ${PARADIGMAS}`).tap()
     await expect(addPanel(screen).getByRole("combobox", "Materia")).toContainText(PARADIGMAS)
-    await pickCommission(screen, browser, PARADIGMAS, COMMISSION_B)
+    await pickCommission(screen, browser, PARADIGMAS, PARADIGMAS_FREE)
     await expect(screen.getByText("Tu horario tiene", { exact: false })).toBeHidden()
     await expect(screen.getByRole("heading", "Tus materias (2)")).toBeVisible()
   })

@@ -27,6 +27,10 @@ const commissionColumns = {
   shift: commissions.shift,
   period: commissions.period,
   slots: commissions.slots,
+  term: commissions.term,
+  source: commissions.source,
+  sourceUrl: commissions.sourceUrl,
+  sourceUpdatedAt: commissions.sourceUpdatedAt,
 }
 
 // ---------------------------------------------------------------------------
@@ -49,11 +53,11 @@ async function assertSubjectExists(db: AppDatabase, subjectId: number): Promise<
   if (!subject) throw new AdminRuleError("La materia no existe")
 }
 
-async function assertCommissionNameAvailable(db: AppDatabase, subjectId: number, name: string, exceptId: number | null): Promise<void> {
-  const conditions = [eq(commissions.subjectId, subjectId), eq(commissions.name, name)]
+async function assertCommissionNameAvailable(db: AppDatabase, subjectId: number, fields: CommissionFields, exceptId: number | null): Promise<void> {
+  const conditions = [eq(commissions.subjectId, subjectId), eq(commissions.name, fields.name), eq(commissions.period, fields.period)]
   if (exceptId !== null) conditions.push(ne(commissions.id, exceptId))
   const [taken] = await db.select({ id: commissions.id }).from(commissions).where(and(...conditions)).limit(1)
-  if (taken) throw new AdminRuleError(`La materia ya tiene una comisión llamada ${name}`)
+  if (taken) throw new AdminRuleError(`La materia ya tiene una comisión llamada ${fields.name} en ese período`)
 }
 
 async function getCommissionOrThrow(db: AppDatabase, commissionId: number): Promise<Commission> {
@@ -64,7 +68,7 @@ async function getCommissionOrThrow(db: AppDatabase, commissionId: number): Prom
 
 export async function createCommission(db: AppDatabase, subjectId: number, fields: CommissionFields): Promise<number> {
   await assertSubjectExists(db, subjectId)
-  await assertCommissionNameAvailable(db, subjectId, fields.name, null)
+  await assertCommissionNameAvailable(db, subjectId, fields, null)
   const [created] = await db
     .insert(commissions)
     .values({ subjectId, name: fields.name, shift: fields.shift, period: fields.period, slots: fields.slots })
@@ -75,7 +79,7 @@ export async function createCommission(db: AppDatabase, subjectId: number, field
 /** Students that picked this commission see the new slots right away: entries reference it by id. */
 export async function updateCommission(db: AppDatabase, commissionId: number, fields: CommissionFields): Promise<void> {
   const current = await getCommissionOrThrow(db, commissionId)
-  await assertCommissionNameAvailable(db, current.subjectId, fields.name, commissionId)
+  await assertCommissionNameAvailable(db, current.subjectId, fields, commissionId)
   await db
     .update(commissions)
     .set({ name: fields.name, shift: fields.shift, period: fields.period, slots: fields.slots })

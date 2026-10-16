@@ -5,7 +5,8 @@ import { loadState, StateKey } from "../support/state"
 import { AppRoute, chooseOption, expectToast } from "../support/ui"
 
 const OWN_SUBJECT = "Sintaxis y Semántica de los Lenguajes"
-const OWN_COMMISSION = "Comisión de ejemplo A"
+/** Official 2026 commission (Departamento de Sistemas UTN-FRT). */
+const OWN_COMMISSION = "2K01"
 
 describe("import a shared timetable", { tags: ["schedule", "import"], serial: true, session: Persona.StudentB }, () => {
   test("IMP-01 the second student starts with one subject of their own", async ({ app, screen, browser }) => {

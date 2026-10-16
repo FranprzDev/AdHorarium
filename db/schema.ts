@@ -198,9 +198,19 @@ export const commissions = pgTable(
     period: commissionPeriodEnum("period").notNull(),
     /** Validated with `classSlotsSchema`; stored as JSON so slots change atomically with the commission. */
     slots: jsonb("slots").$type<ClassSlot[]>().notNull(),
+    /** Academic term the timetable belongs to, e.g. "2.º cuatrimestre 2026". Null for commissions loaded by hand. */
+    term: varchar("term", { length: 60 }),
+    /** Who published the timetable, shown to students next to the commission. */
+    source: varchar("source", { length: 120 }),
+    sourceUrl: varchar("source_url", { length: 300 }),
+    /** When the commission was last loaded from its source by an import. */
+    sourceUpdatedAt: timestamp("source_updated_at", { withTimezone: true, mode: "date" }),
     ...timestamps,
   },
-  (table) => [unique("commissions_subject_name_unique").on(table.subjectId, table.name), index("commissions_subject_idx").on(table.subjectId)],
+  (table) => [
+    unique("commissions_subject_name_period_unique").on(table.subjectId, table.name, table.period),
+    index("commissions_subject_idx").on(table.subjectId),
+  ],
 )
 
 /** One subject of a student's timetable: a catalog commission (by reference) or custom slots. */

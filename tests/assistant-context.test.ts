@@ -99,6 +99,8 @@ describe("assistant eligibility", () => {
   })
 })
 
+const NO_SOURCE = { term: null, source: null, sourceUrl: null, sourceUpdatedAt: null }
+
 describe("assistant context", () => {
   const current = states([
     [1, SubjectStatus.Promocionada],
@@ -112,6 +114,7 @@ describe("assistant context", () => {
       shift: CommissionShift.Manana,
       period: CommissionPeriod.PrimerCuatrimestre,
       slots: [{ day: ClassDay.Lunes, start: "08:00", end: "10:00", classroom: null }],
+      ...NO_SOURCE,
     },
     {
       id: 11,
@@ -120,6 +123,7 @@ describe("assistant context", () => {
       shift: CommissionShift.Noche,
       period: CommissionPeriod.Anual,
       slots: [{ day: ClassDay.Martes, start: "19:00", end: "21:00", classroom: null }],
+      ...NO_SOURCE,
     },
   ]
   const timetable: ScheduleEntry[] = [

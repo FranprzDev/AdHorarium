@@ -16,6 +16,13 @@ export type Commission = {
   shift: CommissionShift
   period: CommissionPeriod
   slots: ClassSlot[]
+  /** Academic term of an imported official timetable, e.g. "2.º cuatrimestre 2026"; null when loaded by hand. */
+  term: string | null
+  /** Publisher of the timetable, shown to students as "Fuente: …". */
+  source: string | null
+  sourceUrl: string | null
+  /** When an import last changed the commission. */
+  sourceUpdatedAt: Date | null
 }
 
 /** Commission as listed in the admin panel, with how many student timetables use it. */

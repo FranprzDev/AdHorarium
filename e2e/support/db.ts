@@ -47,14 +47,18 @@ export async function promoteToAdmin(email: string): Promise<void> {
 export const E2E_EMAIL_PATTERN = `${E2E_EMAIL_PREFIX}%@${E2E_EMAIL_DOMAIN}`
 export const E2E_SUBJECT_PATTERN = `${E2E_SUBJECT_PREFIX}%`
 
-export type CleanupResult = { users: number; subjects: number }
+/** Prefix of every commission the suite imports into real subjects; the cleanup script deletes commissions named like it. */
+export const E2E_COMMISSION_PATTERN = "E2E-%"
+
+export type CleanupResult = { users: number; subjects: number; commissions: number }
 
 /**
- * Deletes every account and subject any run of the suite created. Foreign keys cascade to subject states, schedule
- * entries, shares, sessions, correlatives and commissions.
+ * Deletes every account, subject and imported commission any run of the suite created. Foreign keys cascade to subject
+ * states, schedule entries, shares, sessions, correlatives and commissions.
  */
 export async function cleanupE2eData(): Promise<CleanupResult> {
+  const commissions = await sql("delete from commissions where name like $1", [E2E_COMMISSION_PATTERN])
   const subjects = await sql("delete from subjects where name like $1", [E2E_SUBJECT_PATTERN])
   const users = await sql("delete from users where email like $1", [E2E_EMAIL_PATTERN])
-  return { users: users.rowCount ?? 0, subjects: subjects.rowCount ?? 0 }
+  return { users: users.rowCount ?? 0, subjects: subjects.rowCount ?? 0, commissions: commissions.rowCount ?? 0 }
 }
