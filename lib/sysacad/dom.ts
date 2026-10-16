@@ -7,17 +7,19 @@ function cellTexts(row: HTMLTableRowElement): string[] {
   return cells
 }
 
+export type SysacadTable = { table: HTMLTableElement; grid: string[][] }
+
 /**
  * Finds the "Estado académico" table in a SysAcad document (the one whose header has Año, Materia, Estado and
- * Plan, in any order) and returns its rows as cell texts, header included. Null when the page has no such table.
+ * Plan, in any order) and returns it with its rows as cell texts, header included. Null when there is no such table.
  */
-export function findSysacadGrid(root: ParentNode): string[][] | null {
+export function findSysacadTable(root: ParentNode): SysacadTable | null {
   for (const table of Array.from(root.querySelectorAll("table"))) {
     const rows = Array.from(table.rows)
     // `table.rows` only lists the table's own rows, so outer layout tables never match the header.
     const headerIndex = rows.findIndex((row) => detectColumns(cellTexts(row)) !== null)
     if (headerIndex === -1) continue
-    return rows.slice(headerIndex).map(cellTexts)
+    return { table, grid: rows.slice(headerIndex).map(cellTexts) }
   }
   return null
 }

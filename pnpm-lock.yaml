@@ -222,6 +222,9 @@ importers:
       e2e:
         specifier: 0.21.1
         version: 0.21.1(ai@7.0.139(zod@3.25.76))
+      esbuild:
+        specifier: 0.28.2
+        version: 0.28.2
       eslint:
         specifier: ^9.39.5
         version: 9.39.5(jiti@1.21.7)

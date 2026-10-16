@@ -29,3 +29,4 @@ next-env.d.ts
 # local MCP config (contains access tokens)
 .cursor/mcp.json
 .e2e/
+extension/dist/

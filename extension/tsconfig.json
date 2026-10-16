@@ -1,0 +1,8 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "es2022"],
+    "plugins": []
+  },
+  "include": ["src/**/*.ts", "../lib/sysacad/**/*.ts"]
+}
