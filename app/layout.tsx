@@ -3,6 +3,7 @@ import "./globals.css"
 import type { Metadata, Viewport } from "next"
 import { Inter, Source_Serif_4 } from "next/font/google"
 import { Providers } from "./providers"
+import { SITE_URL } from "@/lib/site"
 
 const sans = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" })
 const serif = Source_Serif_4({ subsets: ["latin"], variable: "--font-serif", display: "swap", weight: ["500", "600", "700"] })
@@ -12,6 +13,7 @@ const DESCRIPTION =
   "Planificador académico para estudiantes de ingeniería de la UTN Facultad Regional Tucumán: plan de correlativas, estado de materias, mesas de examen y promedio."
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: TITLE,
     template: "%s · AdHorarium",
