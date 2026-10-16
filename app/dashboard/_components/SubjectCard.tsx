@@ -46,7 +46,7 @@ export default function SubjectCard({ subject, onSelect, showBadge = true }: Sub
             <CardTitle className="text-sm font-medium leading-snug text-foreground">
               {subject.name}
             </CardTitle>
-            <Badge variant={BadgeVariant.Outline} className="whitespace-nowrap border-border text-[0.65rem] font-medium text-muted-foreground">
+            <Badge variant={BadgeVariant.Outline} className="whitespace-nowrap border-border bg-muted text-[0.65rem] font-medium text-foreground/80">
               Nivel {subject.level}
             </Badge>
           </div>
