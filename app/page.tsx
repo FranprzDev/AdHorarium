@@ -160,30 +160,45 @@ export default function LandingPage() {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/demo">
-                    <LayoutDashboard className="h-4 w-4" />
+                    <Network className="h-4 w-4" />
                     Demo
                   </Link>
                 </DropdownMenuItem>
-                {!user && (
-                  <DropdownMenuItem asChild>
-                    <Link href="/registro">
-                      <UserPlus className="h-4 w-4" />
-                      Crear cuenta
+                {user ? (
+                  <DropdownMenuItem asChild className="sm:hidden">
+                    <Link href="/dashboard">
+                      <LayoutDashboard className="h-4 w-4" />
+                      Dashboard
                     </Link>
                   </DropdownMenuItem>
+                ) : (
+                  <>
+                    <DropdownMenuItem asChild className="sm:hidden">
+                      <Link href="/ingresar">
+                        <LogIn className="h-4 w-4" />
+                        Iniciar sesión
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/registro">
+                        <UserPlus className="h-4 w-4" />
+                        Crear cuenta
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
             <ThemeToggle />
             {user ? (
-              <Button asChild>
+              <Button asChild className="hidden sm:inline-flex">
                 <Link href="/dashboard">
                   <LayoutDashboard className="h-4 w-4" />
                   Dashboard
                 </Link>
               </Button>
             ) : (
-              <Button asChild>
+              <Button asChild className="hidden sm:inline-flex">
                 <Link href="/ingresar">
                   <LogIn className="h-4 w-4" />
                   Iniciar sesión

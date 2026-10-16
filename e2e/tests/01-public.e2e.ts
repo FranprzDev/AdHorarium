@@ -43,6 +43,8 @@ describe("public pages", { tags: ["public"] }, () => {
     await nav.getByRole("button", "Más secciones").tap()
     await expect(screen.getByRole("menuitem", "Demo")).toBeVisible()
     await expect(screen.getByRole("menuitem", "Crear cuenta")).toBeVisible()
+    await expect(screen.getByRole("menuitem", "Iniciar sesión")).toHaveAttribute("href", AppRoute.SignIn)
+    expect(await browser.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
     await app.screenshot("landing-menu-movil")
     await screen.getByRole("menuitem", "Planes de estudio").tap()
     await browser.waitForURL(/\/careers$/)
