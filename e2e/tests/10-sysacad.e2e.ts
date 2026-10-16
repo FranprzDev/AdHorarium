@@ -9,11 +9,13 @@ const IMPORT_ROUTE = "/importar/sysacad"
 const APPROVED = "Sistemas Operativos"
 const REGULAR = "Física II"
 const TAKING = "Tecnologías para la Automatización"
+/** 03-student grades another subject of student A with 8 in the same run, so this grade must differ to stay unique. */
+const APPROVED_GRADE = 9
 
 /** Invented rows shaped like the SysAcad page: one per state, plus a plan 2008 entrance course row and a blank one. */
 const ROWS: SysacadRow[] = [
   { year: 0, name: "Física", plan: "2008", status: SysacadRowStatus.Approved, approvedYear: 2021 },
-  { year: 2, name: APPROVED, plan: "2023", status: SysacadRowStatus.Approved, grade: 8 },
+  { year: 2, name: APPROVED, plan: "2023", status: SysacadRowStatus.Approved, grade: APPROVED_GRADE },
   { year: 2, name: REGULAR, plan: "2023", status: SysacadRowStatus.Regular, regularYear: 2022 },
   { year: 4, name: TAKING, plan: "2023", status: SysacadRowStatus.Enrolled, commission: "4K02" },
   { year: 3, name: "Inglés II", plan: "2023", status: SysacadRowStatus.None },
@@ -55,7 +57,7 @@ describe("import from SysAcad, signed in", { tags: ["student", "sysacad"], seria
     // Leaving the import must keep the student's own career in the Materias page.
     await expect(screen.getByRole("heading", SYSTEMS_CAREER)).toBeVisible({ timeout: 20_000 })
     await expect(screen.getByRole("combobox", `Estado de ${APPROVED}`)).toHaveText("Promocionado", { timeout: 20_000 })
-    await expect(screen.getByText("Nota: 8/10")).toBeVisible()
+    await expect(screen.getByText(`Nota: ${APPROVED_GRADE}/10`)).toBeVisible()
     await expect(screen.getByRole("combobox", `Estado de ${REGULAR}`)).toHaveText("Regular")
     await expect(screen.getByRole("combobox", `Estado de ${TAKING}`)).toHaveText("Cursando")
   })
