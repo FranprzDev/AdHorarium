@@ -41,9 +41,9 @@ interface LogoProps {
 export function Logo({ tone = LogoTone.Default, showTagline = false, className, markClassName }: LogoProps) {
   const isInverted = tone === LogoTone.Inverted
   return (
-    <span className={cn("inline-flex items-center gap-2.5", className)}>
+    <span className={cn("inline-flex shrink-0 items-center gap-2.5 whitespace-nowrap", className)}>
       <LogoMark className={markClassName} />
-      <span className="flex flex-col leading-none">
+      <span className="flex shrink-0 flex-col leading-none">
         <span
           className={cn(
             "font-serif text-[1.35rem] font-semibold tracking-tight",
