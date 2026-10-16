@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 
 export const metadata = {
   title: "Acceso denegado",
+  description: "Esta sección es solo para administradores de AdHorarium.",
 }
 
 export default function AccessDeniedPage() {

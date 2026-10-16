@@ -91,3 +91,20 @@ describe("student tools", { tags: ["student"], session: Persona.StudentA }, () =
     }
   })
 })
+
+describe("student page titles", { tags: ["student"], session: Persona.StudentA }, () => {
+  test("STU-07 every signed-in page has its own tab title", async ({ app, browser }) => {
+    const expected: Array<[AppRoute, string]> = [
+      [AppRoute.Dashboard, "Plan de correlativas · AdHorarium"],
+      [AppRoute.Subjects, "Mis materias · AdHorarium"],
+      [AppRoute.Schedule, "Gestor de horarios · AdHorarium"],
+      [AppRoute.ExamTables, "Buscador de mesa · AdHorarium"],
+      [AppRoute.Profile, "Mi perfil · AdHorarium"],
+    ]
+    for (const [route, title] of expected) {
+      await app.open(route)
+      await browser.waitForURL(new RegExp(`${route}$`), { timeout: 20_000 })
+      expect(await browser.title()).toBe(title)
+    }
+  })
+})
