@@ -51,6 +51,7 @@ export default function MateriasPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [updating, setUpdating] = useState<number | null>(null)
   const [updateError, setUpdateError] = useState<string | null>(null)
+  const [gradeError, setGradeError] = useState<string | null>(null)
   const [filter, setFilter] = useState<SubjectFilter>(SubjectFilter.All)
 
   useEffect(() => {
@@ -191,7 +192,7 @@ export default function MateriasPage() {
     const result = await updateUserSubjectState(selectedSubject.id, SubjectStatus.Promocionada, grade)
     setUpdating(null)
     if (!result.ok) {
-      setUpdateError("Error al guardar la nota")
+      setGradeError("No se pudo guardar la nota. Probá de nuevo.")
       toast.error(`No se pudo guardar la nota de ${selectedSubject.name}.`, { description: result.error })
       return
     }
@@ -204,6 +205,7 @@ export default function MateriasPage() {
   const openGradeModal = (subject: PlanSubject) => {
     setSelectedSubject(subject)
     setGradeInput(userSubjects[subject.id]?.grade?.toString() ?? "")
+    setGradeError(null)
     setIsModalOpen(true)
   }
 
@@ -323,10 +325,20 @@ export default function MateriasPage() {
                 id="grade"
                 type="number"
                 value={gradeInput}
-                onChange={e => setGradeInput(e.target.value)}
+                onChange={e => {
+                  setGradeInput(e.target.value)
+                  setGradeError(null)
+                }}
                 min="1"
                 max="10"
+                aria-invalid={gradeError !== null}
+                aria-describedby={gradeError ? "grade-error" : undefined}
               />
+              {gradeError && (
+                <p id="grade-error" role="alert" className="text-sm text-destructive">
+                  {gradeError}
+                </p>
+              )}
               <Button onClick={handleGradeSubmit} disabled={updating !== null}>
                 {updating ? "Guardando..." : "Guardar Nota"}
               </Button>
