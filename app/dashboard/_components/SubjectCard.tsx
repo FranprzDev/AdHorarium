@@ -46,9 +46,16 @@ export default function SubjectCard({ subject, onSelect, showBadge = true }: Sub
             <CardTitle className="text-sm font-medium leading-snug text-foreground">
               {subject.name}
             </CardTitle>
-            <Badge variant={BadgeVariant.Outline} className="whitespace-nowrap border-border bg-muted text-[0.65rem] font-medium text-foreground/80">
-              Nivel {subject.level}
-            </Badge>
+            <div className="flex shrink-0 flex-col items-end gap-1">
+              <Badge variant={BadgeVariant.Outline} className="whitespace-nowrap border-border bg-muted text-[0.65rem] font-medium text-foreground/80">
+                Nivel {subject.level}
+              </Badge>
+              {subject.isElective && (
+                <Badge variant={BadgeVariant.Outline} className="whitespace-nowrap border-dashed text-[0.65rem] font-medium text-muted-foreground">
+                  Electiva
+                </Badge>
+              )}
+            </div>
           </div>
         </CardHeader>
       </div>

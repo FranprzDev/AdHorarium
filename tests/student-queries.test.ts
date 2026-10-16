@@ -32,7 +32,7 @@ afterAll(async () => {
 describe("catalog queries", () => {
   it("returns the plan with correlatives resolved to subject ids", async () => {
     const plan = await listPlanSubjects(db, careerId)
-    expect(plan).toHaveLength(36)
+    expect(plan).toHaveLength(65)
     const finalProject = plan.find((subject) => subject.name === "Proyecto Final")
     expect(finalProject?.approvedToTakeIds.length).toBeGreaterThan(0)
     const ids = new Set(plan.map((subject) => subject.id))

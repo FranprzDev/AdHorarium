@@ -82,6 +82,7 @@ export function AddSubjectPanel({ subjects, states, commissions, entries, onPick
               {group.subjects.map((candidate) => (
                 <SelectItem key={candidate.id} value={String(candidate.id)}>
                   {candidate.name} · Nivel {candidate.level}
+                  {candidate.isElective ? " · Electiva" : ""}
                   {commissionCountBySubject.has(candidate.id) ? "" : " · sin comisiones"}
                 </SelectItem>
               ))}

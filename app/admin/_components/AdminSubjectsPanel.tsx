@@ -21,6 +21,7 @@ import { DeleteSubjectDialog } from "./DeleteSubjectDialog"
 import { ImportCommissionsDialog } from "./ImportCommissionsDialog"
 import { SubjectFormDialog } from "./SubjectFormDialog"
 import { PageHeader } from "@/components/brand/page-header"
+import { careerLabel } from "@/lib/careers"
 
 const ALL_OPTION = "all"
 const SEARCH_DEBOUNCE_MS = 300
@@ -191,7 +192,7 @@ export function AdminSubjectsPanel() {
             <SelectItem value={ALL_OPTION}>Todas las carreras</SelectItem>
             {careers.map((career) => (
               <SelectItem key={career.id} value={String(career.id)}>
-                {career.name}
+                {careerLabel(career, careers)}
               </SelectItem>
             ))}
           </SelectContent>

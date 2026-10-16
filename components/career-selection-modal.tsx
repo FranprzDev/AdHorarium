@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { careerLabel } from "@/lib/careers"
 import { motion } from "framer-motion"
 
 type Career = {
@@ -59,7 +60,7 @@ export function CareerSelectionModal({
             <SelectContent>
               {careers.map((career) => (
                 <SelectItem key={career.id} value={career.id.toString()}>
-                  {career.name}
+                  {careerLabel(career, careers)}
                 </SelectItem>
               ))}
             </SelectContent>

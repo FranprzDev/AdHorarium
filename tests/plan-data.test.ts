@@ -9,13 +9,14 @@ function subjectsOf(code: CareerCode) {
 }
 
 describe("seed plan data", () => {
-  it("seeds the five careers and the three exam tables", () => {
+  it("seeds every career code and the three exam tables", () => {
     expect(plan.careers.map((career) => career.code).sort()).toEqual(Object.values(CareerCode).sort())
     expect(plan.examTables.map((table) => table.name)).toEqual([ExamTable.MesaI, ExamTable.MesaII, ExamTable.MesaIII])
   })
 
   it("keeps the official subject counts per career", () => {
-    expect(subjectsOf(CareerCode.Sistemas)).toHaveLength(36)
+    expect(subjectsOf(CareerCode.Sistemas)).toHaveLength(65)
+    expect(subjectsOf(CareerCode.SistemasPlan2008)).toHaveLength(64)
     expect(subjectsOf(CareerCode.Electronica)).toHaveLength(37)
     expect(subjectsOf(CareerCode.Civil)).toHaveLength(41)
     expect(subjectsOf(CareerCode.Mecanica)).toHaveLength(40)
@@ -40,7 +41,12 @@ describe("seed plan data", () => {
   it("never stores the same requirement twice for one purpose", () => {
     const keys = plan.correlatives.map((c) => `${c.careerCode}-${c.subjectNumber}-${c.requiredNumber}-${c.purpose}`)
     expect(new Set(keys).size).toBe(keys.length)
-    expect(plan.correlatives.every((c) => c.purpose === CorrelativePurpose.Cursar)).toBe(true)
+  })
+
+  it("keeps the 2023 ordinances to correlatives for taking a course", () => {
+    const ordinanceCodes = new Set([CareerCode.Electronica, CareerCode.Civil, CareerCode.Mecanica, CareerCode.EnergiaElectrica])
+    const fromOrdinances = plan.correlatives.filter((c) => ordinanceCodes.has(c.careerCode))
+    expect(fromOrdinances.every((c) => c.purpose === CorrelativePurpose.Cursar)).toBe(true)
   })
 
   it("marks subjects shared by several careers as basic sciences", () => {

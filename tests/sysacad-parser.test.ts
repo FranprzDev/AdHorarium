@@ -274,7 +274,13 @@ describe("matching SysAcad rows to the plan", () => {
 
   it("leaves subjects outside the plan unmatched", () => {
     expect(matchOf("Práctica Profesional Supervisada").subjectId).toBeNull()
-    expect(matchOf("Auditoria en Sistemas de Información (El").subjectId).toBeNull()
+  })
+
+  it("ties an elective cut by the column width to the plan's elective", () => {
+    expect(matchOf("Auditoria en Sistemas de Información (El")).toMatchObject({
+      method: SysacadMatchMethod.Fuzzy,
+      subjectId: subjectId("Auditoría en Sistemas de Información"),
+    })
   })
 
   it("matches every other row of the fixture to a distinct plan subject", () => {
