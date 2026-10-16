@@ -3,7 +3,7 @@ import { expect } from "e2e"
 import { buildSysacadPayload, encodeSysacadFragment } from "../../lib/sysacad/payload"
 import { SysacadRowStatus, type SysacadRow } from "../../lib/sysacad/types"
 import { accountFor, Persona } from "../support/env"
-import { AppRoute, expectToast, fillSignIn } from "../support/ui"
+import { AppRoute, expectToast, fillSignIn, SYSTEMS_CAREER } from "../support/ui"
 
 const IMPORT_ROUTE = "/importar/sysacad"
 const APPROVED = "Sistemas Operativos"
@@ -52,6 +52,8 @@ describe("import from SysAcad, signed in", { tags: ["student", "sysacad"], seria
     } else {
       await app.open(AppRoute.Subjects)
     }
+    // Leaving the import must keep the student's own career in the Materias page.
+    await expect(screen.getByRole("heading", SYSTEMS_CAREER)).toBeVisible({ timeout: 20_000 })
     await expect(screen.getByRole("combobox", `Estado de ${APPROVED}`)).toHaveText("Promocionado", { timeout: 20_000 })
     await expect(screen.getByText("Nota: 8/10")).toBeVisible()
     await expect(screen.getByRole("combobox", `Estado de ${REGULAR}`)).toHaveText("Regular")
