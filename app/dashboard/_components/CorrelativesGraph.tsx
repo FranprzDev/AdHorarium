@@ -126,11 +126,12 @@ export default function CorrelativesGraph({ showBadges = true }: CorrelativesGra
         <Tabs defaultValue={String(levels[0])} className="w-full">
           <TabsList className="grid w-full" style={levelColumns}>
             {levels.map(level => (
-              <TabsTrigger key={level} value={String(level)}>{level}</TabsTrigger>
+              <TabsTrigger key={level} value={String(level)} aria-label={`Nivel ${level}`}>{level}</TabsTrigger>
             ))}
           </TabsList>
           {levels.map(level => (
             <TabsContent key={level} value={String(level)}>
+              <h2 className="sr-only">Nivel {level}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                 {groupedSubjects.get(level)?.map(subject => (
                   <SubjectCard 
