@@ -214,7 +214,7 @@ export default function LandingPage() {
               {FEATURES.map((feature) => (
                 <article key={feature.title} className="surface-card flex h-full flex-col p-6">
                   <feature.icon className="h-6 w-6 text-brand-strong" />
-                  <h3 className="mt-4 text-lg font-semibold text-foreground">{feature.title}</h3>
+                  <h3 className="mt-4 text-lg font-semibold leading-snug text-foreground md:min-h-[3.1rem]">{feature.title}</h3>
                   <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{feature.description}</p>
                   <ul className="mt-5 space-y-2 border-t border-border pt-4">
                     {feature.benefits.map((benefit) => (
