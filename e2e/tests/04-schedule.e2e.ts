@@ -5,7 +5,7 @@ import type { Screen } from "e2e"
 import { expect } from "e2e"
 import { Persona } from "../support/env"
 import { loadState, saveState, StateKey } from "../support/state"
-import { AppRoute, chooseOption, expectToast } from "../support/ui"
+import { AppRoute, chooseOption, expectToast, toasts } from "../support/ui"
 
 const ANALISIS_II = "Análisis Matemático II"
 const PARADIGMAS = "Paradigmas de Programación"
@@ -136,9 +136,14 @@ describe("schedule builder", { tags: ["schedule"], serial: true, session: Person
     await dialog.getByRole("button", "Close").tap()
   })
 
-  test("SCH-09 removing a subject updates the list", async ({ screen, browser }) => {
+  test("SCH-09 removing a subject updates the list and can be undone", async ({ screen, browser }) => {
     await screen.getByRole("button", `Quitar ${FISICA_I} del horario`).tap()
     await expectToast(browser, `${FISICA_I} quitada del horario`)
+    await expect(screen.getByRole("heading", "Tus materias (2)")).toBeVisible()
+    await toasts(browser).getByRole("button", "Deshacer").first().tap()
+    await expectToast(browser, `${FISICA_I} volvió al horario`)
+    await expect(screen.getByRole("heading", "Tus materias (3)")).toBeVisible()
+    await screen.getByRole("button", `Quitar ${FISICA_I} del horario`).tap()
     await expect(screen.getByRole("heading", "Tus materias (2)")).toBeVisible()
   })
 })
