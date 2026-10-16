@@ -13,6 +13,7 @@ import {
   GraduationCap,
   LayoutDashboard,
   LogIn,
+  Menu,
   UserPlus,
   Network,
   Search,
@@ -21,6 +22,12 @@ import {
   TrendingUp,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Logo } from "@/components/brand/logo"
 import { ThemeToggle } from "@/components/brand/theme-toggle"
 import { PlanPreview } from "@/components/brand/plan-preview"
@@ -138,16 +145,60 @@ export default function LandingPage() {
             >
               Demo
             </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden" aria-label="Más secciones">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-48">
+                <DropdownMenuItem asChild>
+                  <Link href="/careers">
+                    <BookOpen className="h-4 w-4" />
+                    Planes de estudio
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/demo">
+                    <Network className="h-4 w-4" />
+                    Demo
+                  </Link>
+                </DropdownMenuItem>
+                {user ? (
+                  <DropdownMenuItem asChild className="sm:hidden">
+                    <Link href="/dashboard">
+                      <LayoutDashboard className="h-4 w-4" />
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                ) : (
+                  <>
+                    <DropdownMenuItem asChild className="sm:hidden">
+                      <Link href="/ingresar">
+                        <LogIn className="h-4 w-4" />
+                        Iniciar sesión
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/registro">
+                        <UserPlus className="h-4 w-4" />
+                        Crear cuenta
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
             <ThemeToggle />
             {user ? (
-              <Button asChild>
+              <Button asChild className="hidden sm:inline-flex">
                 <Link href="/dashboard">
                   <LayoutDashboard className="h-4 w-4" />
                   Dashboard
                 </Link>
               </Button>
             ) : (
-              <Button asChild>
+              <Button asChild className="hidden sm:inline-flex">
                 <Link href="/ingresar">
                   <LogIn className="h-4 w-4" />
                   Iniciar sesión
@@ -176,7 +227,7 @@ export default function LandingPage() {
                 <Button size="lg" asChild className="h-12 px-6 text-base">
                   <Link href="/registro">
                     <UserPlus className="h-4 w-4" />
-                    Comenzar gratis
+                    Crear cuenta
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
