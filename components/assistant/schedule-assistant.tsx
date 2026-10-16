@@ -97,8 +97,8 @@ export function ScheduleAssistant() {
             <p className="eyebrow">Gestor de Horarios</p>
             <SheetTitle className="font-serif text-xl">Asistente de horarios</SheetTitle>
             <SheetDescription>
-              Te ayuda a ver qué materias podés cursar o rendir según tus correlativas. Las respuestas se generan con IA a
-              partir de tus materias; los horarios de cursado no están cargados.
+              Te ayuda a ver qué materias podés cursar o rendir y a combinar comisiones sin superposiciones. Las respuestas se
+              generan con IA a partir de tus materias, las comisiones cargadas y tu horario guardado; no modifica tus datos.
             </SheetDescription>
           </SheetHeader>
 
