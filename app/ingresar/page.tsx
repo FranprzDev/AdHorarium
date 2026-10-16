@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { auth } from "@/auth"
 import { AuthCard } from "@/components/auth/auth-card"
@@ -15,7 +16,7 @@ type SignInPageProps = {
 
 export default async function SignInPage({ searchParams }: SignInPageProps) {
   const { callbackUrl } = await searchParams
-  const callbackPath = safeCallbackPath(Array.isArray(callbackUrl) ? callbackUrl[0] : callbackUrl)
+  const callbackPath = safeCallbackPath(Array.isArray(callbackUrl) ? callbackUrl[0] : callbackUrl, (await headers()).get("host"))
   const session = await auth()
   if (session?.user) redirect(callbackPath)
   return (

@@ -63,8 +63,16 @@ describe("callback path", () => {
     ["//evil.example", DEFAULT_AFTER_SIGN_IN_PATH],
     ["/\\evil.example", DEFAULT_AFTER_SIGN_IN_PATH],
     [undefined, DEFAULT_AFTER_SIGN_IN_PATH],
+    ["https://adhorarium.vercel.app/admin", "/admin"],
+    ["https://adhorarium.vercel.app/dashboard/mesas?x=1#top", "/dashboard/mesas?x=1#top"],
+    ["https://adhorarium.vercel.app.evil.example/admin", DEFAULT_AFTER_SIGN_IN_PATH],
+    ["javascript:alert(1)", DEFAULT_AFTER_SIGN_IN_PATH],
   ])("maps %s to %s", (candidate, expected) => {
-    expect(safeCallbackPath(candidate)).toBe(expected)
+    expect(safeCallbackPath(candidate, "adhorarium.vercel.app")).toBe(expected)
+  })
+
+  it("rejects absolute URLs when the current host is unknown", () => {
+    expect(safeCallbackPath("https://adhorarium.vercel.app/admin", null)).toBe(DEFAULT_AFTER_SIGN_IN_PATH)
   })
 })
 
