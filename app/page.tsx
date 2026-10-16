@@ -63,10 +63,10 @@ const FEATURES = [
   },
   {
     icon: Calendar,
-    title: "Horarios (en desarrollo)",
+    title: "Gestor de horarios",
     description:
-      "Una primera versión para seleccionar las materias de cada nivel que querés cursar. Todavía no arma ni compara horarios.",
-    benefits: ["Selección de materias por nivel"],
+      "Elegí las comisiones de tus materias y armá tu semana: la app marca las superposiciones y podés exportarla o compartirla.",
+    benefits: ["Comisiones cargadas por la administración", "Exportación a PDF e imagen", "Enlace para que otro estudiante lo importe"],
   },
 ]
 

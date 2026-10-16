@@ -78,7 +78,7 @@ export function MainLayout({ children }: MainLayoutProps) {
   const navItems: NavItem[] = [
     { name: "Plan de Correlativas", path: "/dashboard", icon: <BookOpen className="h-4 w-4" /> },
     { name: "Gestor de Materias", path: "/dashboard/materias", icon: <GraduationCap className="h-4 w-4" /> },
-    { name: "Gestor de Horarios", path: "/dashboard/horarios", icon: <Calendar className="h-4 w-4" />, isDisabled: true },
+    { name: "Gestor de Horarios", path: "/dashboard/horarios", icon: <Calendar className="h-4 w-4" /> },
     { name: "Buscador de Mesa", path: "/dashboard/mesas", icon: <Search className="h-4 w-4" /> },
     ...(isAdmin(user?.role) ? [{ name: "Administración", path: "/admin", icon: <ShieldCheck className="h-4 w-4" /> }] : []),
   ]
