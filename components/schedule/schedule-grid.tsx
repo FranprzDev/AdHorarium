@@ -1,5 +1,6 @@
 "use client"
 
+import type { CSSProperties } from "react"
 import { AlertTriangle } from "lucide-react"
 import { CLASS_DAY_LABELS, CLASS_DAY_SHORT_LABELS } from "@/lib/schedule/labels"
 import { ENTRY_COLORS, OVERLAP_COLOR, computeGridLayout, gridHours } from "@/lib/schedule/layout"
@@ -7,6 +8,9 @@ import { MINUTES_PER_HOUR, formatMinutes } from "@/lib/schedule/time"
 import type { ScheduleEntry } from "@/lib/schedule/types"
 
 const HOUR_HEIGHT_PX = 56
+
+/** Block colours go through CSS variables so `.schedule-block` can tone them down in dark mode. */
+type BlockStyle = CSSProperties & { "--entry-fill": string; "--entry-text": string; "--entry-border": string }
 
 type ScheduleGridProps = {
   entries: ReadonlyArray<ScheduleEntry>
@@ -57,23 +61,25 @@ export function ScheduleGrid({ entries, highlightedEntryId = null }: ScheduleGri
               const colors = ENTRY_COLORS[block.colorIndex]
               const columnWidth = dayWidth / block.columns
               const isDimmed = highlightedEntryId !== null && highlightedEntryId !== block.entryId
+              const blockStyle: BlockStyle = {
+                top: topOf(block.startMinutes) + 1,
+                height: topOf(block.endMinutes) - topOf(block.startMinutes) - 2,
+                left: `calc(${block.dayIndex * dayWidth + block.column * columnWidth}% + 2px)`,
+                width: `calc(${columnWidth}% - 4px)`,
+                "--entry-fill": colors.fill,
+                "--entry-text": colors.text,
+                "--entry-border": colors.border,
+                borderColor: block.isOverlapping ? OVERLAP_COLOR : colors.border,
+                borderWidth: block.isOverlapping ? 2 : 1,
+                borderLeftWidth: 4,
+                borderLeftColor: block.isOverlapping ? OVERLAP_COLOR : colors.border,
+                opacity: isDimmed ? 0.35 : 1,
+              }
               return (
                 <div
                   key={block.key}
-                  className="absolute overflow-hidden rounded-md border px-2 py-1 text-left shadow-sm transition-opacity"
-                  style={{
-                    top: topOf(block.startMinutes) + 1,
-                    height: topOf(block.endMinutes) - topOf(block.startMinutes) - 2,
-                    left: `calc(${block.dayIndex * dayWidth + block.column * columnWidth}% + 2px)`,
-                    width: `calc(${columnWidth}% - 4px)`,
-                    backgroundColor: colors.fill,
-                    color: colors.text,
-                    borderColor: block.isOverlapping ? OVERLAP_COLOR : colors.border,
-                    borderWidth: block.isOverlapping ? 2 : 1,
-                    borderLeftWidth: 4,
-                    borderLeftColor: block.isOverlapping ? OVERLAP_COLOR : colors.border,
-                    opacity: isDimmed ? 0.35 : 1,
-                  }}
+                  className="schedule-block absolute overflow-hidden rounded-md border px-2 py-1 text-left shadow-sm transition-opacity"
+                  style={blockStyle}
                   title={`${block.subjectName} · ${block.label} · ${block.slot.start}–${block.slot.end}${block.slot.classroom ? ` · ${block.slot.classroom}` : ""}`}
                 >
                   <p className="line-clamp-2 text-xs font-semibold leading-tight">{block.subjectName}</p>
