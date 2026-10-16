@@ -43,10 +43,17 @@ export const Switch = ({
   return (
     <label className={cn("flex items-center cursor-pointer", className)}>
       <div className="relative">
-        <input type="checkbox" className="sr-only" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+        <input
+          type="checkbox"
+          role="switch"
+          aria-checked={checked}
+          className="peer sr-only"
+          checked={checked}
+          onChange={(e) => onChange(e.target.checked)}
+        />
         <div
           className={cn(
-            "block w-10 h-6 rounded-full",
+            "block w-10 h-6 rounded-full ring-offset-background peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2",
             checked ? "bg-primary" : "bg-input",
             "transition-colors",
           )}
@@ -68,20 +75,24 @@ export const Tabs = ({
   value,
   onChange,
   className = "",
+  label,
 }: {
   tabs: { label: string; value: string }[]
   value: string
   onChange: (value: string) => void
   className?: string
+  label?: string
 }) => {
   return (
-    <div className={cn("inline-flex rounded-md bg-muted p-1", className)}>
+    <div role="group" aria-label={label} className={cn("inline-flex rounded-md bg-muted p-1", className)}>
       {tabs.map((tab) => (
         <button
           key={tab.value}
+          type="button"
+          aria-pressed={value === tab.value}
           onClick={() => onChange(tab.value)}
           className={cn(
-            "px-3 py-1.5 text-sm font-medium rounded-sm transition-colors",
+            "px-3 py-1.5 text-sm font-medium rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
             value === tab.value ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
           )}
         >

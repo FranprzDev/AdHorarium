@@ -52,6 +52,7 @@ export default function DemoPage() {
                 { label: "Cursar", value: CorrelativePurpose.Cursar },
                 { label: "Rendir", value: CorrelativePurpose.Rendir },
               ]}
+              label="Correlativas para"
               value={filterPurpose}
               onChange={(value) => {
                 if (isCorrelativePurpose(value)) setFilterPurpose(value)
@@ -66,6 +67,7 @@ export default function DemoPage() {
                 { label: "Regulares", value: CorrelativeType.Regulares },
                 { label: "Aprobadas", value: CorrelativeType.Aprobadas },
               ]}
+              label="Tipo de correlativa"
               value={filterType}
               onChange={(value) => {
                 if (isCorrelativeType(value)) setFilterType(value)

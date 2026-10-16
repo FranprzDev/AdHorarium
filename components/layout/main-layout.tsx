@@ -13,6 +13,7 @@ import type { Career } from "@/types/types"
 import { CareerSelectionModal } from "@/components/career-selection-modal"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Logo } from "@/components/brand/logo"
+import { useIsMobile } from "@/components/ui/use-mobile"
 import { ThemeToggle } from "@/components/brand/theme-toggle"
 import { isAdmin } from "@/lib/auth/roles"
 import { cn } from "@/lib/utils"
@@ -31,6 +32,8 @@ interface NavItem {
 
 export function MainLayout({ children }: MainLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  // On phones the closed sidebar is only translated off screen, so it is made inert to keep it out of the tab order.
+  const isMobile = useIsMobile()
   const pathname = usePathname()
   const { data: session } = useSession()
   const user = session?.user
@@ -94,6 +97,7 @@ export function MainLayout({ children }: MainLayoutProps) {
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           aria-label={isSidebarOpen ? "Cerrar menú" : "Abrir menú"}
           aria-expanded={isSidebarOpen}
+          aria-controls="app-sidebar"
           className="inline-flex h-9 w-9 items-center justify-center rounded-md text-sidebar-foreground hover:bg-sidebar-accent"
         >
           {isSidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -110,6 +114,8 @@ export function MainLayout({ children }: MainLayoutProps) {
       )}
 
       <aside
+        id="app-sidebar"
+        inert={isMobile && !isSidebarOpen}
         className={cn(
           "fixed inset-y-0 left-0 z-40 w-64 transform bg-sidebar text-sidebar-foreground transition-transform duration-300 ease-in-out",
           isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
