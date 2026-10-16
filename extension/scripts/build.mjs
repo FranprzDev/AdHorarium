@@ -1,5 +1,6 @@
 // Builds the SysAcad browser extension: bundles the content script with esbuild, writes one unpacked folder per
-// browser under extension/dist/ and zips each one. Usage: `pnpm extension:build`.
+// browser under extension/dist/ and zips each one. Usage: `pnpm extension:build` (add `-- --public` to also copy the
+// zips to public/extension/, where the site serves them for download).
 import { copyFile, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises"
 import { dirname, join, relative } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -8,6 +9,8 @@ import { build } from "esbuild"
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)))
 const dist = join(root, "dist")
+const publicDir = join(dirname(root), "public", "extension")
+const copyToPublic = process.argv.includes("--public")
 
 const TARGETS = [
   { name: "chrome", manifest: "manifest.chrome.json", esbuildTarget: ["chrome110", "edge110"] },
@@ -99,6 +102,11 @@ async function main() {
     const zipPath = join(dist, `adhorarium-sysacad-${target.name}.zip`)
     await zipDirectory(outDir, zipPath)
     console.log(`built ${relative(process.cwd(), outDir)} and ${relative(process.cwd(), zipPath)}`)
+    if (copyToPublic) {
+      await mkdir(publicDir, { recursive: true })
+      await copyFile(zipPath, join(publicDir, `adhorarium-sysacad-${target.name}.zip`))
+      console.log(`copied to ${relative(process.cwd(), publicDir)}`)
+    }
   }
 }
 
