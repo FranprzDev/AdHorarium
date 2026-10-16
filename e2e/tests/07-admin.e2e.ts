@@ -167,7 +167,7 @@ describe("student sees the edit", { tags: ["admin"], serial: true, session: Pers
 })
 
 describe("admin deletes the commission in use", { tags: ["admin"], serial: true, session: Persona.Admin, skip: SKIP_REASON }, () => {
-  test("ADM-09 deleting a commission in use converts the entries to manual ones", async ({ app, screen, browser }) => {
+  test("ADM-09 deleting a commission in use converts the entries to manual ones", async ({ app, screen }) => {
     await openAdmin(app, screen, runId)
     await screen.getByRole("button", `Comisiones y horarios de ${SUBJECT_X_EDITED}`).tap()
     await screen.getByRole("dialog", "Comisiones y horarios").getByRole("button", `Eliminar comisión ${COMMISSION}`).tap()

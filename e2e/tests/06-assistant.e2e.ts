@@ -18,7 +18,7 @@ describe("schedule assistant", { tags: ["assistant"], session: Persona.StudentA,
     await expect(panel.getByText("Podés empezar con una de estas preguntas:")).toBeVisible()
     await panel.getByRole("button", QUESTION).tap()
 
-    const conversation = panel.getByRole("log", "Conversación con el asistente")
+    const conversation = panel.getByLabel("Conversación con el asistente")
     await expect(conversation.getByRole("listitem")).toHaveCount(2, { timeout: ANSWER_TIMEOUT_MS })
     await expect(panel.getByRole("button", "Enviar")).toBeVisible({ timeout: ANSWER_TIMEOUT_MS })
     const answer = (await conversation.getByRole("listitem").last().textContent()) ?? ""
