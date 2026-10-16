@@ -16,6 +16,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -318,6 +319,9 @@ export default function MateriasPage() {
               <DialogTitle>
                 Ingresar nota para {selectedSubject?.name}
               </DialogTitle>
+              <DialogDescription>
+                Cargá la nota final con la que promocionaste la materia. Se usa para calcular tu promedio.
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <Label htmlFor="grade">Nota final (1-10)</Label>

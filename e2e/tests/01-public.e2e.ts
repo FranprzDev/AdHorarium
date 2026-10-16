@@ -69,6 +69,7 @@ describe("public pages", { tags: ["public"] }, () => {
 
     for (const tab of ["Rendir", "Aprobadas", "Cursar", "Regulares"]) {
       await screen.getByRole("button", tab).tap()
+      await expect(screen.getByRole("button", tab)).toHaveAttribute("aria-pressed", "true")
       await expect(cards.first()).toBeVisible()
     }
 
