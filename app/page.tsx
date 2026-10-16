@@ -302,14 +302,14 @@ export default function LandingPage() {
             <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} · Plataforma académica para UTN FRT</p>
           </div>
           <div className="flex flex-wrap items-center gap-5 text-sm text-muted-foreground">
-            <Link href="/privacidad" className="transition-colors hover:text-foreground">
+            <Link href="/privacidad" className="inline-flex min-h-6 items-center transition-colors hover:text-foreground">
               Política de privacidad
             </Link>
             <a
               href={REPOSITORY_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 transition-colors hover:text-foreground"
+              className="inline-flex min-h-6 items-center gap-2 transition-colors hover:text-foreground"
             >
               <Github className="h-4 w-4" />
               Código abierto en GitHub

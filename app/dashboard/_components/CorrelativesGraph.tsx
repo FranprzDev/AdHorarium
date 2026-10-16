@@ -19,6 +19,9 @@ interface CorrelativesGraphProps {
 
 export default function CorrelativesGraph({ showBadges = true }: CorrelativesGraphProps) {
   const selectedCareer = useCareerStore(state => state.selectedCareer);
+  // The career list is loaded by the page header/selector; until it resolves there is no career yet, which is not the
+  // same as the user having none selected.
+  const isLoadingCareers = useCareerStore(state => state.isLoading);
   const careerId = selectedCareer?.id ?? null;
   const { subjects, isLoading: isLoadingSubjects, error } = usePlanSubjects(careerId);
   const { status } = useSession();
@@ -29,7 +32,7 @@ export default function CorrelativesGraph({ showBadges = true }: CorrelativesGra
   const isMobile = useIsMobile();
   
   const { isLoading: isLoadingUserSubjects } = useUserSubjectsStore();
-  const isLoading = isLoadingSubjects || isLoadingUserSubjects;
+  const isLoading = isLoadingCareers || isLoadingSubjects || isLoadingUserSubjects;
 
   useEffect(() => {
     if (isAuthenticated && careerId !== null) {

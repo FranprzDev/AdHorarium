@@ -36,7 +36,7 @@ import { BASIC_SCIENCES_CAREER_NAME } from "@/lib/careers"
 import { SubjectFilter, SubjectStatus } from "@/types/enums"
 
 export default function MateriasPage() {
-  const { selectedCareer, fetchCareers, careers } = useCareerStore()
+  const { selectedCareer, fetchCareers, careers, isLoading: careersLoading } = useCareerStore()
   const careerId = selectedCareer?.id ?? null
   const {
     userSubjects,
@@ -229,7 +229,7 @@ export default function MateriasPage() {
     },
   }
 
-  if (subjectsLoading || userSubjectsLoading) {
+  if (careersLoading || subjectsLoading || userSubjectsLoading) {
     return <LoadingSubjects />
   }
 
