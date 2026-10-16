@@ -9,7 +9,8 @@ import { AppRoute, chooseOption, expectToast, toasts } from "../support/ui"
 
 const ANALISIS_II = "Análisis Matemático II"
 const PARADIGMAS = "Paradigmas de Programación"
-const FISICA_I = "Física I"
+/** A plan 2023 subject without official commissions this term, so the builder offers manual slots for it. */
+const MANUAL_SUBJECT = "Inglés I"
 /*
  * Official 2026 commissions (Departamento de Sistemas UTN-FRT): Análisis Matemático II 2K01 meets Monday 08:00–09:30,
  * Paradigmas 2K02 Monday 08:45–10:15 (a clash) and Paradigmas 2K01 Monday 12:30–14:00 and Tuesday 08:45–10:15 (no clash).
@@ -85,7 +86,7 @@ describe("schedule builder", { tags: ["schedule"], serial: true, session: Person
   })
 
   test("SCH-05 a manual timetable rejects an end before its start", async ({ app, screen, browser }) => {
-    await selectSubject(screen, FISICA_I)
+    await selectSubject(screen, MANUAL_SUBJECT)
     await addPanel(screen).getByRole("button", "Cargar horario manual").tap()
     const dialog = screen.getByRole("dialog", "Cargar horario manual")
     await dialog.getByLabel("Comisión").fill("1K1")
@@ -96,18 +97,18 @@ describe("schedule builder", { tags: ["schedule"], serial: true, session: Person
     await app.screenshot("manual-fin-antes-inicio")
     await dialog.getByLabel("Fin").fill("12:00")
     await dialog.getByRole("button", "Guardar").tap()
-    await expectToast(browser, `${FISICA_I}: horario guardado`)
+    await expectToast(browser, `${MANUAL_SUBJECT}: horario guardado`)
     await expect(screen.getByRole("heading", "Tus materias (3)")).toBeVisible()
     await expect(screen.getByText("Manual", { exact: true })).toBeVisible()
   })
 
   test("SCH-06 a manual entry can be edited", async ({ screen, browser }) => {
-    await screen.getByRole("button", `Editar ${FISICA_I}`).tap()
+    await screen.getByRole("button", `Editar ${MANUAL_SUBJECT}`).tap()
     const dialog = screen.getByRole("dialog", "Editar horario manual")
     await expect(dialog.getByLabel("Comisión")).toHaveValue("1K1")
     await dialog.getByLabel("Aula (opcional)").fill("Aula 3")
     await dialog.getByRole("button", "Guardar").tap()
-    await expectToast(browser, `${FISICA_I}: horario guardado`)
+    await expectToast(browser, `${MANUAL_SUBJECT}: horario guardado`)
     await expect(screen.getByText("Lun 10:00–12:00 (Aula 3)")).toBeVisible()
   })
 
@@ -142,13 +143,13 @@ describe("schedule builder", { tags: ["schedule"], serial: true, session: Person
   })
 
   test("SCH-09 removing a subject updates the list and can be undone", async ({ screen, browser }) => {
-    await screen.getByRole("button", `Quitar ${FISICA_I} del horario`).tap()
-    await expectToast(browser, `${FISICA_I} quitada del horario`)
+    await screen.getByRole("button", `Quitar ${MANUAL_SUBJECT} del horario`).tap()
+    await expectToast(browser, `${MANUAL_SUBJECT} quitada del horario`)
     await expect(screen.getByRole("heading", "Tus materias (2)")).toBeVisible()
     await toasts(browser).getByRole("button", "Deshacer").first().tap()
-    await expectToast(browser, `${FISICA_I} volvió al horario`)
+    await expectToast(browser, `${MANUAL_SUBJECT} volvió al horario`)
     await expect(screen.getByRole("heading", "Tus materias (3)")).toBeVisible()
-    await screen.getByRole("button", `Quitar ${FISICA_I} del horario`).tap()
+    await screen.getByRole("button", `Quitar ${MANUAL_SUBJECT} del horario`).tap()
     await expect(screen.getByRole("heading", "Tus materias (2)")).toBeVisible()
   })
 })
