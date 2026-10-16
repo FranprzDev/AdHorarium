@@ -28,8 +28,8 @@ UTN students juggle correlatives, final-exam tables and their own progress acros
 | Framework | Next.js 15 (App Router), React 19, TypeScript |
 | Data access | Server Actions (`app/actions/*`) calling typed Drizzle queries (`db/queries/*`); inputs validated with zod (`lib/validation/*`) |
 | Database | Postgres on Neon, Drizzle ORM (`db/schema.ts`), SQL migrations in `drizzle/` |
-| Auth | Auth.js v5 (`next-auth`) with Google, Drizzle adapter, JWT sessions |
-| Roles | `users.role` is `student` or `admin`. Emails listed in `ADMIN_EMAILS` are promoted to admin on sign-in. `middleware.ts` guards `/dashboard` (signed in) and `/admin` (admin); server actions and the admin layout re-check the role stored in the database (`requireUserId` / `requireAdminUserId`) |
+| Auth | Auth.js v5 (`next-auth`) with email + password (Credentials provider, bcrypt hashes) and Google, Drizzle adapter, JWT sessions. See [Authentication](#authentication) |
+| Roles | `users.role` is `student` or `admin`; registration always creates students. Emails listed in `ADMIN_EMAILS` are promoted to admin on sign-in, whatever the provider. `middleware.ts` guards `/dashboard` (signed in) and `/admin` (admin); server actions and the admin layout re-check the role stored in the database (`requireUserId` / `requireAdminUserId`) |
 | UI | Tailwind CSS, shadcn/ui (Radix), Framer Motion, react-hook-form |
 | AI | Vercel AI SDK (`ai`, `@ai-sdk/react`) through Vercel AI Gateway; `POST /api/assistant` (`lib/assistant/*`) checks the session, validates input size, rate limits per user and streams the answer |
 | Tests | Vitest; database tests run the real migrations and seed against in-memory PGlite |
@@ -45,6 +45,17 @@ docs/2023/      official 2023 plan data used by the seed
 tests/          Vitest suites
 ```
 
+## Authentication
+
+Two sign-in methods share the same `users` table, roles and JWT session:
+
+- **Email + password** (`/ingresar`, `/registro`). Students register with name, email and a password (at least 10 characters, letters and numbers, at most 72 bytes because bcrypt ignores the rest). Passwords are stored only as bcrypt hashes (`bcryptjs`, cost 12) in `users.password_hash`; they are never logged. Sign-in failures always return the same generic message, and unknown emails still run a bcrypt comparison so response time does not reveal whether an account exists.
+- **Google** (`Continuar con Google` on `/ingresar`). Kept because it adds no runtime cost and the OAuth client is already configured; a Google-only account has no password hash and cannot sign in with a password.
+
+Rate limits (in memory per server instance, so a best-effort guard on serverless): 8 sign-in attempts per email and 30 per client address every 15 minutes, and 5 registrations per client address per hour (20 per day). Inputs are validated with zod (`lib/validation/auth.ts`) on the client and again on the server. The `callbackUrl` of the sign-in page only accepts same-site paths.
+
+Admins: registration never creates admins. Promote an account by adding its email to `ADMIN_EMAILS` (applied on its next sign-in) or by setting `users.role = 'admin'` in the database.
+
 ## Setup
 
 Requirements: Node.js 22 and pnpm 10.
@@ -57,7 +68,7 @@ pnpm db:seed                       # load careers, subjects, correlatives and ex
 pnpm dev                           # http://localhost:3000
 ```
 
-For Google sign-in, create an OAuth client in Google Cloud and add `http://localhost:3000/api/auth/callback/google` (and your production URL's equivalent) as an authorized redirect URI.
+Email + password sign-in works without extra configuration. For Google sign-in, create an OAuth client in Google Cloud and add `http://localhost:3000/api/auth/callback/google` (and your production URL's equivalent) as an authorized redirect URI.
 
 ## Environment variables
 

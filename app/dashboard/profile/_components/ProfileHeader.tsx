@@ -39,7 +39,7 @@ export function ProfileHeader({ profile, onCareerChangeClick }: ProfileHeaderPro
         <p className="mb-3 break-all text-sm text-muted-foreground">{profile?.email}</p>
         <div className="flex items-center justify-center text-xs text-muted-foreground">
           <User className="h-4 w-4 mr-2" />
-          <span>Cuenta Google</span>
+          <span>Cuenta AdHorarium</span>
         </div>
       </CardHeader>
       

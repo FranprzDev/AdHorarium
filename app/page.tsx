@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { signIn, useSession } from "next-auth/react"
+import { useSession } from "next-auth/react"
 import {
   ArrowRight,
   BookOpen,
@@ -13,13 +13,13 @@ import {
   GraduationCap,
   LayoutDashboard,
   LogIn,
+  UserPlus,
   Network,
   Search,
   Settings,
   Shield,
   TrendingUp,
 } from "lucide-react"
-import { AuthProvider } from "@/types/enums"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/brand/logo"
 import { ThemeToggle } from "@/components/brand/theme-toggle"
@@ -73,9 +73,9 @@ const FEATURES = [
 const FACTS = [
   {
     icon: Shield,
-    title: "Ingreso con Google",
+    title: "Cuenta con email y contraseña",
     description:
-      "Iniciás sesión con tu cuenta de Google. Qué datos guardamos y para qué está detallado en la política de privacidad.",
+      "Creás tu cuenta de estudiante con tu email y una contraseña que guardamos cifrada. Qué datos guardamos y para qué está detallado en la política de privacidad.",
   },
   {
     icon: Settings,
@@ -92,8 +92,8 @@ const FACTS = [
 
 const STEPS = [
   {
-    title: "Iniciá sesión de forma segura",
-    description: "Ingresá con tu cuenta de Google. No hace falta crear una contraseña nueva.",
+    title: "Creá tu cuenta",
+    description: "Registrate con tu email y una contraseña, o ingresá con la cuenta que ya tenés.",
   },
   {
     title: "Elegí tu carrera",
@@ -111,24 +111,12 @@ export default function LandingPage() {
   const { data: session, status } = useSession()
   const user = session?.user
   const isLoading = status === "loading"
-  const [isSigningIn, setIsSigningIn] = useState(false)
 
   useEffect(() => {
     if (!isLoading && user) {
       router.push("/dashboard")
     }
   }, [user, isLoading, router])
-
-  const handleSignIn = async () => {
-    try {
-      setIsSigningIn(true)
-      await signIn(AuthProvider.Google, { redirectTo: "/dashboard" })
-    } catch (error) {
-      console.error("Error signing in:", error)
-    } finally {
-      setIsSigningIn(false)
-    }
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -159,9 +147,11 @@ export default function LandingPage() {
                 </Link>
               </Button>
             ) : (
-              <Button onClick={handleSignIn} disabled={isLoading || isSigningIn}>
-                <LogIn className="h-4 w-4" />
-                {isSigningIn ? "Iniciando sesión..." : "Iniciar sesión"}
+              <Button asChild>
+                <Link href="/ingresar">
+                  <LogIn className="h-4 w-4" />
+                  Iniciar sesión
+                </Link>
               </Button>
             )}
           </nav>
@@ -183,9 +173,12 @@ export default function LandingPage() {
                 averiguá en qué mesa se rinde cada una.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Button size="lg" onClick={handleSignIn} disabled={isLoading || isSigningIn} className="h-12 px-6 text-base">
-                  {isSigningIn ? "Iniciando sesión..." : "Comenzar gratis"}
-                  <ArrowRight className="h-4 w-4" />
+                <Button size="lg" asChild className="h-12 px-6 text-base">
+                  <Link href="/registro">
+                    <UserPlus className="h-4 w-4" />
+                    Comenzar gratis
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
                 </Button>
                 <Button size="lg" variant="outline" asChild className="h-12 bg-card px-6 text-base">
                   <Link href="/careers">

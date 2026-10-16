@@ -83,9 +83,26 @@ export enum EnvVar {
   ScheduleAssistantModel = "SCHEDULE_ASSISTANT_MODEL",
 }
 
-/** OAuth providers enabled for sign in. */
+/** Auth.js providers enabled for sign in (provider ids). */
 export enum AuthProvider {
   Google = "google",
+  Credentials = "credentials",
+}
+
+/**
+ * Codes returned to the client when an email + password sign in fails.
+ * They are deliberately coarse so the UI never reveals whether an email is registered.
+ */
+export enum CredentialsErrorCode {
+  InvalidCredentials = "invalid_credentials",
+  RateLimited = "rate_limited",
+}
+
+/** Outcome of a student registration attempt. */
+export enum RegistrationErrorCode {
+  InvalidInput = "invalid_input",
+  Unavailable = "unavailable",
+  RateLimited = "rate_limited",
 }
 
 /** Color treatment of the brand logo depending on the surface it sits on. */

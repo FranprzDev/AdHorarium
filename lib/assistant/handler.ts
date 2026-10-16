@@ -2,7 +2,7 @@ import { streamText, type LanguageModel, type ModelMessage } from "ai"
 import type { AssistantContext } from "@/lib/assistant/context"
 import { ASSISTANT_ERROR_MESSAGES, type AssistantErrorBody } from "@/lib/assistant/errors"
 import { buildAssistantSystemPrompt } from "@/lib/assistant/prompt"
-import type { SlidingWindowRateLimiter } from "@/lib/assistant/rate-limit"
+import type { SlidingWindowRateLimiter } from "@/lib/rate-limit"
 import { AssistantRequestError, parseAssistantRequest, type AssistantChatMessage } from "@/lib/assistant/request"
 import { AssistantErrorCode, AssistantMessageRole } from "@/types/enums"
 

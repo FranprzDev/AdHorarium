@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { ASSISTANT_ERROR_MESSAGES, getAssistantErrorMessage } from "@/lib/assistant/errors"
-import { SlidingWindowRateLimiter } from "@/lib/assistant/rate-limit"
+import { SlidingWindowRateLimiter } from "@/lib/rate-limit"
 import {
   AssistantRequestError,
   MAX_CONVERSATION_LENGTH,

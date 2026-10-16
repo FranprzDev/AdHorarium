@@ -84,7 +84,7 @@ export default function DemoPage() {
             <h2 className="font-medium text-foreground">Modo Demo</h2>
             <p className="text-sm text-muted-foreground">
               Esta es una versión de demostración del Plan de Correlativas. Para acceder a todas las funcionalidades,
-              incluyendo el Gestor de Materias y el Buscador de Mesa, inicia sesión con tu cuenta de Google.
+              incluyendo el Gestor de Materias y el Buscador de Mesa, creá tu cuenta o iniciá sesión.
             </p>
           </div>
         </div>

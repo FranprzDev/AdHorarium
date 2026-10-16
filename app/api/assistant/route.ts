@@ -5,7 +5,8 @@ import { listPlanSubjects } from "@/db/queries/catalog"
 import { getUserCareer, listUserSubjectStates } from "@/db/queries/student"
 import { buildAssistantContext, type AssistantContext } from "@/lib/assistant/context"
 import { handleAssistantRequest } from "@/lib/assistant/handler"
-import { ASSISTANT_RATE_LIMITS, SlidingWindowRateLimiter } from "@/lib/assistant/rate-limit"
+import { ASSISTANT_RATE_LIMITS } from "@/lib/assistant/rate-limit"
+import { SlidingWindowRateLimiter } from "@/lib/rate-limit"
 import { getScheduleAssistantModelId } from "@/lib/env"
 
 export const maxDuration = 30

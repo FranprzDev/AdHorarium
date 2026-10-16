@@ -27,10 +27,11 @@ const SECTIONS: PolicySection[] = [
   },
   {
     title: "Qué datos guardamos",
-    paragraphs: ["Cuando iniciás sesión con Google guardamos únicamente:"],
+    paragraphs: ["Cuando creás tu cuenta o iniciás sesión guardamos únicamente:"],
     items: [
-      "Tu nombre, tu dirección de correo electrónico y la URL de tu foto de perfil, tal como los entrega Google.",
-      "El identificador de tu cuenta de Google y los datos técnicos del inicio de sesión que Google devuelve, necesarios para vincular tu cuenta.",
+      "Tu nombre y tu dirección de correo electrónico.",
+      "Si te registrás con email y contraseña, un hash de tu contraseña (bcrypt): nunca guardamos ni registramos la contraseña en texto plano.",
+      "Si ingresás con Google, la URL de tu foto de perfil, el identificador de tu cuenta de Google y los datos técnicos del inicio de sesión que Google devuelve, necesarios para vincular tu cuenta.",
       "La carrera que elegís dentro de la aplicación.",
       "El estado de cada materia que cargás (no cursada, cursando, regular o promocionada) y las notas que ingresás.",
       "Tu rol en la aplicación (estudiante o administrador).",
@@ -46,7 +47,7 @@ const SECTIONS: PolicySection[] = [
   {
     title: "Con quién los compartimos",
     paragraphs: [
-      "No vendemos ni compartimos tus datos con terceros. Los datos se alojan en los proveedores de infraestructura que hacen funcionar el sitio: Vercel (alojamiento de la aplicación) y Neon (base de datos PostgreSQL). Google interviene solo en el inicio de sesión.",
+      "No vendemos ni compartimos tus datos con terceros. Los datos se alojan en los proveedores de infraestructura que hacen funcionar el sitio: Vercel (alojamiento de la aplicación) y Neon (base de datos PostgreSQL). Google interviene solo si elegís ingresar con tu cuenta de Google.",
     ],
   },
   {
