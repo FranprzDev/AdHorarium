@@ -8,6 +8,7 @@ import { safeCallbackPath } from "@/lib/auth/callback"
 
 export const metadata = {
   title: "Iniciar sesión",
+  description: "Ingresá a AdHorarium con tu email y contraseña para ver tu plan de estudios, tus materias y el gestor de horarios.",
 }
 
 type SignInPageProps = {
