@@ -104,6 +104,16 @@ GitHub Actions (`.github/workflows/ci.yml`) runs on every pull request and on pu
 
 The app is deployed on Vercel. Every pull request gets a preview deployment and `main` is deployed to production at <https://adhorarium.vercel.app>. Set the environment variables above in the Vercel project (the Neon integration provides `DATABASE_URL`). Run `pnpm db:migrate` against the production database when a pull request adds a migration.
 
+## Monitoring
+
+Production monitoring uses only what the Vercel Hobby plan includes; there is no paid service and no extra account.
+
+- **Web Analytics** (`@vercel/analytics`): cookieless page views. Hobby includes 50,000 events per month; when the quota runs out collection pauses, nothing is billed. Enable it once in the Vercel project (Analytics tab).
+- **Speed Insights** (`@vercel/speed-insights`): real-user performance (Real Experience Score). Free tier: 10,000 events over a rolling 30 days, then collection pauses. Enable it once in the Vercel project (Speed Insights tab).
+- Both components live in `components/observability/vercel-observability.tsx` and send every event through `redactAnalyticsEvent` (`lib/observability/redact-url.ts`): query strings and hashes are dropped and shared timetable tokens become `/horarios/compartido/[shareId]`.
+- **Runtime errors**: `instrumentation.ts` implements Next.js `onRequestError`, so every uncaught server error (pages, route handlers, server actions, middleware) is written to stderr as one JSON line: `{"level":"error","event":"request_error","digest":…,"path":…,"routePath":…,"routeType":…,"message":…,"stack":…}`. Vercel keeps it in the project's **Logs** view; filter by `request_error` or search the digest. The digest is the "Código de referencia" that `app/error.tsx` and `app/global-error.tsx` show the user, so a reported code maps to its log line. Hobby keeps runtime logs for 1 hour, so check them soon after a report.
+- Client-side boundaries (`app/error.tsx`, `app/global-error.tsx`) only log `{ digest, name, message }` to the browser console; the full error is logged on the server.
+
 ## Contributing
 
 Work happens on branches (`feat/*`, `fix/*`, `chore/*`) through pull requests to `main`; `main` is never pushed directly. Commits follow `type: brief description`.

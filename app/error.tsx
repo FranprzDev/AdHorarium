@@ -13,7 +13,8 @@ type ErrorPageProps = {
 /** Branded fallback for unexpected render errors; offers a retry of the failed segment. */
 export default function ErrorPage({ error, reset }: ErrorPageProps) {
   useEffect(() => {
-    console.error(error)
+    // The server already logged the full error under this digest (instrumentation.ts); the browser console gets the reference.
+    console.error("[error-boundary]", { digest: error.digest ?? null, name: error.name, message: error.message })
   }, [error])
 
   return (

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: "Qué datos guarda AdHorarium, para qué los usa y cómo pedir su eliminación.",
 }
 
-const LAST_UPDATED = "14 de octubre de 2026"
+const LAST_UPDATED = "16 de octubre de 2026"
 const CONTACT_EMAIL = "franciscoperezdeveloper@gmail.com"
 const REPOSITORY_ISSUES_URL = "https://github.com/FranprzDev/AdHorarium/issues"
 
@@ -42,6 +42,7 @@ const SECTIONS: PolicySection[] = [
     paragraphs: [
       "Usamos estos datos solo para que puedas iniciar sesión y para mostrarte tu progreso académico: el plan de correlativas con el estado de tus materias, las materias que podés cursar, tu promedio y su equivalencia GPA. No los usamos con fines publicitarios ni para elaborar perfiles.",
       "La sesión se mantiene con una cookie propia de inicio de sesión. No usamos cookies de publicidad ni de seguimiento.",
+      "Para saber qué páginas se usan y qué tan rápido cargan usamos Vercel Web Analytics y Speed Insights, que no usan cookies ni guardan datos que te identifiquen: solo registran la página visitada (sin parámetros de la URL ni el código de los horarios compartidos), la ubicación aproximada (país y ciudad), el navegador, el tipo de dispositivo y métricas de rendimiento, de forma agregada.",
     ],
   },
   {

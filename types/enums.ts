@@ -187,3 +187,13 @@ export enum ScheduleExportFormat {
   Pdf = "pdf",
   Png = "png",
 }
+
+/** Severity of a structured server log line (one JSON object per line in Vercel Runtime Logs). */
+export enum LogLevel {
+  Error = "error",
+}
+
+/** What a structured server log line reports; filter Vercel Runtime Logs by it. */
+export enum LogEvent {
+  RequestError = "request_error",
+}
