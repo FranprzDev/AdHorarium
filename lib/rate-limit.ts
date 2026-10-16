@@ -49,11 +49,5 @@ export class SlidingWindowRateLimiter {
   }
 }
 
-const MINUTE_MS = 60_000
-const DAY_MS = 24 * 60 * MINUTE_MS
-
-/** Limits applied per student to the schedule assistant. */
-export const ASSISTANT_RATE_LIMITS: ReadonlyArray<RateLimitRule> = [
-  { limit: 6, windowMs: MINUTE_MS },
-  { limit: 60, windowMs: DAY_MS },
-]
+export const MINUTE_MS = 60_000
+export const DAY_MS = 24 * 60 * MINUTE_MS

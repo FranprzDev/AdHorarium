@@ -3,7 +3,7 @@ import { MockLanguageModelV4 } from "ai/test"
 import { describe, expect, it } from "vitest"
 import type { AssistantContext } from "@/lib/assistant/context"
 import { handleAssistantRequest, type AssistantHandlerDeps } from "@/lib/assistant/handler"
-import { SlidingWindowRateLimiter } from "@/lib/assistant/rate-limit"
+import { SlidingWindowRateLimiter } from "@/lib/rate-limit"
 import { AssistantErrorCode, AssistantMessageRole, SubjectStatus } from "@/types/enums"
 
 const CONTEXT: AssistantContext = {
