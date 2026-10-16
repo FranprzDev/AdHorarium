@@ -24,9 +24,11 @@ import {
   CorrelativePurpose,
   CorrelativeType,
   ExamTable,
+  type MailKind,
   ScheduleEntryKind,
   SubjectStatus,
   UserRole,
+  UserTokenPurpose,
 } from "@/types/enums"
 
 export { MAX_SUBJECT_LEVEL, MIN_SUBJECT_LEVEL }
@@ -39,6 +41,7 @@ export const correlativeRequirementEnum = pgEnum("correlative_requirement", Corr
 export const commissionShiftEnum = pgEnum("commission_shift", CommissionShift)
 export const commissionPeriodEnum = pgEnum("commission_period", CommissionPeriod)
 export const scheduleEntryKindEnum = pgEnum("schedule_entry_kind", ScheduleEntryKind)
+export const userTokenPurposeEnum = pgEnum("user_token_purpose", UserTokenPurpose)
 
 const timestamps = {
   createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
@@ -256,6 +259,38 @@ export const scheduleShares = pgTable(
     createdAt: timestamps.createdAt,
   },
   (table) => [index("schedule_shares_user_idx").on(table.userId)],
+)
+
+/** Single-use tokens emailed to a user (password reset links). Only the SHA-256 of the token is stored. */
+export const userTokens = pgTable(
+  "user_tokens",
+  {
+    id: serial("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    purpose: userTokenPurposeEnum("purpose").notNull(),
+    tokenHash: varchar("token_hash", { length: 64 }).notNull().unique(),
+    expiresAt: timestamp("expires_at", { withTimezone: true, mode: "date" }).notNull(),
+    usedAt: timestamp("used_at", { withTimezone: true, mode: "date" }),
+    createdAt: timestamps.createdAt,
+  },
+  (table) => [index("user_tokens_user_purpose_idx").on(table.userId, table.purpose)],
+)
+
+/** Emails captured instead of sent when `MAIL_OUTBOX=1` (local runs and the e2e suite). Empty in production. */
+export const mailOutbox = pgTable(
+  "mail_outbox",
+  {
+    id: serial("id").primaryKey(),
+    recipient: text("recipient").notNull(),
+    kind: varchar("kind", { length: 40 }).$type<MailKind>().notNull(),
+    subject: text("subject").notNull(),
+    textBody: text("text_body").notNull(),
+    htmlBody: text("html_body").notNull(),
+    createdAt: timestamps.createdAt,
+  },
+  (table) => [index("mail_outbox_recipient_idx").on(table.recipient)],
 )
 
 export const careersRelations = relations(careers, ({ many }) => ({

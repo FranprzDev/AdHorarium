@@ -81,6 +81,14 @@ export enum EnvVar {
   AuthGoogleSecret = "AUTH_GOOGLE_SECRET",
   /** Vercel AI Gateway model id used by the schedule assistant, e.g. "openai/gpt-4.1-mini". */
   ScheduleAssistantModel = "SCHEDULE_ASSISTANT_MODEL",
+  /** Brevo transactional email API key. Without it emails are not sent (only logged on the server). */
+  BrevoApiKey = "BREVO_API_KEY",
+  /** Sender of every email, e.g. "AdHorarium <no-reply@adhorarium.app>". Must be a sender verified in Brevo. */
+  MailFrom = "MAIL_FROM",
+  /** "1" stores emails in the `mail_outbox` table instead of sending them (local runs and e2e only; ignored in production). */
+  MailOutbox = "MAIL_OUTBOX",
+  /** Set by Vercel: "production", "preview" or "development". */
+  VercelEnv = "VERCEL_ENV",
 }
 
 /** Auth.js providers enabled for sign in (provider ids). */
@@ -215,4 +223,47 @@ export enum CommissionImportStatus {
 export enum ImportIssueLevel {
   Error = "error",
   Warning = "warning",
+}
+
+/** Where outgoing emails go. */
+export enum MailProviderKind {
+  /** Brevo transactional email API. */
+  Brevo = "brevo",
+  /** Nothing is sent: the server logs that email delivery is not configured. */
+  Log = "log",
+  /** Stored in the `mail_outbox` table so local runs and the e2e suite can read them. */
+  Outbox = "outbox",
+}
+
+/** Kind of transactional email, stored in `mail_outbox.kind` and sent to Brevo as a tag. */
+export enum MailKind {
+  PasswordReset = "password_reset",
+  PasswordResetGoogleAccount = "password_reset_google_account",
+}
+
+/** Outcome of handing an email to the configured provider. */
+export enum MailDeliveryStatus {
+  Sent = "sent",
+  NotConfigured = "not_configured",
+  Failed = "failed",
+}
+
+/** Purpose of a single-use token emailed to a user, stored in `user_tokens.purpose`. */
+export enum UserTokenPurpose {
+  PasswordReset = "password_reset",
+}
+
+/** Outcome of a password reset request or of setting a new password with a reset token. */
+export enum PasswordResetErrorCode {
+  InvalidInput = "invalid_input",
+  InvalidToken = "invalid_token",
+  RateLimited = "rate_limited",
+  Unavailable = "unavailable",
+}
+
+/** What a password reset request ended up emailing (logged server-side, never shown to the requester). */
+export enum PasswordResetDelivery {
+  NoAccount = "no_account",
+  GoogleAccount = "google_account",
+  ResetLink = "reset_link",
 }

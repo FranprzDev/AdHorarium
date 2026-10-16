@@ -14,7 +14,7 @@ agent steps, so no model or API key is needed to run the suite.
 | `e2e/support/db.ts` | Minimal Neon HTTP SQL client: promotes the admin persona and deletes test data. |
 | `e2e/support/state.ts` | Hands values between tests of one run (the share link). |
 | `e2e/tests/00-sessions.setup.e2e.ts` | One setup per persona; saves its signed-in session. |
-| `e2e/tests/01-…07-*.e2e.ts` | Public pages, auth, student tools, schedule builder, import, assistant, admin catalog. |
+| `e2e/tests/01-…08-*.e2e.ts` | Public pages, auth, student tools, schedule builder, import, assistant, admin catalog, password recovery. |
 | `e2e/scripts/cleanup.ts` | Removes every account and subject any run created and prints what is left. |
 
 ## Test catalogue
@@ -28,6 +28,7 @@ agent steps, so no model or API key is needed to run the suite.
 | Import a shared timetable | IMP-01 … IMP-03 | student B |
 | Schedule assistant | ASI-01 | student A |
 | Admin catalog | ADM-01 … ADM-12 | student A and admin, alternating |
+| Password recovery | PWR-01 … PWR-07 | anonymous (PWR-03 … 07 need the mail outbox, so they never run against production) |
 
 ## Personas and test data
 
@@ -51,6 +52,7 @@ registering again (registration is limited to 5 per hour per client and sign in 
 | `E2E_DATABASE_URL` | unset | Neon connection string; enables admin promotion and cleanup. |
 | `E2E_ADMIN_EMAIL`, `E2E_ADMIN_PASSWORD` | unset | Use an existing admin instead of promoting one. |
 | `E2E_ASSISTANT` | unset | `1` runs the assistant test outside production (it calls a paid model). |
+| `E2E_MAIL_OUTBOX` | unset | `1` when the app under test runs with `MAIL_OUTBOX=1` (never production); with `E2E_DATABASE_URL` it enables the flows that read emailed links (password recovery). |
 | `E2E_STATE_DIR` | `.e2e/state` | Where tests hand values to later tests. |
 | `E2E_OUTPUT_DIR` | `.e2e` | Reports, traces and screenshots. |
 | `VERCEL_AUTOMATION_BYPASS_SECRET` | unset | Sent as `x-vercel-protection-bypass` for protected preview deployments. |

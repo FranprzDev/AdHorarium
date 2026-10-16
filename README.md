@@ -33,9 +33,11 @@ UTN students juggle correlatives, final-exam tables and their own progress acros
 | Roles | `users.role` is `student` or `admin`; registration always creates students. Emails listed in `ADMIN_EMAILS` are promoted to admin on sign-in, whatever the provider. `middleware.ts` guards `/dashboard` (signed in) and `/admin` (admin); server actions and the admin layout re-check the role stored in the database (`requireUserId` / `requireAdminUserId`) |
 | UI | Tailwind CSS, shadcn/ui (Radix), Framer Motion, react-hook-form |
 | AI | Vercel AI SDK (`ai`, `@ai-sdk/react`) through Vercel AI Gateway; `POST /api/assistant` (`lib/assistant/*`) checks the session, validates input size, rate limits per user and streams the answer |
+| Email | `lib/mail/*`: a `MailProvider` interface with the Brevo transactional API (`BREVO_API_KEY`, `MAIL_FROM`), a log-only provider used while email is not configured, and an outbox provider (`MAIL_OUTBOX=1`, never in production) that the e2e suite reads |
+| Password recovery | `/recuperar` always answers the same neutral message (no account enumeration) and sends the email after the response (`after()`); the link `/restablecer?token=…` holds a 256-bit single-use token stored as SHA-256 in `user_tokens`, valid for 30 minutes; only the newest link works and setting a password invalidates the rest. Google-only accounts get an email explaining to use Google. Rate limited per email and per client |
 | Tests | Vitest; database tests run the real migrations and seed against in-memory PGlite |
 
-Main tables: `careers`, `exam_tables`, `subjects` (career, number, name, level 1–6, hours, elective, basic science, exam table), `subject_correlatives` (subject, required subject, purpose `cursar|rendir`, requirement `regulares|aprobadas`), `users`, Auth.js tables (`accounts`, `sessions`, `verification_tokens`) and `user_subject_states`.
+Main tables: `careers`, `exam_tables`, `subjects` (career, number, name, level 1–6, hours, elective, basic science, exam table), `subject_correlatives` (subject, required subject, purpose `cursar|rendir`, requirement `regulares|aprobadas`), `users`, Auth.js tables (`accounts`, `sessions`, `verification_tokens`), `user_subject_states`, `user_tokens` (hashed single-use email tokens) and `mail_outbox` (emails captured when `MAIL_OUTBOX=1`).
 
 ```
 app/            routes (landing, careers, dashboard, admin, privacidad, api/auth) and server actions
@@ -83,6 +85,9 @@ Email + password sign-in works without extra configuration. For Google sign-in, 
 | `ADMIN_EMAILS` | Comma-separated emails promoted to `admin` on sign-in |
 | `SCHEDULE_ASSISTANT_MODEL` | AI Gateway model id used by the schedule assistant (for example `openai/gpt-4.1-mini`). Required by `/api/assistant`; there is no default |
 | `AI_GATEWAY_API_KEY` | Only for local development of the assistant. Vercel deployments authenticate to AI Gateway with the project's OIDC token (`VERCEL_OIDC_TOKEN`) automatically |
+| `BREVO_API_KEY` | Brevo transactional email API key. Optional: without it (or without `MAIL_FROM`) no email is sent and the server logs `Envío de email no configurado`; the UI answers the same way |
+| `MAIL_FROM` | Sender of every email, `Name <address>` or a bare address (for example `AdHorarium <no-reply@adhorarium.app>`). Must be a sender verified in Brevo |
+| `MAIL_OUTBOX` | `1` stores emails in the `mail_outbox` table instead of sending them (local runs and the e2e suite). Ignored when `VERCEL_ENV=production` |
 
 ## Scripts
 

@@ -44,6 +44,30 @@ export async function promoteToAdmin(email: string): Promise<void> {
   if (result.rowCount !== 1) throw new Error(`Could not promote ${email}: user not found`)
 }
 
+type OutboxRow = { text_body: string }
+
+const OUTBOX_POLL_MS = 500
+
+/** Waits for the newest email of `kind` sent to `recipient` after `since` (the app sends it after responding). */
+export async function waitForOutboxMail(recipient: string, kind: string, since: Date, timeoutMs = 20_000): Promise<string> {
+  const deadline = Date.now() + timeoutMs
+  while (Date.now() < deadline) {
+    const { rows } = await sql<OutboxRow>(
+      "select text_body from mail_outbox where recipient = $1 and kind = $2 and created_at >= $3 order by id desc limit 1",
+      [recipient, kind, since.toISOString()],
+    )
+    if (rows[0]) return rows[0].text_body
+    await new Promise((resolve) => setTimeout(resolve, OUTBOX_POLL_MS))
+  }
+  throw new Error(`No ${kind} email for ${recipient} in the outbox`)
+}
+
+export function linkFrom(text: string, path: string): string {
+  const match = new RegExp(`https?://\\S+${path}\\?token=[A-Za-z0-9_-]+`).exec(text)
+  if (!match) throw new Error(`No ${path} link in the email`)
+  return match[0]
+}
+
 export const E2E_EMAIL_PATTERN = `${E2E_EMAIL_PREFIX}%@${E2E_EMAIL_DOMAIN}`
 export const E2E_SUBJECT_PATTERN = `${E2E_SUBJECT_PREFIX}%`
 
@@ -57,6 +81,7 @@ export type CleanupResult = { users: number; subjects: number; commissions: numb
  * states, schedule entries, shares, sessions, correlatives and commissions.
  */
 export async function cleanupE2eData(): Promise<CleanupResult> {
+  await sql("delete from mail_outbox where recipient like $1", [E2E_EMAIL_PATTERN])
   const commissions = await sql("delete from commissions where name like $1", [E2E_COMMISSION_PATTERN])
   const subjects = await sql("delete from subjects where name like $1", [E2E_SUBJECT_PATTERN])
   const users = await sql("delete from users where email like $1", [E2E_EMAIL_PATTERN])

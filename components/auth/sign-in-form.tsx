@@ -1,12 +1,14 @@
 "use client"
 
 import { useState, type FormEvent } from "react"
+import Link from "next/link"
 import { signIn } from "next-auth/react"
 import { LogIn } from "lucide-react"
 import { FormError } from "@/components/auth/form-error"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { PASSWORD_RESET_REQUEST_PATH } from "@/lib/auth/password-reset-config"
 import { signInInputSchema } from "@/lib/validation/auth"
 import { AuthProvider, CredentialsErrorCode } from "@/types/enums"
 
@@ -67,7 +69,12 @@ export function SignInForm({ callbackPath }: { callbackPath: string }) {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="password">Contraseña</Label>
+          <div className="flex items-center justify-between gap-3">
+            <Label htmlFor="password">Contraseña</Label>
+            <Link href={PASSWORD_RESET_REQUEST_PATH} className="text-sm font-medium text-brand-strong underline-offset-4 hover:underline">
+              ¿Olvidaste tu contraseña?
+            </Link>
+          </div>
           <Input
             id="password"
             name="password"
