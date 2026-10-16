@@ -68,3 +68,15 @@ export function buildGoogleAccountResetMail(to: string, name: string | null, sig
     footer: "Si no lo pediste vos, ignorá este email.",
   })
 }
+
+export function buildEmailVerificationMail(to: string, name: string | null, verifyUrl: string, validHours: number): MailMessage {
+  return buildMail(to, MailKind.EmailVerification, `Confirmá tu email en ${BRAND}`, {
+    greetingName: name,
+    paragraphs: [
+      `Gracias por crear tu cuenta de ${BRAND}. Confirmá que este email es tuyo para poder recuperar tu cuenta si olvidás la contraseña.`,
+      `El enlace vale por ${validHours} horas. Si vence, pedí uno nuevo desde el aviso en tu panel.`,
+    ],
+    action: { label: "Confirmar mi email", url: verifyUrl },
+    footer: "Si no creaste una cuenta, ignorá este email.",
+  })
+}

@@ -6,7 +6,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest"
 import * as schema from "@/db/schema"
 import { findCredentialUserByEmail } from "@/db/queries/auth"
 import { storeOutboxMail } from "@/db/queries/mail"
-import { consumeUserToken, invalidateUserTokens, replaceUserToken, updateUserPasswordHash } from "@/db/queries/tokens"
+import { consumeUserToken, invalidateUserTokens, markEmailVerified, replaceUserToken, updateUserPasswordHash } from "@/db/queries/tokens"
 import { resolveAppOrigin } from "@/lib/app-origin"
 import { hashPassword, verifyPassword } from "@/lib/auth/password"
 import { PASSWORD_RESET_PATH } from "@/lib/auth/password-reset-config"
@@ -53,6 +53,7 @@ function resetDependencies(overrides: Partial<PasswordResetDependencies> = {}): 
     consumeToken: (tokenHash) => consumeUserToken(db, UserTokenPurpose.PasswordReset, tokenHash),
     updatePasswordHash: (userId, passwordHash) => updateUserPasswordHash(db, userId, passwordHash),
     invalidateTokens: (userId) => invalidateUserTokens(db, userId, UserTokenPurpose.PasswordReset),
+    markEmailVerified: (userId) => markEmailVerified(db, userId),
     bcryptCost: TEST_COST,
     ...overrides,
   }
@@ -150,6 +151,8 @@ describe("resetPassword", () => {
     const result = await resetPassword({ token, password: NEW_PASSWORD, confirmPassword: NEW_PASSWORD }, "ip", resetDependencies())
     expect(result).toEqual({ ok: true })
     expect(await verifyPassword(NEW_PASSWORD, await storedHash("student"), TEST_COST)).toBe(true)
+    const [verified] = await db.select({ emailVerified: schema.users.emailVerified }).from(schema.users).where(eq(schema.users.id, "student"))
+    expect(verified.emailVerified).toBeInstanceOf(Date)
 
     const reused = await resetPassword({ token, password: "otraclave2028", confirmPassword: "otraclave2028" }, "ip", resetDependencies())
     expect(reused).toMatchObject({ ok: false, code: PasswordResetErrorCode.InvalidToken })

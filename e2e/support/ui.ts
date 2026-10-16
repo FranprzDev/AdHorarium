@@ -14,6 +14,7 @@ export enum AppRoute {
   Register = "/registro",
   PasswordResetRequest = "/recuperar",
   PasswordReset = "/restablecer",
+  VerifyEmail = "/verificar-email",
   Dashboard = "/dashboard",
   Subjects = "/dashboard/materias",
   Schedule = "/dashboard/horarios",

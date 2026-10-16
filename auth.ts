@@ -5,6 +5,7 @@ import Credentials from "next-auth/providers/credentials"
 import { createBaseAuthConfig } from "@/auth.config"
 import { getDb } from "@/db/client"
 import { findCredentialUserByEmail } from "@/db/queries/auth"
+import { markEmailVerified } from "@/db/queries/tokens"
 import { accounts, sessions, users, verificationTokens } from "@/db/schema"
 import { getClientKey } from "@/lib/auth/client-key"
 import { authorizeCredentials, SIGN_IN_CLIENT_RATE_LIMITS, SIGN_IN_EMAIL_RATE_LIMITS } from "@/lib/auth/credentials"
@@ -59,6 +60,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
       sessionsTable: sessions,
       verificationTokensTable: verificationTokens,
     }),
+    events: {
+      async linkAccount({ user, account }) {
+        if (account.provider === AuthProvider.Google && user.id) await markEmailVerified(getDb(), user.id)
+      },
+    },
     callbacks: {
       ...base.callbacks,
       async jwt({ token, user }) {

@@ -8,6 +8,7 @@ import { useSession } from "next-auth/react"
 import { MainLayout } from "@/components/layout/main-layout"
 import { BrandLoader } from "@/components/brand/brand-loader"
 import { ScheduleAssistant } from "@/components/assistant/schedule-assistant"
+import { EmailVerificationBanner } from "@/components/auth/email-verification-banner"
 
 export default function DashboardLayout({
   children,
@@ -33,6 +34,7 @@ export default function DashboardLayout({
 
   return (
     <MainLayout>
+      <EmailVerificationBanner />
       {children}
       <ScheduleAssistant />
     </MainLayout>
