@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import { AlertCircle, CalendarClock, Link2, Loader2, Pencil, Plus, Search, Trash2 } from "lucide-react"
+import { AlertCircle, CalendarClock, ChevronLeft, ChevronRight, Link2, Loader2, Pencil, Plus, Search, Trash2 } from "lucide-react"
 import { getCareersAction } from "@/app/actions/catalog"
 import { listAdminSubjectsAction } from "@/app/actions/admin"
 import type { AdminSubject } from "@/db/queries/admin"
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { ADMIN_PAGE_SIZE, paginate } from "@/lib/pagination"
 import { SUBJECT_LEVELS } from "@/lib/subject-levels"
 import type { AdminSubjectFilters } from "@/lib/validation/admin"
 import { BadgeVariant } from "@/types/enums"
@@ -31,10 +32,68 @@ enum DialogKind {
   Commissions = "commissions",
 }
 
-type OpenDialog = { kind: DialogKind.Create } | { kind: Exclude<DialogKind, DialogKind.Create>; subject: AdminSubject } | null
+type SubjectAction = Exclude<DialogKind, DialogKind.Create>
+
+type OpenDialog = { kind: DialogKind.Create } | { kind: SubjectAction; subject: AdminSubject } | null
 
 function parseOptionalId(value: string): number | null {
   return value === ALL_OPTION ? null : Number(value)
+}
+
+function SubjectActions({ subject, onAction }: { subject: AdminSubject; onAction: (kind: SubjectAction, subject: AdminSubject) => void }) {
+  return (
+    <div className="flex justify-end gap-1">
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label={`Comisiones y horarios de ${subject.name}`}
+        title="Comisiones y horarios"
+        className="text-muted-foreground hover:text-foreground"
+        onClick={() => onAction(DialogKind.Commissions, subject)}
+      >
+        <CalendarClock className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label={`Correlativas de ${subject.name}`}
+        title="Correlativas"
+        className="text-muted-foreground hover:text-foreground"
+        onClick={() => onAction(DialogKind.Correlatives, subject)}
+      >
+        <Link2 className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label={`Editar ${subject.name}`}
+        title="Editar"
+        className="text-muted-foreground hover:text-foreground"
+        onClick={() => onAction(DialogKind.Edit, subject)}
+      >
+        <Pencil className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label={`Eliminar ${subject.name}`}
+        title="Eliminar"
+        className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+        onClick={() => onAction(DialogKind.Delete, subject)}
+      >
+        <Trash2 className="h-4 w-4" />
+      </Button>
+    </div>
+  )
+}
+
+function SubjectBadges({ subject }: { subject: AdminSubject }) {
+  return (
+    <>
+      {subject.isElective && <Badge variant={BadgeVariant.Outline} className="text-muted-foreground">Electiva</Badge>}
+      {subject.isBasicScience && <Badge variant={BadgeVariant.Outline} className="text-muted-foreground">Ciencias básicas</Badge>}
+    </>
+  )
 }
 
 export function AdminSubjectsPanel() {
@@ -47,6 +106,7 @@ export function AdminSubjectsPanel() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [dialog, setDialog] = useState<OpenDialog>(null)
+  const [page, setPage] = useState(1)
 
   useEffect(() => {
     const load = async () => {
@@ -58,7 +118,10 @@ export function AdminSubjectsPanel() {
   }, [])
 
   useEffect(() => {
-    const timeout = setTimeout(() => setSearch(searchInput.trim()), SEARCH_DEBOUNCE_MS)
+    const timeout = setTimeout(() => {
+      setSearch(searchInput.trim())
+      setPage(1)
+    }, SEARCH_DEBOUNCE_MS)
     return () => clearTimeout(timeout)
   }, [searchInput])
 
@@ -80,6 +143,17 @@ export function AdminSubjectsPanel() {
   }, [loadSubjects])
 
   const closeDialog = () => setDialog(null)
+  const openSubjectDialog = (kind: SubjectAction, subject: AdminSubject) => setDialog({ kind, subject })
+  const changeCareer = (value: string) => {
+    setCareerId(parseOptionalId(value))
+    setPage(1)
+  }
+  const changeLevel = (value: string) => {
+    setLevel(parseOptionalId(value))
+    setPage(1)
+  }
+  const visible = paginate(subjects, page, ADMIN_PAGE_SIZE)
+  const showPager = !isLoading && visible.total > 0
 
   const handleSaved = async () => {
     closeDialog()
@@ -101,7 +175,7 @@ export function AdminSubjectsPanel() {
       </div>
 
       <div className="surface-card grid grid-cols-1 gap-3 p-4 md:grid-cols-3">
-        <Select value={careerId === null ? ALL_OPTION : String(careerId)} onValueChange={(value) => setCareerId(parseOptionalId(value))}>
+        <Select value={careerId === null ? ALL_OPTION : String(careerId)} onValueChange={changeCareer}>
           <SelectTrigger className="bg-background" aria-label="Filtrar por carrera">
             <SelectValue placeholder="Carrera" />
           </SelectTrigger>
@@ -114,7 +188,7 @@ export function AdminSubjectsPanel() {
             ))}
           </SelectContent>
         </Select>
-        <Select value={level === null ? ALL_OPTION : String(level)} onValueChange={(value) => setLevel(parseOptionalId(value))}>
+        <Select value={level === null ? ALL_OPTION : String(level)} onValueChange={changeLevel}>
           <SelectTrigger className="bg-background" aria-label="Filtrar por nivel">
             <SelectValue placeholder="Nivel" />
           </SelectTrigger>
@@ -132,8 +206,9 @@ export function AdminSubjectsPanel() {
           <Input
             value={searchInput}
             onChange={(event) => setSearchInput(event.target.value)}
-            placeholder="Buscar por nombre"
-            aria-label="Buscar materia por nombre"
+            type="search"
+            placeholder="Buscar por nombre o número"
+            aria-label="Buscar materia por nombre o número"
             className="bg-background pl-9"
           />
         </div>
@@ -146,7 +221,7 @@ export function AdminSubjectsPanel() {
         </div>
       )}
 
-      <div className="surface-card overflow-x-auto">
+      <div className="surface-card hidden overflow-x-auto md:block">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50 hover:bg-muted/50">
@@ -176,14 +251,13 @@ export function AdminSubjectsPanel() {
               </TableRow>
             )}
             {!isLoading &&
-              subjects.map((subject) => (
+              visible.items.map((subject) => (
                 <TableRow key={subject.id}>
                   <TableCell>{subject.number}</TableCell>
                   <TableCell>
                     <div className="flex flex-wrap items-center gap-2">
                       <span>{subject.name}</span>
-                      {subject.isElective && <Badge variant={BadgeVariant.Outline} className="text-muted-foreground">Electiva</Badge>}
-                      {subject.isBasicScience && <Badge variant={BadgeVariant.Outline} className="text-muted-foreground">Ciencias básicas</Badge>}
+                      <SubjectBadges subject={subject} />
                     </div>
                   </TableCell>
                   <TableCell className="text-muted-foreground">{subject.careerName}</TableCell>
@@ -191,54 +265,68 @@ export function AdminSubjectsPanel() {
                   <TableCell>{subject.hours ?? "-"}</TableCell>
                   <TableCell className="whitespace-nowrap">{subject.examTable ?? "-"}</TableCell>
                   <TableCell>
-                    <div className="flex justify-end gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label={`Comisiones y horarios de ${subject.name}`}
-                        title="Comisiones y horarios"
-                        className="text-muted-foreground hover:text-foreground"
-                        onClick={() => setDialog({ kind: DialogKind.Commissions, subject })}
-                      >
-                        <CalendarClock className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label={`Correlativas de ${subject.name}`}
-                        title="Correlativas"
-                        className="text-muted-foreground hover:text-foreground"
-                        onClick={() => setDialog({ kind: DialogKind.Correlatives, subject })}
-                      >
-                        <Link2 className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label={`Editar ${subject.name}`}
-                        title="Editar"
-                        className="text-muted-foreground hover:text-foreground"
-                        onClick={() => setDialog({ kind: DialogKind.Edit, subject })}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label={`Eliminar ${subject.name}`}
-                        title="Eliminar"
-                        className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-                        onClick={() => setDialog({ kind: DialogKind.Delete, subject })}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    <SubjectActions subject={subject} onAction={openSubjectDialog} />
                   </TableCell>
                 </TableRow>
               ))}
           </TableBody>
         </Table>
       </div>
+
+      <ul className="space-y-3 md:hidden" aria-label="Materias">
+        {isLoading && (
+          <li className="surface-card flex items-center justify-center p-4 text-sm text-muted-foreground">
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Cargando materias...
+          </li>
+        )}
+        {!isLoading && subjects.length === 0 && (
+          <li className="surface-card p-4 text-center text-sm text-muted-foreground">No hay materias que coincidan con los filtros.</li>
+        )}
+        {!isLoading &&
+          visible.items.map((subject) => (
+            <li key={subject.id} className="surface-card space-y-3 p-4">
+              <div className="space-y-1">
+                <p className="text-xs font-medium text-muted-foreground">
+                  N° {subject.number} · Nivel {subject.level}
+                  {subject.hours !== null && ` · ${subject.hours} h`}
+                  {subject.examTable !== null && ` · Mesa ${subject.examTable}`}
+                </p>
+                <p className="font-semibold leading-snug text-foreground">{subject.name}</p>
+                <p className="text-sm text-muted-foreground">{subject.careerName}</p>
+                {(subject.isElective || subject.isBasicScience) && (
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    <SubjectBadges subject={subject} />
+                  </div>
+                )}
+              </div>
+              <div className="border-t border-border pt-2">
+                <SubjectActions subject={subject} onAction={openSubjectDialog} />
+              </div>
+            </li>
+          ))}
+      </ul>
+
+      {showPager && (
+        <nav aria-label="Paginación de materias" className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
+          <p className="text-sm text-muted-foreground" aria-live="polite">
+            Mostrando {visible.firstItem}–{visible.lastItem} de {visible.total} materias
+          </p>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => setPage(visible.page - 1)} disabled={visible.page === 1}>
+              <ChevronLeft className="h-4 w-4" />
+              Anterior
+            </Button>
+            <span className="min-w-24 text-center text-sm tabular-nums text-muted-foreground">
+              Página {visible.page} de {visible.pageCount}
+            </span>
+            <Button variant="outline" size="sm" onClick={() => setPage(visible.page + 1)} disabled={visible.page === visible.pageCount}>
+              Siguiente
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </nav>
+      )}
 
       {dialog?.kind === DialogKind.Create && (
         <SubjectFormDialog careers={careers} defaultCareerId={careerId} subject={null} onClose={closeDialog} onSaved={handleSaved} />

@@ -69,6 +69,14 @@ describe("admin subject listing", () => {
     expect(searched.map((subject) => subject.name)).toContain("Análisis Matemático I")
   })
 
+  it("matches a numeric search against the subject number", async () => {
+    const [first] = await listAdminSubjects(db, { careerId, level: 1, search: "" })
+    if (!first) throw new Error("Missing seeded level 1 subject")
+    const byNumber = await listAdminSubjects(db, { careerId, level: null, search: String(first.number) })
+    expect(byNumber.map((subject) => subject.id)).toContain(first.id)
+    expect(byNumber.every((subject) => subject.number === first.number || subject.name.includes(String(first.number)))).toBe(true)
+  })
+
   it("treats LIKE wildcards in the search as literal text", async () => {
     expect(await listAdminSubjects(db, { careerId, level: null, search: "%" })).toEqual([])
   })
