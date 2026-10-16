@@ -118,7 +118,23 @@ export default function HorariosPage() {
       return
     }
     await reload()
-    toast.success(`${entry.subjectName} quitada del horario`)
+    toast.success(`${entry.subjectName} quitada del horario`, {
+      action: { label: "Deshacer", onClick: () => void handleRestore(entry) },
+    })
+  }
+
+  /** Puts a removed entry back: catalog entries re-pick their commission, custom ones are saved again. */
+  const handleRestore = async (entry: ScheduleEntry) => {
+    const result =
+      entry.kind === ScheduleEntryKind.Commission && entry.commissionId !== null
+        ? await pickCommissionAction(entry.commissionId)
+        : await saveCustomEntryAction({ subjectId: entry.subjectId, label: entry.label, slots: entry.slots })
+    if (!result.ok) {
+      toast.error(`No se pudo volver a agregar ${entry.subjectName}`, { description: result.error })
+      return
+    }
+    await reload()
+    toast.success(`${entry.subjectName} volvió al horario`)
   }
 
   if (isLoading) {
