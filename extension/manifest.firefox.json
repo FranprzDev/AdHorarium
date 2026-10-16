@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "AdHorarium: importar desde SysAcad",
+  "short_name": "AdHorarium SysAcad",
+  "version": "0.1.0",
+  "description": "Agrega «Llevar a AdHorarium» al Estado académico de SysAcad (UTN FRT) para importar tus materias. No guarda ni envía datos.",
+  "homepage_url": "https://adhorarium.vercel.app/importar/sysacad",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://sysacad.frt.utn.edu.ar/estadoAcademico.asp*",
+        "http://sysacad.frt.utn.edu.ar/estadoAcademico.asp*",
+        "https://sysacad.frt.utn.edu.ar/estadoacademico.asp*",
+        "http://sysacad.frt.utn.edu.ar/estadoacademico.asp*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ],
+  "permissions": [],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "sysacad-import@adhorarium.app",
+      "strict_min_version": "115.0"
+    }
+  }
+}

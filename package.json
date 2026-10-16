@@ -13,7 +13,8 @@
     "db:migrate": "node --env-file-if-exists=.env.local --import tsx scripts/migrate.ts",
     "db:seed": "node --env-file-if-exists=.env.local --import tsx scripts/seed.ts",
     "test:e2e": "e2e run",
-    "test:e2e:cleanup": "node --import tsx e2e/scripts/cleanup.ts"
+    "test:e2e:cleanup": "node --import tsx e2e/scripts/cleanup.ts",
+    "extension:build": "node extension/scripts/build.mjs"
   },
   "dependencies": {
     "@ai-sdk/react": "4.0.142",
@@ -89,6 +90,7 @@
     "@types/react-dom": "^19",
     "drizzle-kit": "0.31.11",
     "e2e": "0.21.1",
+    "esbuild": "0.28.2",
     "eslint": "^9.39.5",
     "eslint-config-next": "15.5.27",
     "postcss": "^8",
