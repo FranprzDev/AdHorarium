@@ -8,6 +8,7 @@ import { toast } from "sonner"
 import { useCareerStore } from "@/stores/useCareerStore"
 import { useProfile } from "./_hooks/useProfile"
 import { convertToGPA } from "@/lib/gpa"
+import { DeleteAccountCard } from "./_components/DeleteAccountCard"
 import {
   ProfileHeader,
   AverageGradeCard,
@@ -107,6 +108,10 @@ export default function ProfilePage() {
             />
 
             <GPAConversionCard />
+
+            <div className="mt-6">
+              <DeleteAccountCard />
+            </div>
           </motion.div>
         </div>
 

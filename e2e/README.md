@@ -28,6 +28,7 @@ agent steps, so no model or API key is needed to run the suite.
 | Import a shared timetable | IMP-01 … IMP-03 | student B |
 | Schedule assistant | ASI-01 | student A |
 | Admin catalog | ADM-01 … ADM-12 | student A and admin, alternating |
+| Account deletion | DEL-01 … DEL-04 | a throwaway `e2e+…-delete…` account (production-safe; it deletes itself) |
 | Password recovery | PWR-01 … PWR-07 | anonymous (PWR-03 … 07 need the mail outbox, so they never run against production) |
 | Email verification | EMV-01 … EMV-04 | anonymous → a fresh account (EMV-02 … 04 need the mail outbox) |
 
