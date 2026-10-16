@@ -1,0 +1,64 @@
+name: E2E
+
+# Manual only: the suite writes to the target's database (test accounts, an E2E subject and commission) and the
+# assistant test calls a paid model, so it never runs on every push. It cleans up after itself when the database
+# secret is set.
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "App URL to test"
+        required: true
+        default: "https://adhorarium.vercel.app"
+
+concurrency:
+  group: e2e
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    name: TesterArmy e2e (web)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      E2E_BASE_URL: ${{ inputs.base_url }}
+      E2E_RUN_ID: gh${{ github.run_id }}
+      # Optional. Without it the admin tests are skipped and the cleanup step cannot delete the test accounts.
+      E2E_DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
+      VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+      E2E_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Chromium
+        run: pnpm exec e2e-web install chromium --with-deps
+
+      - name: Run e2e suite
+        run: pnpm test:e2e
+
+      - name: Clean up test data
+        if: always() && env.E2E_DATABASE_URL != ''
+        run: pnpm test:e2e:cleanup
+
+      - name: Upload report and traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-report
+          path: .e2e/
+          retention-days: 14
