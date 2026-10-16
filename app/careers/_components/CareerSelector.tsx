@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useCareerStore } from '@/stores/useCareerStore';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
+import { careerLabel } from '@/lib/careers';
 
 export default function CareerSelector() {
     const { careers, selectedCareer, selectCareer, fetchCareers, isLoading } = useCareerStore();
@@ -35,7 +36,7 @@ export default function CareerSelector() {
             <SelectContent>
                 {careers.map(career => (
                     <SelectItem key={career.code} value={career.code}>
-                        {career.name}
+                        {careerLabel(career, careers)}
                     </SelectItem>
                 ))}
             </SelectContent>

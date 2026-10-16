@@ -67,6 +67,8 @@ export enum UserRole {
 /** Codes of the careers seeded from the official UTN plans, stored in `careers.code`. */
 export enum CareerCode {
   Sistemas = "ISI",
+  /** Ingeniería en Sistemas de Información on its previous plan (2008), still taken by advanced students. */
+  SistemasPlan2008 = "ISI-2008",
   Electronica = "IE",
   Civil = "IC",
   Mecanica = "IM",

@@ -6,7 +6,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest"
 import * as schema from "@/db/schema"
 import { buildSeedPlan } from "@/db/seed/plan-data"
 import { seedDatabase } from "@/db/seed/seed-database"
-import { SubjectStatus } from "@/types/enums"
+import { CareerCode, SubjectStatus } from "@/types/enums"
 
 const client = new PGlite()
 const db = drizzle({ client, schema })
@@ -36,6 +36,17 @@ describe("migrations and seed", () => {
     })
     expect(await tableCount(schema.subjects)).toBe(plan.subjects.length)
     expect(await tableCount(schema.subjectCorrelatives)).toBe(plan.correlatives.length)
+  })
+
+  it("stores the ISI plan 2008 career, hours and electives", async () => {
+    const [career] = await db.select().from(schema.careers).where(eq(schema.careers.code, CareerCode.SistemasPlan2008))
+    expect(career).toMatchObject({ name: "Ingeniería en Sistemas de Información", plan: "2008" })
+    const rows = await db.select().from(schema.subjects).where(eq(schema.subjects.careerId, career.id))
+    expect(rows).toHaveLength(64)
+    expect(rows.filter((row) => row.isElective)).toHaveLength(28)
+    expect(rows.find((row) => row.number === 21)).toMatchObject({ name: "Matemática Superior", hours: 8, level: 3 })
+    const [electives] = await db.select({ value: count() }).from(schema.subjects).where(eq(schema.subjects.isElective, true))
+    expect(electives.value).toBe(56)
   })
 
   it("is idempotent", async () => {

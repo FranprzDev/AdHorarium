@@ -60,7 +60,7 @@ describe("admin subject listing", () => {
   it("filters by career, level and text", async () => {
     const all = await listAdminSubjects(db, noFilters)
     const career = await listAdminSubjects(db, { ...noFilters, careerId })
-    expect(career).toHaveLength(36)
+    expect(career).toHaveLength(65)
     expect(all.length).toBeGreaterThan(career.length)
     const levelOne = await listAdminSubjects(db, { careerId, level: 1, search: "" })
     expect(levelOne.length).toBeGreaterThan(0)

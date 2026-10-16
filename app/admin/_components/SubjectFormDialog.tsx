@@ -18,6 +18,7 @@ import { SUBJECT_LEVELS } from "@/lib/subject-levels"
 import { subjectFieldsSchema } from "@/lib/validation/admin"
 import { idSchema } from "@/lib/validation/student"
 import { ExamTable } from "@/types/enums"
+import { careerLabel } from "@/lib/careers"
 import type { Career } from "@/types/types"
 
 const NO_EXAM_TABLE = "none"
@@ -116,7 +117,7 @@ export function SubjectFormDialog({ careers, defaultCareerId, subject, onClose, 
                     <SelectContent>
                       {careers.map((career) => (
                         <SelectItem key={career.id} value={String(career.id)}>
-                          {career.name}
+                          {careerLabel(career, careers)}
                         </SelectItem>
                       ))}
                     </SelectContent>

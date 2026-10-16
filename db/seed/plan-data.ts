@@ -4,6 +4,9 @@ import { plan_ing_electrica_2023 } from "@/docs/2023/IngElectrica"
 import { plan_ing_electronica_2023 } from "@/docs/2023/IngElectronica"
 import { plan_ing_en_sistemas_2023 } from "@/docs/2023/IngEnSistemas"
 import { plan_ing_mecanica_2023 } from "@/docs/2023/IngMecanica"
+import { ISI_2008_CATALOG } from "@/db/seed/catalog/isi-2008"
+import { ISI_2023_ADDITIONS } from "@/db/seed/catalog/isi-2023-additions"
+import type { CatalogPlanData } from "@/db/seed/catalog/types"
 import materiasDB from "@/data/materias.db"
 import { parseLevel } from "@/lib/plan-integrity"
 import { CareerCode, CorrelativePurpose, CorrelativeType, ExamTable } from "@/types/enums"
@@ -19,6 +22,9 @@ export type SeedSubject = {
   number: number
   name: string
   level: number
+  /** Weekly hours when the official source publishes them. */
+  hours: number | null
+  isElective: boolean
   isBasicScience: boolean
   examTable: ExamTable | null
 }
@@ -56,6 +62,20 @@ type CareerSource = {
   regimen: RegimenCorrelatividades
 }
 
+/** A career whose subjects are transcribed in the catalog format (hours, electives, correlatives to sit). */
+type CatalogCareerSource = {
+  code: CareerCode
+  name: string
+  plan: string
+  data: CatalogPlanData
+}
+
+/** Subjects added to a career seeded from a `CareerSource` (electives and subjects its ordinance does not list). */
+type CatalogAddition = {
+  code: CareerCode
+  data: CatalogPlanData
+}
+
 type ExamTablesByCareer = Readonly<Record<string, Readonly<Record<string, ReadonlyArray<string>>>>>
 
 export const SEED_EXAM_TABLES: SeedExamTable[] = [
@@ -64,13 +84,21 @@ export const SEED_EXAM_TABLES: SeedExamTable[] = [
   { name: ExamTable.MesaIII, description: "Tercera mesa de examen" },
 ]
 
+export const SISTEMAS_CAREER_NAME = "Ingeniería en Sistemas de Información"
+
 export const CAREER_SOURCES: CareerSource[] = [
-  { code: CareerCode.Sistemas, name: "Ingeniería en Sistemas de Información", regimen: plan_ing_en_sistemas_2023 },
+  { code: CareerCode.Sistemas, name: SISTEMAS_CAREER_NAME, regimen: plan_ing_en_sistemas_2023 },
   { code: CareerCode.Electronica, name: "Ingeniería Electrónica", regimen: plan_ing_electronica_2023 },
   { code: CareerCode.Civil, name: "Ingeniería Civil", regimen: plan_ing_civil_2023 },
   { code: CareerCode.Mecanica, name: "Ingeniería Mecánica", regimen: plan_ing_mecanica_2023 },
   { code: CareerCode.EnergiaElectrica, name: "Ingeniería en Energía Eléctrica", regimen: plan_ing_electrica_2023 },
 ]
+
+export const CATALOG_CAREER_SOURCES: CatalogCareerSource[] = [
+  { code: CareerCode.SistemasPlan2008, name: SISTEMAS_CAREER_NAME, plan: "2008", data: ISI_2008_CATALOG },
+]
+
+export const CATALOG_ADDITIONS: CatalogAddition[] = [{ code: CareerCode.Sistemas, data: ISI_2023_ADDITIONS }]
 
 export const BASIC_SCIENCE_MIN_CAREERS = 2
 
@@ -113,13 +141,34 @@ function isExamTable(value: string): value is ExamTable {
   return (Object.values(ExamTable) as string[]).includes(value)
 }
 
-function countCareersPerSubjectName(sources: ReadonlyArray<CareerSource>): Map<string, number> {
-  const counts = new Map<string, number>()
+/**
+ * How many different careers teach each subject name. Two plans of the same career (ISI 2008 and 2023) count once,
+ * so a subject shared only by them is not a basic science.
+ */
+function countCareersPerSubjectName(
+  sources: ReadonlyArray<CareerSource>,
+  catalogSources: ReadonlyArray<CatalogCareerSource>,
+): Map<string, number> {
+  const namesByCareer = new Map<string, Set<string>>()
+  const namesOf = (careerName: string) => {
+    const names = namesByCareer.get(careerName) ?? new Set<string>()
+    namesByCareer.set(careerName, names)
+    return names
+  }
   for (const source of sources) {
-    const names = new Set<string>()
+    const names = namesOf(source.name)
     for (const level of source.regimen.regimen_correlatividades) {
       for (const subject of level.asignaturas) names.add(normalizeSubjectName(subject.nombre))
     }
+  }
+  for (const source of catalogSources) {
+    const names = namesOf(source.name)
+    for (const subject of source.data.subjects) {
+      if (!subject.isElective) names.add(normalizeSubjectName(subject.name))
+    }
+  }
+  const counts = new Map<string, number>()
+  for (const names of namesByCareer.values()) {
     for (const name of names) counts.set(name, (counts.get(name) ?? 0) + 1)
   }
   return counts
@@ -138,11 +187,62 @@ function examTableIndex(entries: Readonly<Record<string, ReadonlyArray<string>>>
   return index
 }
 
+type CatalogSubjectsInput = {
+  code: CareerCode
+  data: CatalogPlanData
+  examIndex: Map<string, ExamTable>
+  matchedKeys: Set<string>
+  careerNameCounts: Map<string, number>
+}
+
+function addCatalogSubjects(input: CatalogSubjectsInput, subjects: SeedSubject[], correlatives: SeedCorrelative[]): void {
+  for (const subject of input.data.subjects) {
+    const key = normalizeSubjectName(subject.name)
+    const examTable = input.examIndex.get(key) ?? null
+    if (examTable) input.matchedKeys.add(key)
+    subjects.push({
+      careerCode: input.code,
+      number: subject.number,
+      name: subject.name,
+      level: subject.level,
+      hours: subject.hours,
+      isElective: subject.isElective,
+      isBasicScience: !subject.isElective && (input.careerNameCounts.get(key) ?? 0) >= BASIC_SCIENCE_MIN_CAREERS,
+      examTable,
+    })
+  }
+  for (const correlative of input.data.correlatives) {
+    correlatives.push({
+      careerCode: input.code,
+      subjectNumber: correlative.subjectNumber,
+      requiredNumber: correlative.requiredNumber,
+      purpose: correlative.purpose,
+      requirementType: correlative.requirementType,
+    })
+  }
+}
+
+function collectUnmatchedExamEntries(
+  code: CareerCode,
+  careerExamTables: Readonly<Record<string, ReadonlyArray<string>>> | undefined,
+  matchedKeys: ReadonlySet<string>,
+  unmatched: UnmatchedExamEntry[],
+): void {
+  for (const [table, names] of Object.entries(careerExamTables ?? {})) {
+    if (!isExamTable(table)) continue
+    for (const name of names) {
+      if (!matchedKeys.has(examTableLookupKey(name))) unmatched.push({ careerCode: code, examTable: table, subjectName: name })
+    }
+  }
+}
+
 export function buildSeedPlan(
   sources: ReadonlyArray<CareerSource> = CAREER_SOURCES,
   examTables: ExamTablesByCareer = materiasDB,
+  catalogSources: ReadonlyArray<CatalogCareerSource> = CATALOG_CAREER_SOURCES,
+  catalogAdditions: ReadonlyArray<CatalogAddition> = CATALOG_ADDITIONS,
 ): SeedPlan {
-  const careerNameCounts = countCareersPerSubjectName(sources)
+  const careerNameCounts = countCareersPerSubjectName(sources, catalogSources)
   const careers: SeedCareer[] = []
   const subjects: SeedSubject[] = []
   const correlatives: SeedCorrelative[] = []
@@ -165,6 +265,8 @@ export function buildSeedPlan(
           number: subject.numero,
           name: subject.nombre.trim(),
           level: levelNumber,
+          hours: null,
+          isElective: false,
           isBasicScience: (careerNameCounts.get(key) ?? 0) >= BASIC_SCIENCE_MIN_CAREERS,
           examTable,
         })
@@ -191,14 +293,25 @@ export function buildSeedPlan(
       }
     }
 
-    for (const [table, names] of Object.entries(careerExamTables ?? {})) {
-      if (!isExamTable(table)) continue
-      for (const name of names) {
-        if (!matchedKeys.has(examTableLookupKey(name))) {
-          unmatchedExamEntries.push({ careerCode: source.code, examTable: table, subjectName: name })
-        }
-      }
+    for (const addition of catalogAdditions) {
+      if (addition.code !== source.code) continue
+      addCatalogSubjects(
+        { code: source.code, data: addition.data, examIndex, matchedKeys, careerNameCounts },
+        subjects,
+        correlatives,
+      )
     }
+
+    collectUnmatchedExamEntries(source.code, careerExamTables, matchedKeys, unmatchedExamEntries)
+  }
+
+  for (const source of catalogSources) {
+    careers.push({ code: source.code, name: source.name, plan: source.plan })
+    const careerExamTables = examTables[source.name]
+    const examIndex = examTableIndex(careerExamTables)
+    const matchedKeys = new Set<string>()
+    addCatalogSubjects({ code: source.code, data: source.data, examIndex, matchedKeys, careerNameCounts }, subjects, correlatives)
+    collectUnmatchedExamEntries(source.code, careerExamTables, matchedKeys, unmatchedExamEntries)
   }
 
   return { careers, examTables: SEED_EXAM_TABLES, subjects, correlatives, unmatchedExamEntries }

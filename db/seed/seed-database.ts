@@ -51,6 +51,8 @@ export async function seedDatabase(db: AppDatabase, plan: SeedPlan = buildSeedPl
           number: subject.number,
           name: subject.name,
           level: subject.level,
+          hours: subject.hours,
+          isElective: subject.isElective,
           isBasicScience: subject.isBasicScience,
           examTableId: subject.examTable ? requireId(examTableIds, subject.examTable, subject.examTable) : null,
         })),
@@ -60,6 +62,9 @@ export async function seedDatabase(db: AppDatabase, plan: SeedPlan = buildSeedPl
         set: {
           name: sql`excluded.name`,
           level: sql`excluded.level`,
+          // Plans without published hours keep the hours an admin may have entered.
+          hours: sql`coalesce(excluded.hours, ${subjects.hours})`,
+          isElective: sql`excluded.is_elective`,
           isBasicScience: sql`excluded.is_basic_science`,
           examTableId: sql`excluded.exam_table_id`,
           updatedAt: sql`now()`,

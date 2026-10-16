@@ -5,9 +5,10 @@ import { useCareerStore } from "@/stores/useCareerStore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getMyCareerIdAction } from "@/app/actions/student";
 import { PageHeader } from "@/components/brand/page-header";
+import { careerLabel } from "@/lib/careers";
 
 export default function DashboardHeader() {
-  const { selectedCareer, fetchCareers, isLoading } = useCareerStore();
+  const { careers, selectedCareer, fetchCareers, isLoading } = useCareerStore();
 
   useEffect(() => {
     const load = async () => {
@@ -24,7 +25,7 @@ export default function DashboardHeader() {
   return (
     <PageHeader
       eyebrow="Plan de correlativas"
-      title={`Plan de Estudios - ${selectedCareer.name}`}
+      title={`Plan de Estudios - ${careerLabel(selectedCareer, careers)}`}
       description="Tocá una materia para ver qué necesitás para cursarla y qué materias te habilita."
     />
   );

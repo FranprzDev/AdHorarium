@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Search, List, TableIcon, BookOpen } from "lucide-react"
+import { careerLabel } from "@/lib/careers"
 import { EXAM_TABLES, createEmptyExamTableMap } from "@/lib/exam-tables"
 import { BadgeVariant, ExamTable, ExamViewMode } from "@/types/enums"
 
@@ -93,8 +94,8 @@ export default function MesasPage() {
                 </SelectTrigger>
                 <SelectContent>
                   {careers.map((career) => (
-                    <SelectItem key={career.id} value={career.name}>
-                      {career.name}
+                    <SelectItem key={career.id} value={career.code}>
+                      {careerLabel(career, careers)}
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -22,11 +22,11 @@ export function useMesas() {
   }, [careers.length, fetchCareers])
 
   useEffect(() => {
-    if (!selectedCareer && storeCareer) setSelectedCareer(storeCareer.name)
+    if (!selectedCareer && storeCareer) setSelectedCareer(storeCareer.code)
   }, [selectedCareer, storeCareer])
 
   useEffect(() => {
-    const career = careers.find((item) => item.name === selectedCareer)
+    const career = careers.find((item) => item.code === selectedCareer)
     if (!career) {
       setCareerSubjects(null)
       return
