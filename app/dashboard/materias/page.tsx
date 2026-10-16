@@ -246,7 +246,7 @@ export default function MateriasPage() {
         <PageHeader
           eyebrow="Seguimiento académico"
           title="Gestor de Materias"
-          description="Gestiona el estado de tus materias y lleva un registro de tu progreso académico."
+          description="Gestioná el estado de tus materias y llevá un registro de tu progreso académico."
         />
 
         <div className="flex flex-wrap items-center gap-2">

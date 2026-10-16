@@ -57,7 +57,7 @@ export async function fillRegistration(screen: Screen, account: Account, confirm
 
 /** Chooses a career in the first-visit dialog when it is open. */
 export async function chooseCareerIfAsked(screen: Screen, career: string): Promise<boolean> {
-  const dialog = screen.getByRole("dialog", "Selecciona tu carrera")
+  const dialog = screen.getByRole("dialog", "Seleccioná tu carrera")
   try {
     await dialog.waitFor({ timeout: 8_000 })
   } catch {

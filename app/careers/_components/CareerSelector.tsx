@@ -30,7 +30,7 @@ export default function CareerSelector() {
             value={selectedCareer?.code}
         >
             <SelectTrigger className="w-64 max-w-[calc(100vw-5.5rem)] bg-card" aria-label="Carrera">
-                <SelectValue placeholder="Selecciona una carrera..." />
+                <SelectValue placeholder="Seleccioná una carrera..." />
             </SelectTrigger>
             <SelectContent>
                 {careers.map(career => (
