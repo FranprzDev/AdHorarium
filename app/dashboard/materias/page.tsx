@@ -183,12 +183,12 @@ export default function MateriasPage() {
 
     const grade = parseFloat(gradeInput)
     if (!isValidArgentineGrade(grade)) {
-      setUpdateError("La nota debe ser un número entre 1 y 10")
+      setGradeError("La nota debe ser un número entre 1 y 10")
       return
     }
 
     setUpdating(selectedSubject.id)
-    setUpdateError(null)
+    setGradeError(null)
     const result = await updateUserSubjectState(selectedSubject.id, SubjectStatus.Promocionada, grade)
     setUpdating(null)
     if (!result.ok) {
