@@ -6,11 +6,9 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { careerLabel } from "@/lib/careers"
 import { motion } from "framer-motion"
+import type { Career as CatalogCareer } from "@/types/types"
 
-type Career = {
-  id: number
-  name: string
-}
+type Career = Pick<CatalogCareer, "id" | "name" | "plan">
 
 interface CareerSelectionModalProps {
   careers: Career[]
