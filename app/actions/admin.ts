@@ -12,13 +12,17 @@ import {
   type AdminCorrelative,
   type AdminSubject,
 } from "@/db/queries/admin"
+import { applyCommissionImport, previewCommissionImport, type CommissionImportResult } from "@/db/queries/commission-import"
 import { createCommission, deleteCommission, listSubjectCommissions, updateCommission } from "@/db/queries/schedule"
 import { runAction, type ActionResult } from "@/lib/action-result"
+import type { CommissionImportPlan } from "@/lib/schedule/commission-import"
 import type { AdminCommission } from "@/lib/schedule/types"
 import {
+  commissionImportInputSchema,
   createCommissionInputSchema,
   deleteCommissionInputSchema,
   updateCommissionInputSchema,
+  type CommissionImportInput,
   type CreateCommissionInput,
   type DeleteCommissionInput,
   type UpdateCommissionInput,
@@ -118,5 +122,21 @@ export async function deleteCommissionAction(input: DeleteCommissionInput): Prom
   return runAction(async () => {
     await requireAdminUserId()
     return deleteCommission(getDb(), deleteCommissionInputSchema.parse(input))
+  })
+}
+
+/** Reads an import file and compares it with the catalog without writing anything. */
+export async function previewCommissionImportAction(input: CommissionImportInput): Promise<ActionResult<CommissionImportPlan>> {
+  return runAction(async () => {
+    await requireAdminUserId()
+    return previewCommissionImport(getDb(), commissionImportInputSchema.parse(input).content)
+  })
+}
+
+/** Creates and updates the commissions of an import file; refuses files with blocking errors. */
+export async function applyCommissionImportAction(input: CommissionImportInput): Promise<ActionResult<CommissionImportResult>> {
+  return runAction(async () => {
+    await requireAdminUserId()
+    return applyCommissionImport(getDb(), commissionImportInputSchema.parse(input).content, new Date())
   })
 }

@@ -12,7 +12,7 @@ export const MAX_SHARED_ENTRIES = 40
 /** Share ids are 16 random bytes encoded as base64url (22 characters). */
 export const SHARE_ID_PATTERN = /^[A-Za-z0-9_-]{22}$/
 
-const timeSchema = z.string().regex(TIME_PATTERN, "Usá el formato HH:MM")
+export const timeSchema = z.string().regex(TIME_PATTERN, "Usá el formato HH:MM")
 
 const optionalText = (maxLength: number, message: string) =>
   z
@@ -104,3 +104,9 @@ export type CreateCustomEntryInput = z.input<typeof createCustomEntryInputSchema
 export type UpdateCustomEntryInput = z.input<typeof updateCustomEntryInputSchema>
 export type CreateShareInput = z.input<typeof createShareInputSchema>
 export type ImportShareInput = z.infer<typeof importShareInputSchema>
+
+export const commissionImportInputSchema = z.object({
+  content: z.string().max(500_000, "El archivo es demasiado grande (máximo 500 KB)"),
+})
+
+export type CommissionImportInput = z.infer<typeof commissionImportInputSchema>

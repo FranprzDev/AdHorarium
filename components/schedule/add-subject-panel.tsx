@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { canTakeSubject, getSubjectStatus } from "@/lib/assistant/eligibility"
 import { CLASS_DAY_SHORT_LABELS, COMMISSION_PERIOD_LABELS, COMMISSION_SHIFT_LABELS } from "@/lib/schedule/labels"
 import { commissionClashes } from "@/lib/schedule/overlaps"
+import { formatCommissionSource } from "@/lib/schedule/source"
 import type { Commission, ScheduleEntry } from "@/lib/schedule/types"
 import { BadgeVariant, ScheduleEntryKind, SubjectStatus } from "@/types/enums"
 import type { PlanSubject, UserSubjectStates } from "@/types/types"
@@ -135,6 +136,7 @@ export function AddSubjectPanel({ subjects, states, commissions, entries, onPick
                     .map((slot) => `${CLASS_DAY_SHORT_LABELS[slot.day]} ${slot.start}–${slot.end}${slot.classroom ? ` (${slot.classroom})` : ""}`)
                     .join(" · ")}
                 </p>
+                <CommissionSource commission={commission} />
                 {clashes.length > 0 && (
                   <p className="flex items-start gap-1.5 text-xs font-medium text-destructive">
                     <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
@@ -147,5 +149,21 @@ export function AddSubjectPanel({ subjects, states, commissions, entries, onPick
         </ul>
       )}
     </section>
+  )
+}
+
+function CommissionSource({ commission }: { commission: Commission }) {
+  const label = formatCommissionSource(commission)
+  if (!label) return null
+  return (
+    <p className="text-xs text-muted-foreground">
+      {commission.sourceUrl ? (
+        <a href={commission.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline-offset-2 hover:underline">
+          {label}
+        </a>
+      ) : (
+        label
+      )}
+    </p>
   )
 }

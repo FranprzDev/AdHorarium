@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { CLASS_DAY_SHORT_LABELS, COMMISSION_PERIOD_LABELS, COMMISSION_SHIFT_LABELS } from "@/lib/schedule/labels"
+import { formatCommissionSource } from "@/lib/schedule/source"
 import type { AdminCommission } from "@/lib/schedule/types"
 import { BadgeVariant } from "@/types/enums"
 import { CommissionFormDialog } from "./CommissionFormDialog"
@@ -135,6 +136,7 @@ export function CommissionsDialog({ subject, onClose }: CommissionsDialogProps) 
                         .map((slot) => `${CLASS_DAY_SHORT_LABELS[slot.day]} ${slot.start}–${slot.end}${slot.classroom ? ` (${slot.classroom})` : ""}`)
                         .join(" · ")}
                     </p>
+                    {commission.source && <p className="text-xs text-muted-foreground">{formatCommissionSource(commission)}</p>}
                   </div>
                   <div className="flex shrink-0 gap-1">
                     <Button

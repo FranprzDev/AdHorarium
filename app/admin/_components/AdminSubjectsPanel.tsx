@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import { AlertCircle, CalendarClock, ChevronLeft, ChevronRight, Link2, Loader2, Pencil, Plus, Search, Trash2 } from "lucide-react"
+import { AlertCircle, CalendarClock, ChevronLeft, ChevronRight, FileUp, Link2, Loader2, Pencil, Plus, Search, Trash2 } from "lucide-react"
 import { getCareersAction } from "@/app/actions/catalog"
 import { listAdminSubjectsAction } from "@/app/actions/admin"
 import type { AdminSubject } from "@/db/queries/admin"
@@ -18,6 +18,7 @@ import type { Career } from "@/types/types"
 import { CommissionsDialog } from "./CommissionsDialog"
 import { CorrelativesDialog } from "./CorrelativesDialog"
 import { DeleteSubjectDialog } from "./DeleteSubjectDialog"
+import { ImportCommissionsDialog } from "./ImportCommissionsDialog"
 import { SubjectFormDialog } from "./SubjectFormDialog"
 import { PageHeader } from "@/components/brand/page-header"
 
@@ -30,11 +31,12 @@ enum DialogKind {
   Delete = "delete",
   Correlatives = "correlatives",
   Commissions = "commissions",
+  ImportCommissions = "import-commissions",
 }
 
-type SubjectAction = Exclude<DialogKind, DialogKind.Create>
+type SubjectAction = Exclude<DialogKind, DialogKind.Create | DialogKind.ImportCommissions>
 
-type OpenDialog = { kind: DialogKind.Create } | { kind: SubjectAction; subject: AdminSubject } | null
+type OpenDialog = { kind: DialogKind.Create | DialogKind.ImportCommissions } | { kind: SubjectAction; subject: AdminSubject } | null
 
 function parseOptionalId(value: string): number | null {
   return value === ALL_OPTION ? null : Number(value)
@@ -168,10 +170,16 @@ export function AdminSubjectsPanel() {
           title="Administración"
           description="Gestioná las materias, correlativas y comisiones con horarios de cada plan de estudios."
         />
-        <Button onClick={() => setDialog({ kind: DialogKind.Create })} disabled={careers.length === 0}>
-          <Plus className="h-4 w-4" />
-          Nueva materia
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={() => setDialog({ kind: DialogKind.ImportCommissions })}>
+            <FileUp className="h-4 w-4" />
+            Importar comisiones
+          </Button>
+          <Button onClick={() => setDialog({ kind: DialogKind.Create })} disabled={careers.length === 0}>
+            <Plus className="h-4 w-4" />
+            Nueva materia
+          </Button>
+        </div>
       </div>
 
       <div className="surface-card grid grid-cols-1 gap-3 p-4 md:grid-cols-3">
@@ -337,6 +345,7 @@ export function AdminSubjectsPanel() {
       {dialog?.kind === DialogKind.Delete && <DeleteSubjectDialog subject={dialog.subject} onClose={closeDialog} onDeleted={handleSaved} />}
       {dialog?.kind === DialogKind.Correlatives && <CorrelativesDialog subject={dialog.subject} onClose={closeDialog} />}
       {dialog?.kind === DialogKind.Commissions && <CommissionsDialog subject={dialog.subject} onClose={closeDialog} />}
+      {dialog?.kind === DialogKind.ImportCommissions && <ImportCommissionsDialog onClose={closeDialog} />}
     </div>
   )
 }
