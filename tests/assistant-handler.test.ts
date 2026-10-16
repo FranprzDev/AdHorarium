@@ -27,6 +27,8 @@ const CONTEXT: AssistantContext = {
       canSitFinal: false,
     },
   ],
+  commissionLines: [],
+  timetableLines: [],
 }
 
 function createModel(): MockLanguageModelV4 {

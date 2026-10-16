@@ -3,7 +3,17 @@ import { buildAssistantContext, renderAssistantContext } from "@/lib/assistant/c
 import { canSitSubjectFinal, canTakeSubject, getMissingToSit, getMissingToTake, getSubjectStatus } from "@/lib/assistant/eligibility"
 import { buildAssistantSystemPrompt } from "@/lib/assistant/prompt"
 import { buildPlanSubjects, type PlanCorrelativeRow, type PlanSubjectRow } from "@/lib/plan-subjects"
-import { CorrelativePurpose, CorrelativeType, ExamTable, SubjectStatus } from "@/types/enums"
+import type { Commission, ScheduleEntry } from "@/lib/schedule/types"
+import {
+  ClassDay,
+  CommissionPeriod,
+  CommissionShift,
+  CorrelativePurpose,
+  CorrelativeType,
+  ExamTable,
+  ScheduleEntryKind,
+  SubjectStatus,
+} from "@/types/enums"
 import type { PlanSubject, UserSubjectStates } from "@/types/types"
 
 function row(id: number, level: number, name: string, examTable: ExamTable | null = ExamTable.MesaI): PlanSubjectRow {
@@ -94,7 +104,45 @@ describe("assistant context", () => {
     [1, SubjectStatus.Promocionada],
     [2, SubjectStatus.Cursando],
   ])
-  const context = buildAssistantContext({ career: { name: "Ingeniería en Sistemas de Información", plan: "2008" }, subjects: PLAN, states: current })
+  const commissions: Commission[] = [
+    {
+      id: 10,
+      subjectId: 3,
+      name: "Comisión de ejemplo 2K1",
+      shift: CommissionShift.Manana,
+      period: CommissionPeriod.PrimerCuatrimestre,
+      slots: [{ day: ClassDay.Lunes, start: "08:00", end: "10:00", classroom: null }],
+    },
+    {
+      id: 11,
+      subjectId: 99,
+      name: "Otra carrera",
+      shift: CommissionShift.Noche,
+      period: CommissionPeriod.Anual,
+      slots: [{ day: ClassDay.Martes, start: "19:00", end: "21:00", classroom: null }],
+    },
+  ]
+  const timetable: ScheduleEntry[] = [
+    {
+      id: 1,
+      kind: ScheduleEntryKind.Custom,
+      subjectId: 2,
+      subjectName: "Álgebra",
+      subjectLevel: 1,
+      commissionId: null,
+      label: "1K3",
+      shift: null,
+      period: null,
+      slots: [{ day: ClassDay.Miercoles, start: "14:00", end: "16:00", classroom: "Aula 3" }],
+    },
+  ]
+  const context = buildAssistantContext({
+    career: { name: "Ingeniería en Sistemas de Información", plan: "2008" },
+    subjects: PLAN,
+    states: current,
+    commissions,
+    timetable,
+  })
 
   it("resolves correlatives to subject numbers and computes availability", () => {
     const physics = context.subjects.find((candidate) => candidate.number === 4)
@@ -122,6 +170,13 @@ describe("assistant context", () => {
     expect(text).toMatch(/MATERIAS QUE PUEDE CURSAR AHORA[^\n]*\n- Análisis Matemático II \(nivel 2\)\n/)
     expect(text).toMatch(/FINALES QUE PUEDE RENDIR AHORA[^\n]*\n- ninguno/)
     expect(text).toContain("- Física II (nivel 2): le falta regularizar Álgebra")
+  })
+
+  it("embeds the career's commission catalog and the saved timetable as read-only context", () => {
+    const text = renderAssistantContext(context)
+    expect(text).toContain("- Análisis Matemático II: comisión Comisión de ejemplo 2K1 (Mañana, 1.er cuatrimestre): Lunes 08:00-10:00")
+    expect(text).not.toContain("Otra carrera")
+    expect(text).toMatch(/HORARIO GUARDADO DEL ESTUDIANTE:\n- Álgebra: horario manual 1K3: Miércoles 14:00-16:00/)
   })
 
   it("builds a system prompt that forbids inventing class times and embeds the student data", () => {
