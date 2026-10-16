@@ -6,7 +6,7 @@ import { AppRoute, chooseOption, ELECTRONICS_CAREER, SYSTEMS_CAREER } from "../s
 const REPOSITORY_URL = "https://github.com/FranprzDev/AdHorarium"
 
 describe("public pages", { tags: ["public"] }, () => {
-  test("PUB-01 landing shows every section and its calls to action", async ({ app, screen, browser }) => {
+  test("PUB-01 landing shows every section and its calls to action", async ({ app, screen }) => {
     await app.open(AppRoute.Home)
     await expect(screen.getByRole("heading", { level: 1 })).toContainText("Tu carrera universitaria")
     for (const heading of ["Qué es AdHorarium", "Lo que podés hacer hoy", "Cómo funciona AdHorarium"]) {
@@ -19,7 +19,7 @@ describe("public pages", { tags: ["public"] }, () => {
     await expect(nav.getByRole("link", "Planes de estudio")).toHaveAttribute("href", AppRoute.Careers)
     await expect(nav.getByRole("link", "Demo")).toHaveAttribute("href", AppRoute.Demo)
     await expect(nav.getByRole("link", "Iniciar sesión")).toHaveAttribute("href", AppRoute.SignIn)
-    await expect(browser.locator(`main a[href="${AppRoute.Register}"]`)).toBeVisible()
+    await expect(screen.getByRole("main").getByRole("link", "Crear cuenta")).toHaveAttribute("href", AppRoute.Register)
     await expect(screen.getByRole("link", "Política de privacidad")).toHaveAttribute("href", AppRoute.Privacy)
     await expect(screen.getByRole("link", "Código abierto en GitHub")).toHaveAttribute("href", REPOSITORY_URL)
     await app.screenshot("landing")
@@ -33,6 +33,19 @@ describe("public pages", { tags: ["public"] }, () => {
     await browser.locator(`main a[href="${AppRoute.Register}"]`).tap()
     await browser.waitForURL(/\/registro$/)
     await expect(screen.getByRole("button", "Crear cuenta")).toBeVisible()
+  })
+
+  test("PUB-08 on a phone the header menu reaches the public pages", async ({ app, screen, browser }) => {
+    await browser.setViewport({ width: 390, height: 844 })
+    await app.open(AppRoute.Home)
+    const nav = screen.getByRole("navigation", "Principal")
+    await expect(nav.getByRole("link", "Planes de estudio")).toBeHidden()
+    await nav.getByRole("button", "Más secciones").tap()
+    await expect(screen.getByRole("menuitem", "Demo")).toBeVisible()
+    await expect(screen.getByRole("menuitem", "Crear cuenta")).toBeVisible()
+    await app.screenshot("landing-menu-movil")
+    await screen.getByRole("menuitem", "Planes de estudio").tap()
+    await browser.waitForURL(/\/careers$/)
   })
 
   test("PUB-03 study plan: career selector and subject detail", async ({ app, screen }) => {
