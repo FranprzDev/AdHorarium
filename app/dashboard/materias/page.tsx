@@ -23,7 +23,8 @@ import { Label } from "@/components/ui/label"
 import { useUserSubjectsStore } from "@/stores/useUserSubjectsStore"
 import { useCareerStore } from "@/stores/useCareerStore"
 import { PageHeader } from "@/components/brand/page-header"
-import { NotebookPen, Loader2, AlertCircle, X } from "lucide-react"
+import Link from "next/link"
+import { NotebookPen, Loader2, AlertCircle, X, FileDown } from "lucide-react"
 import { toast } from "sonner"
 import DeniedAccess from "./_components/DeniedAccess"
 import LoadingSubjects from "./_components/LoadingSubjects"
@@ -249,6 +250,26 @@ export default function MateriasPage() {
           title="Gestor de Materias"
           description="Gestioná el estado de tus materias y llevá un registro de tu progreso académico."
         />
+
+        <section
+          aria-labelledby="sysacad-import-title"
+          className="surface-card flex flex-col gap-3 p-4 md:flex-row md:items-center md:justify-between md:p-5"
+        >
+          <div className="space-y-1">
+            <h2 id="sysacad-import-title" className="font-serif text-lg font-semibold text-foreground">
+              Importar desde SysAcad
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Instalá la extensión, abrí tu Estado académico y traé tus aprobadas con nota, regulares y las que cursás. También podés pegar la tabla.
+            </p>
+          </div>
+          <Button asChild variant="outline" className="shrink-0 bg-card">
+            <Link href="/importar/sysacad">
+              <FileDown className="h-4 w-4" />
+              Importar desde SysAcad
+            </Link>
+          </Button>
+        </section>
 
         <div className="flex flex-wrap items-center gap-2">
           <p className="mr-1 text-sm font-medium text-muted-foreground">Filtrar por:</p>
