@@ -1,0 +1,44 @@
+Estado académico de Alumno, Ejemplo al 01/03/2026 10:00:00
+Año	Materia	Estado	Plan
+0	Física	Aprobada en 2021	2008
+0	Matemática	Aprobada en 2021	2008
+0	Taller de Orientación Universitaria	Aprobada en 2021	2008
+1	Algoritmos y Estructuras de Datos	Aprobada con 9 (5 hs.) Tomo: 101 Folio: 11	2023
+1	Análisis Matemático I	Aprobada con 7 (5 hs.) Tomo: 102 Folio: 12	2023
+1	Arquitectura de Computadoras	Aprobada con 6 (4 hs.) Tomo: 103 Folio: 13	2023
+1	Física I	Aprobada con 8 (5 hs.) Tomo: 104 Folio: 14	2023
+1	Ingeniería y Sociedad	Aprobada con 10 (2 hs.) Tomo: 105 Folio: 15	2023
+1	Lógica y Estructuras Discretas	Aprobada con 6 (3 hs.) Tomo: 106 Folio: 16	2023
+1	Sistemas y Procesos de Negocio	Aprobada con 9 (3 hs.) Tomo: 107 Folio: 17	2023
+1	Álgebra y Geometría Analítica	Aprobada con 8 (5 hs.) Tomo: 108 Folio: 18	2023
+2	Análisis de Sistemas de Información	Aprobada con 7 (6 hs.) Tomo: 201 Folio: 21	2023
+2	Análisis Matemático II	Regular en 2022	2023
+2	Física II	Regular en 2022	2023
+2	Inglés I	Aprobada con 9 (1 hs.) Tomo: 202 Folio: 22	2023
+2	Paradigmas de Programación	Aprobada con 8 (4 hs.) Tomo: 203 Folio: 23	2023
+2	Sintaxis y Semántica de los Lenguajes	Aprobada con 7 (4 hs.) Tomo: 204 Folio: 24	2023
+2	Sistemas Operativos	Aprobada con 9 (4 hs.) Tomo: 205 Folio: 25	2023
+3	Análisis Numérico	Aprobada con 8 (1.5 hs.) Tomo: 301 Folio: 31	2023
+3	Bases de Datos	Aprobada con 9 (2 hs.) Tomo: 302 Folio: 32	2023
+3	Comunicación de Datos	Aprobada con 6 (4 hs.) Tomo: 303 Folio: 33	2023
+3	Desarrollo de Software		2023
+3	Diseño de Sistemas de Información	Aprobada con 7 (6 hs.) Tomo: 304 Folio: 34	2023
+3	Economía	Regular en 2023 (2C)	2023
+3	Inglés II		2023
+3	Probabilidad y Estadística	Aprobada con 8 (1.5 hs.) Tomo: 305 Folio: 35	2023
+4	Administración de Sistemas de Informació	Aprobada con 8 (3 hs.) Tomo: 401 Folio: 41	2023
+4	Auditoria en Sistemas de Información (El	Aprobada con 7 (2 hs.) Tomo: 402 Folio: 42	2023
+4	Ingeniería y Calidad de Software	Aprobada con 9 (1.5 hs.) Tomo: 403 Folio: 43	2023
+4	Investigación Operativa	Aprobada con 6 (2 hs.) Tomo: 404 Folio: 44	2023
+4	Legislación	Aprobada con 9 (1 hs.) Tomo: 405 Folio: 45	2023
+4	Redes de Datos	Regular en 2025 (1C)	2023
+4	Simulación	Aprobada con 7 (1.5 hs.) Tomo: 406 Folio: 46	2023
+4	Tecnologías para la Automatización	Cursa en 4K02 Aula 210 Casa Central	2023
+5	Ciencia de Datos		2023
+5	Gestión Gerencial		2023
+5	Inteligencia Artificial		2023
+5	Proyecto Final		2023
+5	Práctica Profesional Supervisada		2023
+5	Seguridad en los Sistemas de Información		2023
+5	Sistemas de Gestión		2023
+IMPORTANTE: la información de esta página es sólo informativa.

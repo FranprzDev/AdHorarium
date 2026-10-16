@@ -46,6 +46,14 @@ const SECTIONS: PolicySection[] = [
     ],
   },
   {
+    title: "Importación desde SysAcad",
+    paragraphs: [
+      "Si usás «Importar desde SysAcad», la extensión de AdHorarium para el navegador lee la tabla de la página de Estado académico de SysAcad (UTN FRT) que ya tenés abierta, solo cuando tocás «Llevar a AdHorarium». No pide ni ve tu usuario o contraseña de SysAcad, no guarda nada en el navegador y no envía datos a ningún otro sitio.",
+      "Los datos (año, nombre, estado, nota y plan de cada materia) viajan dentro de la dirección de la página de importación, después del signo #: esa parte de la dirección no se envía a ningún servidor. La página los lee en tu navegador y, mientras iniciás sesión, los conserva solo en el almacenamiento de esa pestaña. Lo mismo pasa si pegás la tabla a mano.",
+      "Solo cuando confirmás la importación guardamos en tu cuenta el estado y la nota de las materias que elegiste, igual que si los cargaras vos. No guardamos tu legajo, el tomo y folio de las actas, las comisiones ni ninguna otra información de SysAcad.",
+    ],
+  },
+  {
     title: "Con quién los compartimos",
     paragraphs: [
       "No vendemos ni compartimos tus datos con terceros. Los datos se alojan en los proveedores de infraestructura que hacen funcionar el sitio: Vercel (alojamiento de la aplicación) y Neon (base de datos PostgreSQL). Google interviene solo si elegís ingresar con tu cuenta de Google.",
