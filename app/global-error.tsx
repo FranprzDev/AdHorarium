@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useEffect } from "react"
 import "./globals.css"
 
@@ -33,9 +34,9 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
               >
                 Reintentar
               </button>
-              <a href="/" className="rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted">
+              <Link href="/" className="rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted">
                 Ir al inicio
-              </a>
+              </Link>
             </div>
           </div>
         </main>
