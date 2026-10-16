@@ -62,6 +62,9 @@ const adminSubjectColumns = {
   examTable: examTables.name,
 }
 
+/** A search made only of digits also matches the subject number (its code in the plan). */
+const SUBJECT_NUMBER_PATTERN = /^\d{1,3}$/
+
 function escapeLikePattern(value: string): string {
   return value.replace(/[\\%_]/g, (character) => `\\${character}`)
 }
@@ -72,7 +75,12 @@ export async function listAdminSubjects(db: AppDatabase, filters: AdminSubjectFi
   if (filters.level !== null) conditions.push(eq(subjects.level, filters.level))
   if (filters.search.length > 0) {
     const pattern = `%${escapeLikePattern(filters.search)}%`
-    const searchCondition = or(ilike(subjects.name, pattern), ilike(careers.name, pattern))
+    const subjectNumber = SUBJECT_NUMBER_PATTERN.test(filters.search) ? Number(filters.search) : null
+    const searchCondition = or(
+      ilike(subjects.name, pattern),
+      ilike(careers.name, pattern),
+      subjectNumber === null ? undefined : eq(subjects.number, subjectNumber),
+    )
     if (searchCondition) conditions.push(searchCondition)
   }
   return db

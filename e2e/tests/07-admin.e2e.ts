@@ -88,6 +88,15 @@ describe("admin catalog", { tags: ["admin"], serial: true, session: Persona.Admi
     await expect(row(screen, SUBJECT_X_EDITED)).toBeVisible()
   })
 
+  test("ADM-03b a numeric search matches the subject number", async ({ screen }) => {
+    const search = screen.getByRole("textbox", "Buscar materia por nombre")
+    await search.fill(String(runNumber + 1))
+    await expect(row(screen, SUBJECT_Y)).toBeVisible({ timeout: 20_000 })
+    await expect(row(screen, SUBJECT_X_EDITED)).toBeHidden()
+    await search.fill(runId)
+    await expect(row(screen, SUBJECT_X_EDITED)).toBeVisible({ timeout: 20_000 })
+  })
+
   test("ADM-04 correlatives: add, reject duplicates and cycles, remove", async ({ app, screen }) => {
     await screen.getByRole("button", `Correlativas de ${SUBJECT_X_EDITED}`).tap()
     let dialog = screen.getByRole("dialog", `Correlativas de ${SUBJECT_X_EDITED}`)
@@ -205,5 +214,37 @@ describe("student timetable after the subject is gone", { tags: ["admin"], sessi
     await app.open(AppRoute.Schedule)
     await expect(screen.getByRole("heading", "Gestor de Horarios")).toBeVisible({ timeout: 20_000 })
     await expect(screen.getByText(SUBJECT_X_EDITED)).toBeHidden()
+  })
+})
+
+describe("admin catalog pagination", { tags: ["admin"], serial: true, session: Persona.Admin, skip: SKIP_REASON }, () => {
+  test("ADM-13 the catalog is paginated and filters go back to the first page", async ({ app, screen }) => {
+    await app.open(AppRoute.Admin)
+    await expect(screen.getByRole("heading", "Administración")).toBeVisible({ timeout: 20_000 })
+    const pager = screen.getByRole("navigation", "Paginación de materias")
+    await expect(pager.getByText(/^Mostrando 1–25 de \d+ materias$/)).toBeVisible({ timeout: 20_000 })
+    await expect(pager.getByRole("button", "Anterior")).toBeDisabled()
+    await pager.getByRole("button", "Siguiente").tap()
+    await expect(pager.getByText(/^Página 2 de \d+$/)).toBeVisible()
+    await expect(pager.getByText(/^Mostrando 26–50 de /)).toBeVisible()
+    await chooseOption(screen, "Filtrar por carrera", SYSTEMS_CAREER)
+    await expect(pager.getByText(/^Página 1 de \d+$/)).toBeVisible({ timeout: 20_000 })
+    await expect(pager.getByText(/^Mostrando 1–25 de \d+ materias$/)).toBeVisible()
+    await expect(screen.getByRole("row").filter({ hasText: "Ingeniería Civil" })).toBeHidden()
+  })
+
+  test("ADM-14 on a phone each subject is a card with its actions on screen", async ({ app, screen, browser }) => {
+    await browser.setViewport({ width: 375, height: 812 })
+    await app.open(AppRoute.Admin)
+    await expect(screen.getByRole("heading", "Administración")).toBeVisible({ timeout: 20_000 })
+    await screen.getByRole("textbox", "Buscar materia por nombre").fill("Análisis Matemático I")
+    const card = screen.getByRole("list", "Materias").getByRole("listitem").filter({ hasText: "Análisis Matemático I" }).first()
+    await expect(card).toBeVisible({ timeout: 20_000 })
+    const remove = card.getByRole("button", /^Eliminar /)
+    await expect(remove).toBeVisible()
+    expect(await browser.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+    const box = await remove.boundingBox()
+    expect(box !== null && box.x + box.width <= 375).toBe(true)
+    await app.screenshot("admin-materias-movil")
   })
 })
