@@ -115,12 +115,13 @@ describe("assistant context", () => {
   it("renders the plan, the available subjects and what blocks the rest", () => {
     const text = renderAssistantContext(context)
     expect(text).toContain("Carrera: Ingeniería en Sistemas de Información (plan 2008).")
-    expect(text).toContain("- 1. Análisis Matemático I (estado: aprobada; mesa de examen: Mesa I)")
-    expect(text).toContain("- 2. Álgebra (estado: cursando; mesa de examen: Mesa I)")
+    expect(text).toContain("- Análisis Matemático I (código #1; estado: aprobada; mesa de examen: Mesa I)")
+    expect(text).toContain("- Álgebra (código #2; estado: cursando; mesa de examen: Mesa I)")
+    expect(text).toContain("para cursar necesita regulares [#2] y aprobadas [#1]")
     expect(text).toContain("mesa de examen: sin asignar")
-    expect(text).toMatch(/MATERIAS QUE PUEDE CURSAR AHORA[^\n]*\n- 3\. Análisis Matemático II \(nivel 2\)/)
+    expect(text).toMatch(/MATERIAS QUE PUEDE CURSAR AHORA[^\n]*\n- Análisis Matemático II \(nivel 2\)\n/)
     expect(text).toMatch(/FINALES QUE PUEDE RENDIR AHORA[^\n]*\n- ninguno/)
-    expect(text).toContain("- 4. Física II (nivel 2): le falta regularizar [2]")
+    expect(text).toContain("- Física II (nivel 2): le falta regularizar Álgebra")
   })
 
   it("builds a system prompt that forbids inventing class times and embeds the student data", () => {
@@ -128,5 +129,7 @@ describe("assistant context", () => {
     expect(prompt).toContain("Nunca inventes horarios")
     expect(prompt).toContain("DATOS DEL ESTUDIANTE")
     expect(prompt).toContain("Análisis Matemático II")
+    expect(prompt).toContain('"- Nombre (nivel N)"')
+    expect(prompt).toContain("Nunca muestres los códigos internos")
   })
 })
