@@ -214,7 +214,6 @@ export function AdminSubjectsPanel() {
           <Input
             value={searchInput}
             onChange={(event) => setSearchInput(event.target.value)}
-            type="search"
             placeholder="Buscar por nombre o número"
             aria-label="Buscar materia por nombre o número"
             className="bg-background pl-9"
