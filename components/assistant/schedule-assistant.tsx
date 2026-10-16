@@ -81,6 +81,8 @@ export function ScheduleAssistant() {
 
   return (
     <>
+      {/* Reserves room at the end of the page so the floating button never covers the last row of content. */}
+      <div aria-hidden="true" className="h-16" />
       <Button
         type="button"
         onClick={() => setIsOpen(true)}
