@@ -12,6 +12,8 @@ export enum AppRoute {
   AccessDenied = "/acceso-denegado",
   SignIn = "/ingresar",
   Register = "/registro",
+  PasswordResetRequest = "/recuperar",
+  PasswordReset = "/restablecer",
   Dashboard = "/dashboard",
   Subjects = "/dashboard/materias",
   Schedule = "/dashboard/horarios",

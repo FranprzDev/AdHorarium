@@ -49,5 +49,22 @@ export const registerInputSchema = z
     path: ["confirmPassword"],
   })
 
+const MAX_TOKEN_LENGTH = 128
+
+export const passwordResetRequestSchema = z.object({ email: emailSchema })
+
+export const passwordResetInputSchema = z
+  .object({
+    token: z.string({ required_error: "Falta el enlace de restablecimiento" }).trim().min(1, "Falta el enlace de restablecimiento").max(MAX_TOKEN_LENGTH),
+    password: newPasswordSchema,
+    confirmPassword: z.string({ required_error: "Repetí la contraseña" }),
+  })
+  .refine((input) => input.password === input.confirmPassword, {
+    message: "Las contraseñas no coinciden",
+    path: ["confirmPassword"],
+  })
+
 export type SignInInput = z.infer<typeof signInInputSchema>
+export type PasswordResetRequestInput = z.input<typeof passwordResetRequestSchema>
+export type PasswordResetInput = z.input<typeof passwordResetInputSchema>
 export type RegisterInput = z.input<typeof registerInputSchema>

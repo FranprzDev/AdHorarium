@@ -21,6 +21,8 @@ export enum E2eEnv {
   AdminPassword = "E2E_ADMIN_PASSWORD",
   Assistant = "E2E_ASSISTANT",
   StateDir = "E2E_STATE_DIR",
+  /** "1" when the target app runs with MAIL_OUTBOX=1, so emails can be read from the `mail_outbox` table. */
+  MailOutbox = "E2E_MAIL_OUTBOX",
 }
 
 export enum Persona {
@@ -57,6 +59,9 @@ export const isProduction = new URL(baseUrl).origin === PRODUCTION_URL
 
 /** The assistant calls a paid model behind a 6/min limit, so it runs against production or when asked explicitly. */
 export const assistantEnabled = isProduction || readEnv(E2eEnv.Assistant) === "1"
+
+/** Flows that need an emailed link run only against a non-production app that stores emails in the outbox. */
+export const mailOutboxAvailable = !isProduction && Boolean(databaseUrl) && readEnv(E2eEnv.MailOutbox) === "1"
 
 const PASSWORD = `E2e-${runId}-pass9`
 
