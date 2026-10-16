@@ -4,7 +4,7 @@ import { isUserRole } from "@/lib/auth/roles"
 import { readRequiredEnv } from "@/lib/env"
 import { EnvVar, UserRole } from "@/types/enums"
 
-export const SIGN_IN_PAGE = "/"
+export const SIGN_IN_PAGE = "/ingresar"
 
 export function createBaseAuthConfig(): NextAuthConfig {
   return {

@@ -1,12 +1,28 @@
 import { DrizzleAdapter } from "@auth/drizzle-adapter"
 import { eq } from "drizzle-orm"
-import NextAuth from "next-auth"
+import NextAuth, { CredentialsSignin } from "next-auth"
+import Credentials from "next-auth/providers/credentials"
 import { createBaseAuthConfig } from "@/auth.config"
 import { getDb } from "@/db/client"
+import { findCredentialUserByEmail } from "@/db/queries/auth"
 import { accounts, sessions, users, verificationTokens } from "@/db/schema"
+import { getClientKey } from "@/lib/auth/client-key"
+import { authorizeCredentials, SIGN_IN_CLIENT_RATE_LIMITS, SIGN_IN_EMAIL_RATE_LIMITS } from "@/lib/auth/credentials"
 import { isUserRole, resolveRoleOnSignIn } from "@/lib/auth/roles"
 import { getAdminEmails } from "@/lib/env"
-import { UserRole } from "@/types/enums"
+import { SlidingWindowRateLimiter } from "@/lib/rate-limit"
+import { AuthProvider, CredentialsErrorCode, UserRole } from "@/types/enums"
+
+/** Sign in failure surfaced to the client as `code`; the message never says which part was wrong. */
+class CredentialsFailure extends CredentialsSignin {
+  constructor(code: CredentialsErrorCode) {
+    super()
+    this.code = code
+  }
+}
+
+const emailLimiter = new SlidingWindowRateLimiter(SIGN_IN_EMAIL_RATE_LIMITS)
+const clientLimiter = new SlidingWindowRateLimiter(SIGN_IN_CLIENT_RATE_LIMITS)
 
 async function syncRoleOnSignIn(userId: string, email: string | null | undefined): Promise<UserRole> {
   const db = getDb()
@@ -21,6 +37,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
   const base = createBaseAuthConfig()
   return {
     ...base,
+    providers: [
+      ...base.providers,
+      Credentials({
+        id: AuthProvider.Credentials,
+        credentials: { email: {}, password: {} },
+        async authorize(credentials, request) {
+          const result = await authorizeCredentials(credentials, getClientKey(request.headers), {
+            findUserByEmail: (email) => findCredentialUserByEmail(getDb(), email),
+            emailLimiter,
+            clientLimiter,
+          })
+          if (!result.ok) throw new CredentialsFailure(result.code)
+          return result.user
+        },
+      }),
+    ],
     adapter: DrizzleAdapter(getDb(), {
       usersTable: users,
       accountsTable: accounts,
