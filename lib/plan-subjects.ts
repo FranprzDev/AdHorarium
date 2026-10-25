@@ -1,5 +1,5 @@
-import type { PlanSubject } from "@/types/types"
-import { CorrelativePurpose, CorrelativeType, type ExamTable } from "@/types/enums"
+import type { PlanSubject, UserSubjectStates } from "@/types/types"
+import { CorrelativePurpose, CorrelativeType, SubjectStatus, type ExamTable } from "@/types/enums"
 
 export type PlanSubjectRow = {
   id: number
@@ -55,4 +55,22 @@ export function groupByLevel(subjects: ReadonlyArray<PlanSubject>): Map<number, 
     else groups.set(subject.level, [subject])
   }
   return groups
+}
+
+export type PlanImpactSubject = PlanSubject & {
+  status: SubjectStatus
+  regularToTake: number[]
+  approvedToTake: number[]
+  approvedToSit: number[]
+}
+
+export function toImpactSubjects(subjects: ReadonlyArray<PlanSubject>, states: UserSubjectStates): PlanImpactSubject[] {
+  return subjects.map((subject) => ({
+    ...subject,
+    number: subject.id,
+    status: states[subject.id]?.status ?? SubjectStatus.NoCursada,
+    regularToTake: subject.regularToTakeIds,
+    approvedToTake: subject.approvedToTakeIds,
+    approvedToSit: subject.approvedToSitIds,
+  }))
 }

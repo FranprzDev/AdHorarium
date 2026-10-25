@@ -2,6 +2,7 @@
 
 import type { PlanSubject } from "@/types/types";
 import SubjectCard from "./SubjectCard";
+import RegularityLossImpact from "./RegularityLossImpact";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { getEnabledSubjects, getPrerequisiteSubjects } from "@/lib/correlatives";
@@ -59,6 +60,7 @@ export default function DependencyView({ selectedSubject, allSubjects, onClose }
                 </div>
             </div>
         </div>
+        <RegularityLossImpact selectedSubject={selectedSubject} allSubjects={allSubjects} />
     </div>
   );
 } 

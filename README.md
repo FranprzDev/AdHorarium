@@ -13,6 +13,7 @@ UTN students juggle correlatives, final-exam tables and their own progress acros
 - **Public correlatives plan** (`/careers`): the 2023 plans for Sistemas, Civil, Eléctrica, Electrónica and Mecánica, with "para cursar" (regular / approved) and "para rendir" correlatives. No sign-in required.
 - **Subject states and grades** (`/dashboard/materias`): mark each subject as no cursada, cursando, regular or promocionada and store the 1–10 grade of promoted subjects.
 - **Correlatives graph** (`/dashboard`): pick a subject to see what it requires and what it enables, grouped by level.
+- **Impact of losing regularity** (`/careers` and `/dashboard`, below the selected subject): computed in code, with no model involved. It lists the subjects that stop being available to take (those that asked for the subject regular, then the ones that fall behind them in the chain of correlatives), the ones that already required it approved, and the finals that require it approved, all ordered by level. When signed in, each subject card shows the student's own status. Limits: it ignores conditions such as "all previous subjects" (Proyecto Final, Seminario Integrador), does not know terms or years, and only reflects the correlatives loaded in the catalog (see `docs/catalog-sources.md` for what is left out). Asking this in natural language is done by the [UTN MCP](https://github.com/FranprzDev/utn-mcp) (`plan_recursar_impacto`), which resolves the subject name and asks when it is ambiguous; AdHorarium itself adds no model for this.
 - **Exam table finder** (`/dashboard/mesas`): which exam table (Mesa I, II or III) each subject of the career belongs to.
 - **Average and GPA conversion** (`/dashboard/profile`): average of promoted subjects and an approximate US GPA (0–4) equivalence, documented in `docs/INFORME_CONVERSION_GPA_ARGENTINA.md`.
 - **Schedules** (`/dashboard/horarios`): early work in progress (subject selection per level only; the sidebar link is disabled).
@@ -103,6 +104,7 @@ Email + password sign-in works without extra configuration. For Google sign-in, 
 | `pnpm db:generate` | Generate a new SQL migration from `db/schema.ts` |
 | `pnpm db:migrate` | Apply pending migrations to `DATABASE_URL` (reads `.env.local` if present) |
 | `pnpm db:seed` | Seed the official plans into `DATABASE_URL` (idempotent) |
+| `pnpm export:catalog <file.ts>` | Write the Sistemas 2008 and 2023 subjects and correlatives as a typed module (used to feed the UTN MCP's `src/plan/data.ts`; re-run it when the seed changes) |
 
 ## CI
 
