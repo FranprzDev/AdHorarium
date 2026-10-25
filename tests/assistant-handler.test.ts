@@ -113,7 +113,7 @@ describe("handleAssistantRequest", () => {
     expect(await response.json()).toMatchObject({ code: AssistantErrorCode.Unavailable })
   })
 
-  it("streams the answer with the student's data as system instructions and no tools", async () => {
+  it("streams the answer with the student's data as system instructions and the impact tool", async () => {
     const deps = createDeps()
     const response = await handleAssistantRequest(chatRequest("¿Qué puedo cursar?"), deps)
     expect(response.status).toBe(200)
@@ -123,7 +123,7 @@ describe("handleAssistantRequest", () => {
 
     expect(deps.model.doStreamCalls).toHaveLength(1)
     const call = deps.model.doStreamCalls[0]
-    expect(call.tools ?? []).toHaveLength(0)
+    expect((call.tools ?? []).map((tool) => tool.name)).toEqual(["impacto_de_recursar_materia"])
     const [system, user] = call.prompt
     expect(system.role).toBe("system")
     expect(JSON.stringify(system.content)).toContain("Ingeniería Civil")
