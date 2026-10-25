@@ -113,7 +113,7 @@ describe("handleAssistantRequest", () => {
     expect(await response.json()).toMatchObject({ code: AssistantErrorCode.Unavailable })
   })
 
-  it("streams the answer with the student's data as system instructions and no tools", async () => {
+  it("streams the answer with the student's data as system instructions and the impact tool", async () => {
     const deps = createDeps()
     const response = await handleAssistantRequest(chatRequest("¿Qué puedo cursar?"), deps)
     expect(response.status).toBe(200)
@@ -123,11 +123,54 @@ describe("handleAssistantRequest", () => {
 
     expect(deps.model.doStreamCalls).toHaveLength(1)
     const call = deps.model.doStreamCalls[0]
-    expect(call.tools ?? []).toHaveLength(0)
+    expect((call.tools ?? []).map((tool) => tool.name)).toEqual(["impacto_de_recursar_materia"])
     const [system, user] = call.prompt
     expect(system.role).toBe("system")
     expect(JSON.stringify(system.content)).toContain("Ingeniería Civil")
     expect(user.role).toBe("user")
     expect(JSON.stringify(user.content)).toContain("¿Qué puedo cursar?")
+  })
+})
+
+describe("handleAssistantRequest impact tool", () => {
+  const usage = {
+    inputTokens: { total: 10, noCache: 10, cacheRead: undefined, cacheWrite: undefined },
+    outputTokens: { total: 6, text: 6, reasoning: undefined },
+  }
+
+  it("runs the impact tool on the student's plan and gives the result back to the model", async () => {
+    let call = 0
+    const model = new MockLanguageModelV4({
+      doStream: async () => {
+        call += 1
+        if (call === 1) {
+          return {
+            stream: simulateReadableStream({
+              chunks: [
+                { type: "tool-call", toolCallId: "c1", toolName: "impacto_de_recursar_materia", input: JSON.stringify({ materia: "analisis matematico 1" }) },
+                { type: "finish", finishReason: { unified: "tool-calls", raw: undefined }, usage },
+              ],
+            }),
+          }
+        }
+        return {
+          stream: simulateReadableStream({
+            chunks: [
+              { type: "text-start", id: "t1" },
+              { type: "text-delta", id: "t1", delta: "listo" },
+              { type: "text-end", id: "t1" },
+              { type: "finish", finishReason: { unified: "stop", raw: undefined }, usage },
+            ],
+          }),
+        }
+      },
+    })
+    const response = await handleAssistantRequest(chatRequest("recurso Análisis Matemático I, qué me corta"), createDeps({ getModel: () => model }))
+    expect(response.status).toBe(200)
+    expect(await response.text()).toContain("listo")
+    expect(model.doStreamCalls).toHaveLength(2)
+    const toolMessage = model.doStreamCalls[1].prompt.find((message) => message.role === "tool")
+    expect(JSON.stringify(toolMessage)).toContain("Análisis Matemático I")
+    expect(JSON.stringify(toolMessage)).toContain("found")
   })
 })

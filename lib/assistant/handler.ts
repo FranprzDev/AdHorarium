@@ -1,6 +1,7 @@
-import { streamText, type LanguageModel, type ModelMessage } from "ai"
+import { stepCountIs, streamText, type LanguageModel, type ModelMessage } from "ai"
 import type { AssistantContext } from "@/lib/assistant/context"
 import { ASSISTANT_ERROR_MESSAGES, type AssistantErrorBody } from "@/lib/assistant/errors"
+import { buildAssistantTools } from "@/lib/assistant/impact-tool"
 import { buildAssistantSystemPrompt } from "@/lib/assistant/prompt"
 import type { SlidingWindowRateLimiter } from "@/lib/rate-limit"
 import { AssistantRequestError, parseAssistantRequest, type AssistantChatMessage } from "@/lib/assistant/request"
@@ -54,7 +55,7 @@ async function readJson(request: Request): Promise<unknown> {
 
 /**
  * Query-only schedule assistant: authenticates the student, rate limits, grounds the system prompt
- * on their own plan and streams the model answer. It exposes no tools and never writes data.
+ * on their own plan and streams the model answer. Its only tool is a read-only impact calculator and it never writes data.
  */
 export async function handleAssistantRequest(request: Request, deps: AssistantHandlerDeps): Promise<Response> {
   const userId = await deps.getUserId()
@@ -88,6 +89,8 @@ export async function handleAssistantRequest(request: Request, deps: AssistantHa
     model,
     instructions: buildAssistantSystemPrompt(context),
     messages: toModelMessages(messages),
+    tools: buildAssistantTools(context),
+    stopWhen: stepCountIs(3),
     maxOutputTokens: ASSISTANT_MAX_OUTPUT_TOKENS,
     temperature: ASSISTANT_TEMPERATURE,
     abortSignal: request.signal,
