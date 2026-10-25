@@ -13,6 +13,7 @@
     "db:migrate": "node --env-file-if-exists=.env.local --import tsx scripts/migrate.ts",
     "db:seed": "node --env-file-if-exists=.env.local --import tsx scripts/seed.ts",
     "test:e2e": "e2e run",
+    "export:catalog": "node --import tsx scripts/export-catalog.ts",
     "test:e2e:cleanup": "node --import tsx e2e/scripts/cleanup.ts",
     "extension:build": "node extension/scripts/build.mjs"
   },
