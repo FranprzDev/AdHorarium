@@ -32,7 +32,8 @@ describe("regularity loss impact", () => {
       expect.arrayContaining(["Ingeniería de Software", "Habilitación Profesional", "Computación en la Nube", "Testing Automatizado de Software"]),
     )
     expect(names(impact.direct)).not.toContain("Proyecto Final")
-    expect(names(impact.laterInChain)).toContain("Proyecto Final")
+    expect(names(impact.laterInChain)).not.toContain("Proyecto Final")
+    expect(names(impact.alreadyRequiredApproval)).toEqual(expect.arrayContaining(["Proyecto Final"]))
     const affected = new Set([...names(impact.direct), ...names(impact.laterInChain)])
     expect(names(impact.alreadyRequiredApproval).some((name) => affected.has(name))).toBe(false)
     expect(names(impact.laterInChain)).toContain("Agilidad y Gestión de Productos Digitales")

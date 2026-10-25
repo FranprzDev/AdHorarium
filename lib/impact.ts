@@ -43,12 +43,11 @@ function collectChain<T extends ImpactSubject>(seeds: ReadonlyArray<T>, subjects
 
 export function findRegularityLossSubjects<T extends ImpactSubject>(root: T, subjects: ReadonlyArray<T>): RegularityLossSubjects<T> {
   const others = subjects.filter((subject) => subject.number !== root.number)
-  const direct = others.filter((subject) => subject.regularToTake.includes(root.number)).sort(byLevelAndNumber)
-  const laterInChain = collectChain(direct, others)
-  const affected = new Set<number>([...direct, ...laterInChain].map((subject) => subject.number))
-  const alreadyRequiredApproval = others
-    .filter((subject) => subject.approvedToTake.includes(root.number) && !affected.has(subject.number))
-    .sort(byLevelAndNumber)
+  const alreadyRequiredApproval = others.filter((subject) => subject.approvedToTake.includes(root.number)).sort(byLevelAndNumber)
+  const blockedAnyway = new Set<number>(alreadyRequiredApproval.map((subject) => subject.number))
+  const reachable = others.filter((subject) => !blockedAnyway.has(subject.number))
+  const direct = reachable.filter((subject) => subject.regularToTake.includes(root.number)).sort(byLevelAndNumber)
+  const laterInChain = collectChain(direct, reachable)
   const finalsNeedingApproval = others.filter((subject) => subject.approvedToSit.includes(root.number)).sort(byLevelAndNumber)
   return { direct, laterInChain, alreadyRequiredApproval, finalsNeedingApproval }
 }
